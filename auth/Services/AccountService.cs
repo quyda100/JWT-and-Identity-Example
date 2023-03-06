@@ -1,4 +1,5 @@
 ﻿using auth.Data;
+using auth.Helpers;
 using auth.Interfaces;
 using auth.Model;
 using Microsoft.AspNetCore.Identity;
@@ -33,12 +34,19 @@ namespace auth.Services
             {
                 return string.Empty;
             }
+            return GenerateJwtToken(model);
+        }
+
+        public string GenerateJwtToken(LoginRequest model)
+        {
             // generate token that is valid for 7 days
             var claims = new Claim[]
-            {
+             {
+                 new Claim(ClaimTypes.Email, model.Email),
+                 new Claim(ClaimTypes.Name, this.GetUserByEmail(model.Email).FullName),
                new Claim("email", model.Email),
                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
+             };
 
             var token_key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
             var creds = new SigningCredentials(token_key, SecurityAlgorithms.HmacSha512Signature);

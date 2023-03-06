@@ -49,7 +49,6 @@ builder.Services.AddSwaggerGen(c =>
             Scheme = "oauth2",
             Name = "Bearer",
             In = ParameterLocation.Header
-
         },
         new List<string>()
         }
@@ -63,12 +62,12 @@ builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<Appl
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Password settings.
-    options.Password.RequireDigit = false;
+    options.Password.RequireDigit = true; //Require numbers [0-9]
     options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
     options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 0;
+    options.Password.RequiredUniqueChars = 1;
 
     // Lockout settings.
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -77,8 +76,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 
     // User settings.
     /*options.User.AllowedUserNameCharacters =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = false;*/
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";*/
+    options.User.RequireUniqueEmail = true;
 });
 
 
@@ -93,7 +92,7 @@ builder.Services.AddAuthentication(options =>
                   cfg.RequireHttpsMetadata = false;
                   cfg.SaveToken = true;
 
-                  cfg.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                  cfg.TokenValidationParameters = new TokenValidationParameters
                   {
                       ValidateIssuer = true,
                       ValidateAudience = true,
@@ -119,8 +118,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseCors(options =>
      options.AllowAnyOrigin()
             .AllowAnyHeader()
