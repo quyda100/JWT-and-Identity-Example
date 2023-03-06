@@ -105,6 +105,7 @@ builder.Services.AddAuthentication(options =>
               });
 builder.Services.AddCors();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.AddAutoMapper(typeof(Program));
 /////////////////////////////
 
 var app = builder.Build();

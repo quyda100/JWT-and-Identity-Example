@@ -5,8 +5,9 @@ namespace auth.Interfaces
     public interface IProductService
     {
         public Task<IEnumerable<Product>> GetProducts();
-        /*public bool addProduct(Product product);
-        public bool removeProduct(int id);
-        public bool updateProduct(int id, Product product);*/
+        public Product getProductById(int id);
+        public void addProduct(Product product);
+        public void removeProduct(int id);
+        public void updateProduct(int id, Product product);
     }
 }

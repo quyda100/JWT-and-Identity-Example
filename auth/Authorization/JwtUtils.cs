@@ -63,7 +63,7 @@ namespace auth.Authorization
                     }, out SecurityToken validatedToken);
 
                     var jwtToken = (JwtSecurityToken)validatedToken;
-                var Email = jwtToken.Claims.First(x => x.Type == "email").Value;
+                var Email = jwtToken.Claims.First(x => x.Type == "Email").Value;
 
                     // return user id from JWT token if validation successful
                     return Email;

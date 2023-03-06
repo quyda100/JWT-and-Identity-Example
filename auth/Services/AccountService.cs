@@ -42,16 +42,15 @@ namespace auth.Services
             // generate token that is valid for 7 days
             var claims = new Claim[]
              {
-                 new Claim(ClaimTypes.Email, model.Email),
-                 new Claim(ClaimTypes.Name, this.GetUserByEmail(model.Email).FullName),
-               new Claim("email", model.Email),
+               new Claim("Name", this.GetUserByEmail(model.Email).FullName),
+               new Claim("Email", model.Email),
                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
              };
 
             var token_key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
             var creds = new SigningCredentials(token_key, SecurityAlgorithms.HmacSha512Signature);
 
-            var expires = DateTime.Now.AddYears(7);
+            var expires = DateTime.Now.AddDays(7);
             var token = new JwtSecurityToken(
                _configuration["Jwt:Issuser"],
               _configuration["Jwt:Audience"],
