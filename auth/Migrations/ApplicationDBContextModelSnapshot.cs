@@ -22,6 +22,50 @@ namespace auth.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("auth.Model.Brand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brand");
+                });
+
+            modelBuilder.Entity("auth.Model.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category");
+                });
+
             modelBuilder.Entity("auth.Model.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -30,8 +74,38 @@ namespace auth.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CaseMeterial")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("CaseSize")
+                        .HasColumnType("real");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GlassMaterial")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Movement")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -42,35 +116,19 @@ namespace auth.Migrations
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
+                    b.Property<int>("Warranty")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WaterResistant")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.HasIndex("BrandId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IsDeleted = false,
-                            Name = "Đồng hồ A",
-                            Price = 200f,
-                            Stock = 10
-                        },
-                        new
-                        {
-                            Id = 2,
-                            IsDeleted = false,
-                            Name = "Đồng hồ B",
-                            Price = 300f,
-                            Stock = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            IsDeleted = true,
-                            Name = "Đồng hồ C",
-                            Price = 800f,
-                            Stock = 0
-                        });
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("auth.Model.User", b =>
@@ -275,6 +333,25 @@ namespace auth.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("auth.Model.Product", b =>
+                {
+                    b.HasOne("auth.Model.Brand", "Brand")
+                        .WithMany()
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("auth.Model.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
