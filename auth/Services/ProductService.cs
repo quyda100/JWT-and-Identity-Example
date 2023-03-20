@@ -22,7 +22,7 @@ namespace auth.Services
             var products = await _context.Products.ToListAsync();
             return products;
         }
-        public  void addProduct(Product product)
+        public void addProduct(Product product)
         {
             try
             {
@@ -33,7 +33,6 @@ namespace auth.Services
             }
             catch(Exception ex)
             {
-
             }
 
         }
@@ -103,14 +102,14 @@ namespace auth.Services
 
 
         // api  SimilarProduct
-        public async Task<List<Product>> getSimilarProduct(int brandId, int caseSize)
+        public Task<List<Product>> getSimilarProduct(int brandId, int caseSize)
         {
             var products = _context.Products.Where(p => p.BrandId == brandId && p.CaseSize==caseSize).ToList();
             if(products == null)
             {
                 throw new Exception("Product not found");
             }
-            return products;
+            return Task.FromResult(products);
         }
     }
 }

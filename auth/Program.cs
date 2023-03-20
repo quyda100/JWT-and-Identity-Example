@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Life cycle DI: AddSingleton(), AddTransient(), AddScoped()
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IOrderService, OrderService>();
 builder.Services.AddTransient<IJwtUtils, JwtUtils>();
 
 builder.Services.AddControllers().AddJsonOptions(option =>

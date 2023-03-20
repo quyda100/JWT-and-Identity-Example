@@ -69,7 +69,6 @@ namespace auth.Services
                 Email = model.Email,
                 PhoneNumber = model.Phone,
                 FullName = model.FullName,
-                Avatar = model.Avatar,
             };
             return await _userManager.CreateAsync(user, model.Password);
         }

@@ -5,23 +5,25 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace auth.Services
 {
     public class OrderService: IOrderService
     {
         private readonly ApplicationDBContext _context;
-        private readonly IMapper _mapper;
 
-
-        public async Task<List<int>> getDataOrder()
+        public OrderService(ApplicationDBContext context)
         {
-            for (int i = 1; i < 12; i++)
+            _context = context;
+        }
+
+        public Task<List<int>> getDataOrder()
+        {
+            List<int> lst = new List<int>();
+            for (int i = 1; i <= 12; i++)
             {
-                _context.Orders.Sum(o => o.Total);
+                lst.Add(_context.Orders.Where(o => o.PaymentTime.Month == i && o.PaymentTime.Year == DateTime.Now.Year).Sum(o => o.Total));
             }
-            var dataDash =  _context.Orders.Where(o => o.PaymentTime.Year == DateTime.Now.Year).Sum(o => o.Total);
-            
+            return Task.FromResult(lst);
         }
     }
 }

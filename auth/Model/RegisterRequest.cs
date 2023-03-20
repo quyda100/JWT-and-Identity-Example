@@ -17,7 +17,5 @@ namespace auth.Model
         public string Address { get; set; }
         [Required]
         public string Phone { get; set; }
-        
-        public string Avatar { get; set; } 
     }
 }
