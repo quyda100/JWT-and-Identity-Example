@@ -22,14 +22,48 @@ namespace auth.Services
             var products = await _context.Products.ToListAsync();
             return products;
         }
-        public async void addProduct(Product p)
+        public  void addProduct(Product product)
         {
-            if (await _context.Products.AnyAsync(p => p.Name == p.Name))
-                throw new Exception(p.Name +" is exist");
-            _context.Products.Add(p);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (_context.Products.Any(x => x.Name == product.Name))
+                    throw new Exception(product.Name + " is exist");
+                _context.Products.Add(product);
+                _context.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+
+            }
 
         }
+            
+        //public void addProduct(Product model)
+        //{
+        //    if (_context.Products.Any(x => x.Name == model.Name))
+        //        throw new Exception("Name '" + model.Name + "' Product is already");
+        //    var product = new Product()
+        //    {
+        //        Code = model.Code,
+        //        Name = model.Name,
+        //        Price = model.Price,
+        //        Stock = model.Stock,
+        //        Image = model.Image,
+        //        Color = model.Color,
+        //        CaseMeterial = model.CaseMeterial,
+        //        CaseSize = model.CaseSize,
+        //        GlassMaterial = model.GlassMaterial,
+        //        Movement = model.Movement,
+        //        WaterResistant = model.WaterResistant,
+        //        Description = model.Description,
+        //        Warranty = model.Warranty,
+        //        IsDeleted= model.IsDeleted,
+        //        BrandId= model.BrandId,
+        //        Gender = model.Gender,
+        //    };
+        //    _context.Products.Add(product);
+        //    _context.SaveChanges();
+        //}
 
         public void removeProduct(int id)
         {
@@ -50,6 +84,7 @@ namespace auth.Services
             _context.SaveChangesAsync();
         }
 
+
         public Product getProductById(int id)
         {
             return getProduct(id);
@@ -63,6 +98,19 @@ namespace auth.Services
                 throw new Exception("Product not found");
             }
             return product;
+        }
+
+
+
+        // api  SimilarProduct
+        public async Task<List<Product>> getSimilarProduct(int brandId, int caseSize)
+        {
+            var products = _context.Products.Where(p => p.BrandId == brandId && p.CaseSize==caseSize).ToList();
+            if(products == null)
+            {
+                throw new Exception("Product not found");
+            }
+            return products;
         }
     }
 }

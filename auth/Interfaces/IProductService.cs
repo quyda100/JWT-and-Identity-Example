@@ -9,5 +9,8 @@ namespace auth.Interfaces
         public void addProduct(Product product);
         public void removeProduct(int id);
         public void updateProduct(int id, Product product);
+
+        //SimilarProduct
+        public Task<List<Product>>  getSimilarProduct(int brandId, int caseSize);
     }
 }

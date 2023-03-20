@@ -3,15 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace auth.Model
 {
+    [Table("Products")]
     public class Product
     {
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public float Price { get; set; }
+        public int Price { get; set; }
         public int Stock { get;set; }
         public string Image { get; set; }
         public string Color { get; set; }
+
+        public string PreviewImages { get; set; }
+
         [DisplayName("Chất liệu vỏ")]
         public string CaseMeterial { get; set; }
         [DisplayName("Kích thước mặt")]
@@ -25,6 +29,8 @@ namespace auth.Model
         public string Description { get; set; }
         [DisplayName("Bảo hành")]
         public int Warranty { get; set; }
+
+        public string Gender { get; set; }
         public bool IsDeleted { get; set; } = false;
         [ForeignKey("Brand")]
         public int BrandId { get; set; }

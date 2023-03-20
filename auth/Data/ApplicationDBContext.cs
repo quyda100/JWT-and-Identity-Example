@@ -6,18 +6,28 @@ namespace auth.Data
 {
     public class ApplicationDBContext : IdentityDbContext<User>
     {
-        public ApplicationDBContext(DbContextOptions options) : base(options)
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
         }
         #region DBSet
-        public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
-        #endregion
+        public DbSet<Order> Orders { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.LogTo(Console.WriteLine);
 
         #region Seeding
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            foreach(var relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+            builder.Entity<Product>().ToTable("Products");
+            builder.Entity<Brand>().ToTable("Brand");
+            builder.Entity<Order>().ToTable("Order");
+            builder.Entity<OrderDetail>().ToTable("OrderDetail");
             /*builder.Entity<Brand>().HasData(new Brand
             {
                 Name = "LONGINES",
@@ -407,5 +417,7 @@ namespace auth.Data
             });*/
         }
         #endregion
+
     }
 }
+#endregion

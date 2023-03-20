@@ -9,4 +9,4 @@ namespace auth.Model
         public string Avatar { get; set; } = "static.israel21c.org/www/uploads/2018/07/israel-sunset-ashkelon-september.jpg";
     }
 }
-// channel; 
+
