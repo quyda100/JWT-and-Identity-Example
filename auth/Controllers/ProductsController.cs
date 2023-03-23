@@ -30,6 +30,20 @@ namespace auth.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet("GetAvailableProducts")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAvailableProducts()
+        {
+            try
+            {
+                return Ok(await _service.GetAvailableProducts());
+            }
+            catch
+            {
+
+                return BadRequest();
+            }
+        }
         [HttpGet("{id}")]
         public IActionResult GetProductById(int id)
         {
@@ -65,5 +79,16 @@ namespace auth.Controllers
 
             return Ok(product);
         }
+
+        [HttpGet("AddCart")]
+        public async Task <IActionResult> getAddCart(string image, string name, int price)
+        {
+            var product = await _service.getAddCart(image, name, price);
+            return Ok(product);
+        }
+
+    
+
+        
     }
 }

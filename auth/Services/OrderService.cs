@@ -16,6 +16,22 @@ namespace auth.Services
             _context = context;
         }
 
+        // add hoa don
+        public void addOrder(Order order)
+        {
+            try
+            {
+                if (_context.Products.Any(x => x.Name == order.UserName))
+                    throw new Exception(order.UserName + " is exist");
+                _context.Orders.Add(order);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+            }
+
+        }
+
         public Task<List<int>> getDataOrder()
         {
             List<int> lst = new List<int>();

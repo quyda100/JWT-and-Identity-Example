@@ -1,5 +1,7 @@
 ﻿using auth.Interfaces;
+using auth.Model;
 using auth.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +16,14 @@ namespace auth.Controllers
         public OrdersController(IOrderService service)
         {
             _service = service;
+        }
+
+        [HttpPost("AddProduct")]
+        [Authorize]
+        public IActionResult Add(Order order)
+        {
+            _service.addOrder(order);
+            return Ok(new { message = "Thêm hoa don thành công" });
         }
 
         [HttpGet]

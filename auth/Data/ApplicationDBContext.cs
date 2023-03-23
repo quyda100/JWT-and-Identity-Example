@@ -27,7 +27,7 @@ namespace auth.Data
             builder.Entity<Product>().ToTable("Products");
             builder.Entity<Brand>().ToTable("Brand");
             builder.Entity<Order>().ToTable("Order");
-            builder.Entity<OrderDetail>().ToTable("OrderDetail");
+           
             /*builder.Entity<Brand>().HasData(new Brand
             {
                 Name = "LONGINES",

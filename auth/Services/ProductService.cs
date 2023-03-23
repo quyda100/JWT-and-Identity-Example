@@ -22,6 +22,11 @@ namespace auth.Services
             var products = await _context.Products.ToListAsync();
             return products;
         }
+        public async Task<IEnumerable<Product>> GetAvailableProducts()
+        {
+            var products = await _context.Products.Where(product => product.Stock > 0).ToListAsync();
+            return products;
+        }
         public void addProduct(Product product)
         {
             try
@@ -111,5 +116,33 @@ namespace auth.Services
             }
             return Task.FromResult(products);
         }
+
+        // api  add cart
+
+        public Task<List<Product>> getAddCart(string image, string name, int price)
+        {
+            var products = _context.Products.Where(p => p.Image == image && p.Name == name && p.Price == price).ToList();
+            if (products == null)
+            {
+                throw new Exception("not found");
+            }
+            return Task.FromResult(products);
+        }
+        
+        // api check stock products
+
+        public bool checkStock(int id)
+        {
+            var isCheckStock = true;
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            if (product == null || product.Stock == 0)
+            {
+                isCheckStock =false;
+            }
+            return isCheckStock;
+        }
+
+        // count product in store
+       
     }
 }

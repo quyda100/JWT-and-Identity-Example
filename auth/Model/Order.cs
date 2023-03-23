@@ -4,13 +4,16 @@
     {
         public int Id { get; set; }
         public string UserName { get; set; }
+
+        public string CustomerName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
         public int Total { get; set; }
-        public bool IsApproved { get; set; } = false;
+        public int Status { get; set; } 
         public string PaymentMethod { get; set; }
         public DateTime PaymentTime { get; set; }
-        public int OrderStatus { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public List<OrderProduct> OrderProducts { get; set; }
+
     }
 }
