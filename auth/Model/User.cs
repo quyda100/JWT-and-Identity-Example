@@ -8,5 +8,11 @@ namespace auth.Model
         public string Address { get; set; }
         public string Avatar { get; set; } = "static.israel21c.org/www/uploads/2018/07/israel-sunset-ashkelon-september.jpg";
     }
+
+    public static class UserRoles
+    {
+        public const string Admin = "Admin";
+        public const string User = "User";
+    }
 }
 

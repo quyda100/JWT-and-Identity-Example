@@ -23,14 +23,11 @@ namespace auth.Controllers
         public async Task<IActionResult> Register(RegisterRequest model)
         {
             var result = await _service.RegisterAsync(model);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                return Ok(new
-                {
-                    Message = "Đăng ký thành công"
-                });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Đăng ký thất bại" });
             }
-            return BadRequest(result.Errors);
+            return Ok(new { Message = "Đăng ký thành công" });
         }
 
         [HttpPost]
@@ -41,7 +38,7 @@ namespace auth.Controllers
             var result = await _service.LoginAsync(model);
             if (string.IsNullOrEmpty(result))
             {
-                return Unauthorized();
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Đăng nhập thất bại" });
             }
             return Ok(new
             {

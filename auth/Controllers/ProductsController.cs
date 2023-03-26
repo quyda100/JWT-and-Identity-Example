@@ -17,7 +17,7 @@ namespace auth.Controllers
             _service = service;
         }
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> GetAllProducts()
         {
             try
@@ -30,6 +30,7 @@ namespace auth.Controllers
                 return BadRequest();
             }
         }
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet("{id}")]
         public IActionResult GetProductById(int id)
         {
