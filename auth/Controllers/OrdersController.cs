@@ -26,11 +26,11 @@ namespace auth.Controllers
             return Ok(new { message = "Thêm hoa don thành công" });
         }
 
-        [HttpGet]
-        [Route("getListOrders")]
-        public IActionResult getListOrders()
-        {
-            return Ok(_service.getDataOrder());
-        }
+        //[HttpGet]
+        //[Route("getListOrders")]
+        //public IActionResult getListOrders()
+        //{
+        //    return Ok(_service.getDataOrder());
+        //}
     }
 }

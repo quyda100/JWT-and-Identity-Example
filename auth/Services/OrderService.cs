@@ -32,14 +32,14 @@ namespace auth.Services
 
         }
 
-        public Task<List<int>> getDataOrder()
-        {
-            List<int> lst = new List<int>();
-            for (int i = 1; i <= 12; i++)
-            {
-                lst.Add(_context.Orders.Where(o => o.PaymentTime.Month == i && o.PaymentTime.Year == DateTime.Now.Year).Sum(o => o.Total));
-            }
-            return Task.FromResult(lst);
-        }
+        //public task<list<int>> getdataorder()
+        //{
+        //    list<int> lst = new list<int>();
+        //    for (int i = 1; i <= 12; i++)
+        //    {
+        //        lst.add(_context.orders.where(o => o.paymenttime.month == i && o.paymenttime.year == datetime.now.year).sum(o => o.total));
+        //    }
+        //    return task.fromresult(lst);
+        //}
     }
 }

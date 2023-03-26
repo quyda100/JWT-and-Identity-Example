@@ -36,6 +36,7 @@ namespace auth.Controllers
         [HttpPost]
         [Route("Login")]
         [AllowAnonymous]
+        
         public async Task<IActionResult> Login(LoginRequest model)
         {
             var result = await _service.LoginAsync(model);
