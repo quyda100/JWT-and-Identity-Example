@@ -4,6 +4,7 @@ using auth.Model;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 
 namespace auth.Services
 {
@@ -17,7 +18,7 @@ namespace auth.Services
         }
 
         // add hoa don
-        public void addOrder(Order order)
+        public void AddOrder(Order order)
         {
             try
             {
@@ -32,6 +33,8 @@ namespace auth.Services
 
         }
 
+        
+        
         //public task<list<int>> getdataorder()
         //{
         //    list<int> lst = new list<int>();
@@ -41,5 +44,13 @@ namespace auth.Services
         //    }
         //    return task.fromresult(lst);
         //}
+
+        public async Task<Order> AddOrderProducts(Order order)
+        {
+            await _context.Orders.AddAsync(order);
+            _context.SaveChanges();
+            return order;
+        }
+        
     }
 }

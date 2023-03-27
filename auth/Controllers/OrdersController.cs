@@ -22,7 +22,7 @@ namespace auth.Controllers
         [Authorize]
         public IActionResult Add(Order order)
         {
-            _service.addOrder(order);
+            _service.AddOrder(order);
             return Ok(new { message = "Thêm hoa don thành công" });
         }
 
