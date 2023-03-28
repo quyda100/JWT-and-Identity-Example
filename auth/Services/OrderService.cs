@@ -49,7 +49,7 @@ namespace auth.Services
         {
             var order = new Order
             {
-                UserName = model.Name,
+                CustomerName = model.Name,
                 Address = model.Address,
                 Phone = model.Phone,
                 Status = 0
