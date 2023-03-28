@@ -17,6 +17,5 @@ namespace auth.Model
     {
         public int ProductId { get; set; }
         public int Quanlity { get; set; }
-        public int Price { get; set; }
     }
 }

@@ -49,25 +49,17 @@ namespace auth.Services
         {
             var order = new Order
             {
-                CustomerName = model.Name,
+                UserName = model.Name,
                 Address = model.Address,
                 Phone = model.Phone,
                 Status = 0
             };
             _context.Orders.Add(order);
             order.Total = model.orderProducts.Sum(p => p.Quanlity * p.Price); // Tổng hóa đơn
+            _context.SaveChanges();
             //Tạo orderProduct
-            foreach (var orderProduct in model.orderProducts)
-            {
-                if (!_context.Products.Any(p => p.Id == orderProduct.ProductId)) continue;
-                _context.OrderProducts.Add(new OrderProduct
-                {
-                    OrderId = order.Id,
-                    ProductId = orderProduct.ProductId,
-                    Price = orderProduct.Price,
-                    Quantity = orderProduct.Quanlity
-                });
-            }
+            var orderProducts = GetOrderProducts(model.orderProducts, order.Id);
+            _context.OrderProducts.AddRange(orderProducts);
 
             _context.SaveChanges();
         }
@@ -76,6 +68,24 @@ namespace auth.Services
             await _context.Orders.AddAsync(order);
             _context.SaveChanges();
             return order;
+        }
+        public List<OrderProduct> GetOrderProducts(List<OrderProductRequest> productRequests, int OrderId)
+        {
+            List<OrderProduct> orderProducts = new List<OrderProduct>();
+            foreach (var productRequest in productRequests)
+            {
+                var product = _context.Products.First(p => p.Id == productRequest.ProductId);
+                if(product == null) continue;
+                var orderProduct = new OrderProduct
+                {
+                    ProductId = product.Id,
+                    OrderId = OrderId,
+                    Price = product.Price,
+                    Quantity = productRequest.Quanlity
+                };
+                orderProducts.Add(orderProduct);
+            }
+            return orderProducts;
         }
     }
 }
