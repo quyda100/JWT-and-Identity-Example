@@ -144,6 +144,19 @@ namespace auth.Services
         }
 
         // count product in store
+
+        // api search product
+
+      
+        public Product SearchProduct(string name)
+        {
+            var result = _context.Products.FirstOrDefault(n => n.Name == name);
+            if (result == null)
+            {
+                throw new Exception("Product not found");
+            }
+            return result;
+        }
        
     }
 }

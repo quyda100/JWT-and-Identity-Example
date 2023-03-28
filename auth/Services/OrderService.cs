@@ -45,12 +45,8 @@ namespace auth.Services
         //    return task.fromresult(lst);
         //}
 
-        public async Task<Order> AddOrderProducts(Order order)
-        {
-            await _context.Orders.AddAsync(order);
-            _context.SaveChanges();
-            return order;
-        }
+       
+        
         
     }
 }
