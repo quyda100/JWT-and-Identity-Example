@@ -25,7 +25,13 @@ namespace auth.Controllers
             _service.AddOrder(order);
             return Ok(new { message = "Thêm hoa don thành công" });
         }
-
+        [HttpPost("CreateOrder")]
+        [AllowAnonymous]
+        public IActionResult CreateOrder(OrderRequest order)
+        {
+            _service.CreateOrder(order);
+            return Ok(new { Message = "Tạo hóa đơn thành công" });
+        }
         //[HttpGet]
         //[Route("getListOrders")]
         //public IActionResult getListOrders()
