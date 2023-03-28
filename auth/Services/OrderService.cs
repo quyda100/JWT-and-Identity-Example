@@ -4,6 +4,7 @@ using auth.Model;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System.Security.Principal;
 
 namespace auth.Services
@@ -44,13 +45,37 @@ namespace auth.Services
         //    }
         //    return task.fromresult(lst);
         //}
+        public void CreateOrder(OrderRequest model)
+        {
+            var order = new Order
+            {
+                CustomerName = model.Name,
+                Address = model.Address,
+                Phone = model.Phone,
+                Status = 0
+            };
+            _context.Orders.Add(order);
+            order.Total = model.orderProducts.Sum(p => p.Quanlity * p.Price); // Tổng hóa đơn
+            //Tạo orderProduct
+            foreach (var orderProduct in model.orderProducts)
+            {
+                if (!_context.Products.Any(p => p.Id == orderProduct.ProductId)) continue;
+                _context.OrderProducts.Add(new OrderProduct
+                {
+                    OrderId = order.Id,
+                    ProductId = orderProduct.ProductId,
+                    Price = orderProduct.Price,
+                    Quantity = orderProduct.Quanlity
+                });
+            }
 
+            _context.SaveChanges();
+        }
         public async Task<Order> AddOrderProducts(Order order)
         {
             await _context.Orders.AddAsync(order);
             _context.SaveChanges();
             return order;
         }
-        
     }
 }
