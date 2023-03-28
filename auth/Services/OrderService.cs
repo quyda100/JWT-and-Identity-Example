@@ -55,10 +55,11 @@ namespace auth.Services
                 Status = 0
             };
             _context.Orders.Add(order);
-            order.Total = model.orderProducts.Sum(p => p.Quanlity * p.Price); // Tổng hóa đơn
+            
             _context.SaveChanges();
             //Tạo orderProduct
             var orderProducts = GetOrderProducts(model.orderProducts, order.Id);
+            order.Total = orderProducts.Sum(p => p.Quantity * p.Price); // Tổng hóa đơn
             _context.OrderProducts.AddRange(orderProducts);
 
             _context.SaveChanges();
