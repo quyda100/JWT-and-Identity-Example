@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace auth.Model
+namespace auth.Model.Request
 {
     public class OrderRequest
     {

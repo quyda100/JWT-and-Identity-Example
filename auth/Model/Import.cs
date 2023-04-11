@@ -12,6 +12,8 @@ namespace auth.Model
         public int SupplierId { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public bool IsDeleted { get; set; } = false;
+
+        public List<ImportDetail> Details { get; set; }
         #region
         public User User { get; set; }
         public Supplier Supplier { get; set; }

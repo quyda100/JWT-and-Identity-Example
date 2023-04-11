@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
 
-namespace auth.Model
+namespace auth.Model.ViewModel
 {
-    
+
 
     public class ProductViewModel
     {
@@ -11,7 +11,7 @@ namespace auth.Model
         public string Name { get; set; }
         public float Price { get; set; }
         public string Image { get; set; }
-        
+
     }
     public class ProductDetailViewModel : ProductViewModel
     {

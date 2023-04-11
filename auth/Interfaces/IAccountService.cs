@@ -1,4 +1,5 @@
 ﻿using auth.Model;
+using auth.Model.Request;
 using Microsoft.AspNetCore.Identity;
 
 namespace auth.Interfaces

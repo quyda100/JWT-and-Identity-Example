@@ -29,8 +29,6 @@ namespace auth.Model
         public string Description { get; set; }
         [DisplayName("Bảo hành")]
         public int Warranty { get; set; }
-
-        public string Gender { get; set; }
         public bool IsDeleted { get; set; } = false;
         [ForeignKey("Brand")]
         public int BrandId { get; set; }

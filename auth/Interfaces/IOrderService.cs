@@ -1,4 +1,5 @@
 ﻿using auth.Model;
+using auth.Model.Request;
 
 namespace auth.Interfaces
 {

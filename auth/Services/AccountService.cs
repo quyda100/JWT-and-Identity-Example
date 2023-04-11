@@ -2,6 +2,7 @@
 using auth.Helpers;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.Request;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
