@@ -1,6 +1,7 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace auth.Services
 {
@@ -13,27 +14,51 @@ namespace auth.Services
         }
         public void addNew(New model)
         {
-            
+            try
+            {
+                _context.News.Add(model);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
         public void deleteNew(int id)
         {
-            throw new NotImplementedException();
+            var model = findNew(id);
+            model.IsDeleted = true;
+            _context.News.Update(model);
+            _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<New>> getNew(int id)
+        public New getNew(int id)
         {
-            throw new NotImplementedException();
+            return findNew(id);
         }
 
-        public Task<IEnumerable<New>> getNews()
+        public async Task<IEnumerable<New>> getNews()
         {
-            var news = _context.New
+            var news = await _context.News.ToListAsync();
+            return news;
         }
 
-        public void updateNew(int id, New model)
+        public async void updateNew(int id, New model)
         {
-            throw new NotImplementedException();
+            if (model.Id != id)
+                throw new Exception("Having trouble");
+            var item = await _context.News.SingleOrDefaultAsync(x=>x.Id == id);
+            _context.News.Update(model);
+            await _context.SaveChangesAsync();
+        }
+        private New findNew(int id)
+        {
+            var item = _context.News.SingleOrDefault(p => p.Id == id);
+            if (item == null)
+            {
+                throw new Exception("New not found");
+            }
+            return item;
         }
     }
 }
