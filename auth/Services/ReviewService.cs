@@ -40,7 +40,7 @@ namespace auth.Services
 
         public void updateReview(int id, Review model)
         {
-            if (p.Id != id)
+            if (model.Id != id)
                 throw new Exception("Having trouble");
             _context.Reviews.Update(model);
             _context.SaveChanges();

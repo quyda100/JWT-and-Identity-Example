@@ -45,7 +45,7 @@ namespace auth.Services
 
         void IBrandService.updateBrand(int id, Brand model)
         {
-            if (p.Id != id)
+            if (model.Id != id)
                 throw new Exception("Having trouble");
             var brand = GetBrand(id);
             if (model.Name != brand.Name && _context.Products.Any(pr => pr.Name == model.Name))
