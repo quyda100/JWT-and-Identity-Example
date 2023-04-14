@@ -18,24 +18,32 @@ namespace auth.Controllers
         [HttpGet("getBrands")]
         public IActionResult getBrand()
         {
-            return Ok(_service.getBrands());
+            var brands = _service.getBrands();
+            return Ok(new Response
+            {
+                status = "success",
+                data = brands,
+                message = "Thành công"
+            }
+            );
         }
         [HttpPost("addBrand")]
         public IActionResult addBrand(Brand Brand)
         {
             _service.addBrand(Brand);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response { status = "success", data = null, message = "Thành công" });
         }
         [HttpPost("updateBrand")]
         public IActionResult updateBrand(int id, Brand Brand)
         {
             _service.updateBrand(id, Brand);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response { status = "success", data = null, message = "Thành công" });
         }
+        [HttpPost("deleteBrand")]
         public IActionResult deleteBrand(int id)
         {
             _service.deleteBrand(id);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response { status = "success", data = null, message = "Thành công" });
         }
     }
 }

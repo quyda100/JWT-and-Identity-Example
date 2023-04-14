@@ -18,24 +18,32 @@ namespace auth.Controllers
         [HttpGet("getNews")]
         public IActionResult getNews()
         {
-            return Ok(_service.getNews());
+            var news = _service.getNews();
+            return Ok(new Response
+            {
+                status = "success",
+                data = news,
+                message = "Thành công"
+            }
+            );
         }
         [HttpPost("addNew")]
         public IActionResult addNew(New New)
         {
             _service.addNew(New);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response { status = "success", data = null, message = "Thành công" });
         }
         [HttpPost("updateNew")]
         public IActionResult updateNew(int id, New New)
         {
             _service.updateNew(id, New);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response { status = "success", data = null, message = "Thành công" });
         }
+        [HttpPost("deleteNew")]
         public IActionResult deleteNew(int id)
         {
             _service.deleteNew(id);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response { status = "success", data = null, message = "Thành công" });
         }
     }
 }

@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace auth.Services
 {
-    public class NewServices : INewService
+    public class NewService : INewService
     {
         private readonly ApplicationDBContext _context;
 
-        public NewServices(ApplicationDBContext context) { 
+        public NewService(ApplicationDBContext context) { 
             _context = context;
         }
         public void addNew(New model)

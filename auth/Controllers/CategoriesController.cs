@@ -19,22 +19,48 @@ namespace auth.Controllers
         }
         [HttpGet("getCategories")]
         public IActionResult getCategory() {
-            return Ok( _service.getCategories());
+            var categories = _service.getCategories();
+            return Ok(new Response
+            {
+                status = "success",
+                data = categories,
+                message = "Thành công"
+            }
+            );
         }
         [HttpPost("addCategory")]
         public IActionResult addCategory(Category category)
         {
             _service.addCategory(category);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response
+            {
+                status = "success",
+                data = null,
+                message = "Thành công"
+            }
+            );
         }
         [HttpPost("updateCategory")]
         public IActionResult updateCategory(int id, Category category) { 
             _service.updateCategory(id, category);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response
+            {
+                status = "success",
+                data = null,
+                message = "Thành công"
+            }
+            );
         }
+        [HttpPost("deteleCategory")]
         public IActionResult deleteCategory(int id) {
             _service.deleteCategory(id);
-            return Ok(new { message = "Thành công" });
+            return Ok(new Response
+            {
+                status = "success",
+                data = null,
+                message = "Thành công"
+            }
+            );
         }
 
     }
