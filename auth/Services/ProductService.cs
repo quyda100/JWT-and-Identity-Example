@@ -12,7 +12,6 @@ namespace auth.Services
     {
         private readonly ApplicationDBContext _context;
         private readonly IMapper _mapper;
-
         public ProductService(ApplicationDBContext context, IMapper mapper)
         {
             _context = context;

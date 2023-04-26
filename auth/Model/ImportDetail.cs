@@ -11,5 +11,7 @@ namespace auth.Model
         public int ProductId { get; set; }
         public float Price { get; set; }
         public int Quanlity { get; set; }
+        public Product Product {get;set;}
+        public Import Import {get;set;}
     }
 }

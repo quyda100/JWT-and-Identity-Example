@@ -1,5 +1,6 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,15 +8,19 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class NewsController : ControllerBase
     {
         private readonly INewService _service;
+        private readonly ILogService _log;
 
-        public NewsController(INewService service)
+        public NewsController(INewService service, ILogService log)
         {
             _service = service;
+            _log = log;
         }
         [HttpGet("getNews")]
+        [AllowAnonymous]
         public IActionResult getNews()
         {
             var news = _service.getNews();
@@ -28,6 +33,7 @@ namespace auth.Controllers
             );
         }
         [HttpPost("addNew")]
+        [Authorize("")]
         public IActionResult addNew(New New)
         {
             _service.addNew(New);
