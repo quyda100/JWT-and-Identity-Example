@@ -75,17 +75,47 @@ namespace auth.Services
                 throw new Exception("User creation failed!");
             }
 
-            //if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            //{
-            //    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-            //}
-            //if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            //{
-            //    await _userManager.AddToRoleAsync(user, UserRoles.Admin);
-            //}
+            if (!await _roleManager.RoleExistsAsync(UserRoles.User))
+            {
+               await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+            }
+            if (await _roleManager.RoleExistsAsync(UserRoles.User))
+            {
+               await _userManager.AddToRoleAsync(user, UserRoles.User);
+            }
             return await _userManager.UpdateAsync(user);
         }
 
+        public async Task<IdentityResult> RegisterAdminAsync(RegisterRequest model)
+        {
+            var userExists = await _userManager.FindByEmailAsync(model.Email);
+            if(userExists != null)
+            {
+                throw new Exception("Email already exists!");
+            }
+            var user = new User
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                PhoneNumber = model.Phone,
+                FullName = model.FullName,
+            };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                throw new Exception("User creation failed!");
+            }
+
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+            {
+               await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+            }
+            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+            {
+               await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+            }
+            return await _userManager.UpdateAsync(user);
+        }
         public User GetUserByEmail(string email)
         {
             var user = _context.Users.FirstOrDefault(x => x.Email == email);
@@ -110,5 +140,6 @@ namespace auth.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

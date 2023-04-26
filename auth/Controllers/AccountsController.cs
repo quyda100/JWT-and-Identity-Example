@@ -29,6 +29,18 @@ namespace auth.Controllers
             }
             return Ok(new { Message = "Đăng ký thành công" });
         }
+        [HttpPost]
+        [Route("RegisterAdmin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterAdmin(RegisterRequest model)
+        {
+            var result = await _service.RegisterAdminAsync(model);
+            if (!result.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Đăng ký thất bại" });
+            }
+            return Ok(new { Message = "Đăng ký thành công" });
+        }
 
         [HttpPost]
         [Route("Login")]

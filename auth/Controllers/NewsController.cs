@@ -24,7 +24,7 @@ namespace auth.Controllers
         public IActionResult getNews()
         {
             var news = _service.getNews();
-            return Ok(new Response
+            return Ok(new
             {
                 status = "success",
                 data = news,
@@ -40,7 +40,7 @@ namespace auth.Controllers
                 UserId = getCurrentUserId(),
                 Action = "Created new " + New.Title
             });
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new { status = "success", message = "Thành công" });
         }
         [HttpPost("updateNew")]
         public IActionResult updateNew(int id, New New)
@@ -50,7 +50,7 @@ namespace auth.Controllers
                 UserId = getCurrentUserId(),
                 Action = "Updated new " + New.Title
             });
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new { status = "success", message = "Thành công" });
         }
         [HttpPost("deleteNew")]
         public IActionResult deleteNew(int id)
@@ -60,7 +60,7 @@ namespace auth.Controllers
                 UserId = getCurrentUserId(),
                 Action = "Deleted new " + id
             });
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new { status = "success", message = "Thành công" });
         }
 
         private string getCurrentUserId(){

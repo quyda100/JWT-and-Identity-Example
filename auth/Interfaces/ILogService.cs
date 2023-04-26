@@ -1,11 +1,10 @@
 using auth.Model;
-using auth.Model.Request;
-using Microsoft.AspNetCore.Identity;
 
-namespace auth.Interfaces;
-
-public interface ILogService
+namespace auth.Interfaces
 {
-    public List<Log> getLogs();
-    public void saveLog(Log log);
+    public interface ILogService
+    {
+        public List<Log> getLogs();
+        public void saveLog(Log log);
+    }
 }

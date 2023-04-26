@@ -19,25 +19,25 @@ namespace auth.Controllers
         public IActionResult getReview(int id)
         {
             var reviews = _service.getReviews(id);
-            return Ok(new Response { status = "success", data = reviews, message = "Thành công" });
+            return Ok(new{ status = "success", data = reviews, message = "Thành công" });
         }
         [HttpPost("addReview")]
         public IActionResult addReview(Review Review)
         {
             _service.addReview(Review);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new{ status = "success", message = "Thành công" });
         }
         [HttpPost("updateReview")]
         public IActionResult updateReview(int id, Review Review)
         {
             _service.updateReview(id, Review);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new{ status = "success", message = "Thành công" });
         }
         [HttpPost("deleteReview")]
         public IActionResult deleteReview(int id)
         {
             _service.deleteReview(id);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new{ status = "success", message = "Thành công" });
         }
     }
 }

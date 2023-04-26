@@ -12,17 +12,19 @@ namespace auth.Controllers
     public class BrandsController : ControllerBase
     {
         private readonly IBrandService _service;
+        private readonly ILogService _log;
 
-        public BrandsController(IBrandService service)
+        public BrandsController(IBrandService service, ILogService log)
         {
             _service = service;
+            _log = log;
         }
         [AllowAnonymous]
         [HttpGet("getBrands")]
         public IActionResult getBrand()
         {
             var brands = _service.getBrands();
-            return Ok(new Response
+            return Ok(new
             {
                 status = "success",
                 data = brands,
@@ -34,19 +36,27 @@ namespace auth.Controllers
         public IActionResult addBrand(Brand Brand)
         {
             _service.addBrand(Brand);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            _log.saveLog(new Log{
+                UserId = getCurrentUserId(),
+                Action = "Created new brand: " + Brand.Name
+            });
+            return Ok(new { status = "success", message = "Thành công" });
         }
         [HttpPost("updateBrand")]
         public IActionResult updateBrand(int id, Brand Brand)
         {
             _service.updateBrand(id, Brand);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new { status = "success", message = "Thành công" });
         }
         [HttpPost("deleteBrand")]
         public IActionResult deleteBrand(int id)
         {
             _service.deleteBrand(id);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new { status = "success", message = "Thành công" });
+        }
+        private string getCurrentUserId(){
+            var userId = HttpContext.User.Claims.FirstOrDefault(c=>c.Type == "UserId").Value;
+            return userId;
         }
     }
 }
