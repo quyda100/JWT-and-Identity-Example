@@ -12,10 +12,11 @@ namespace auth.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _service;
-
-        public CategoriesController(ICategoryService service)
-        {
+        private readonly ILogService _log;
+        public CategoriesController(ICategoryService service, ILogService log)
+        {   
             _service = service;
+            _log = log;
         }
         [AllowAnonymous]
         [HttpGet("getCategories")]
@@ -25,7 +26,7 @@ namespace auth.Controllers
             {
                 status = "success",
                 data = categories,
-                message = "Thành công"
+                message = "Lấy dữ liệu thành công"
             }
             );
         }
@@ -33,33 +34,48 @@ namespace auth.Controllers
         public IActionResult addCategory(Category category)
         {
             _service.addCategory(category);
+            _log.saveLog(new Log{
+                UserId = getCurrentUserId(),
+                Action = "Created category: " + category.Name
+            });
             return Ok(new
             {
                 status = "success",
-                message = "Thành công"
+                message = "Thêm category thành công"
             }
             );
         }
         [HttpPost("updateCategory")]
         public IActionResult updateCategory(int id, Category category) { 
             _service.updateCategory(id, category);
+            _log.saveLog(new Log{
+                UserId = getCurrentUserId(),
+                Action = "Updated category: " + category.Name
+            });
             return Ok(new
             {
                 status = "success",
-                message = "Thành công"
+                message = "Cập nhật thành công"
             }
             );
         }
         [HttpPost("deteleCategory")]
         public IActionResult deleteCategory(int id) {
             _service.deleteCategory(id);
+            _log.saveLog(new Log{
+                UserId = getCurrentUserId(),
+                Action = "Deleted category id: " + id
+            });
             return Ok(new
             {
                 status = "success",
-                message = "Thành công"
+                message = "Xóa thành công"
             }
             );
         }
-
+                private string getCurrentUserId(){
+            var userId = HttpContext.User.Claims.FirstOrDefault(c=>c.Type == "UserId").Value;
+            return userId;
+        }
     }
 }

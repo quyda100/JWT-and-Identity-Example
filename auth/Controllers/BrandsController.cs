@@ -40,19 +40,27 @@ namespace auth.Controllers
                 UserId = getCurrentUserId(),
                 Action = "Created new brand: " + Brand.Name
             });
-            return Ok(new { status = "success", message = "Thành công" });
+            return Ok(new { status = "success", message = "Tạo brand thành công" });
         }
         [HttpPost("updateBrand")]
         public IActionResult updateBrand(int id, Brand Brand)
         {
             _service.updateBrand(id, Brand);
-            return Ok(new { status = "success", message = "Thành công" });
+            _log.saveLog(new Log{
+                UserId = getCurrentUserId(),
+                Action = "Updated brand: " + Brand.Name
+            });
+            return Ok(new { status = "success", message = "Cập nhật thành công" });
         }
         [HttpPost("deleteBrand")]
         public IActionResult deleteBrand(int id)
         {
             _service.deleteBrand(id);
-            return Ok(new { status = "success", message = "Thành công" });
+            _log.saveLog(new Log{
+                UserId = getCurrentUserId(),
+                Action = "Deleted brandId: " + id
+            });
+            return Ok(new { status = "success", message = "Xóa thành công" });
         }
         private string getCurrentUserId(){
             var userId = HttpContext.User.Claims.FirstOrDefault(c=>c.Type == "UserId").Value;

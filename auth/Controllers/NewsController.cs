@@ -40,7 +40,7 @@ namespace auth.Controllers
                 UserId = getCurrentUserId(),
                 Action = "Created new " + New.Title
             });
-            return Ok(new { status = "success", message = "Thành công" });
+            return Ok(new { status = "success", message = "Tạo tin tức thành công" });
         }
         [HttpPost("updateNew")]
         public IActionResult updateNew(int id, New New)
