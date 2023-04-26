@@ -8,7 +8,7 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = UserRoles.Admin)]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _service;
@@ -17,6 +17,7 @@ namespace auth.Controllers
         {
             _service = service;
         }
+        [AllowAnonymous]
         [HttpGet("getCategories")]
         public IActionResult getCategory() {
             var categories = _service.getCategories();

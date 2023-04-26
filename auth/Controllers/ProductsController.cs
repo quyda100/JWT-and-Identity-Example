@@ -7,7 +7,7 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   
+    [Authorize(Roles = UserRoles.Admin)]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _service;
@@ -45,27 +45,25 @@ namespace auth.Controllers
             }
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult GetProductById(int id)
         {
             var product = _service.getProductById(id);
             return Ok(product);
         }
         [HttpPost("AddProduct")]
-        [Authorize]
         public IActionResult Add(Product product)
         {
             _service.addProduct(product);
             return Ok(new {message = "Thêm sản phẩm thành công"});
         }
         [HttpPut("{id}")]
-        [Authorize]
         public IActionResult Update(int id, Product product)
         {
             _service.updateProduct(id, product);
             return Ok(new { message = "Cập nhật sản phẩm thành công" });
         }
         [HttpDelete("{id}")]
-        [Authorize]
         public IActionResult Delete(int id)
         {
             _service.removeProduct(id);
@@ -86,9 +84,5 @@ namespace auth.Controllers
             var product = await _service.getAddCart(image, name, price);
             return Ok(product);
         }
-
-    
-
-        
     }
 }

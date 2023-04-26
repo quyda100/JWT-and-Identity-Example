@@ -41,7 +41,7 @@ namespace auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand");
+                    b.ToTable("Brands");
                 });
 
             modelBuilder.Entity("auth.Model.Category", b =>
@@ -63,7 +63,7 @@ namespace auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("auth.Model.Import", b =>
@@ -95,7 +95,7 @@ namespace auth.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Import", (string)null);
+                    b.ToTable("Imports", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.ImportDetail", b =>
@@ -122,7 +122,33 @@ namespace auth.Migrations
 
                     b.HasIndex("ImportId");
 
-                    b.ToTable("ImportDetail", (string)null);
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ImportDetails", (string)null);
+                });
+
+            modelBuilder.Entity("auth.Model.Log", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Action")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TimeLog")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Logs", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.New", b =>
@@ -151,9 +177,14 @@ namespace auth.Migrations
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("New", (string)null);
+                    b.HasIndex("UserId");
+
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.Order", b =>
@@ -193,7 +224,7 @@ namespace auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Order", (string)null);
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.OrderProduct", b =>
@@ -310,6 +341,9 @@ namespace auth.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
@@ -320,7 +354,7 @@ namespace auth.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Review", (string)null);
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.Supplier", b =>
@@ -342,7 +376,7 @@ namespace auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppiler", (string)null);
+                    b.ToTable("Suppilers", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.User", b =>
@@ -557,12 +591,13 @@ namespace auth.Migrations
                     b.HasOne("auth.Model.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("auth.Model.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Supplier");
 
@@ -571,11 +606,41 @@ namespace auth.Migrations
 
             modelBuilder.Entity("auth.Model.ImportDetail", b =>
                 {
-                    b.HasOne("auth.Model.Import", null)
+                    b.HasOne("auth.Model.Import", "Import")
                         .WithMany("Details")
                         .HasForeignKey("ImportId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("auth.Model.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Import");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("auth.Model.Log", b =>
+                {
+                    b.HasOne("auth.Model.User", "User")
+                        .WithMany("Logs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("auth.Model.New", b =>
+                {
+                    b.HasOne("auth.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("auth.Model.OrderProduct", b =>
@@ -621,7 +686,7 @@ namespace auth.Migrations
                     b.HasOne("auth.Model.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -686,6 +751,11 @@ namespace auth.Migrations
             modelBuilder.Entity("auth.Model.Order", b =>
                 {
                     b.Navigation("OrderProducts");
+                });
+
+            modelBuilder.Entity("auth.Model.User", b =>
+                {
+                    b.Navigation("Logs");
                 });
 #pragma warning restore 612, 618
         }

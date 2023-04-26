@@ -1,12 +1,14 @@
 ﻿using auth.Interfaces;
 using auth.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     public class BrandsController : ControllerBase
     {
         private readonly IBrandService _service;
@@ -15,6 +17,7 @@ namespace auth.Controllers
         {
             _service = service;
         }
+        [AllowAnonymous]
         [HttpGet("getBrands")]
         public IActionResult getBrand()
         {

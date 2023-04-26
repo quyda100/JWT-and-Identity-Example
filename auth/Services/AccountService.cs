@@ -40,6 +40,7 @@ namespace auth.Services
                 // generate token that is valid for 7 days
                 var claims = new List<Claim>
              {
+               new Claim("UserId", user.Id),
                new Claim("Name", user.FullName),
                new Claim("Email", user.Email),
                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
