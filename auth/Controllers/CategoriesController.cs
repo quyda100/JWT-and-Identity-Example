@@ -20,7 +20,7 @@ namespace auth.Controllers
         [HttpGet("getCategories")]
         public IActionResult getCategory() {
             var categories = _service.getCategories();
-            return Ok(new Response
+            return Ok(new  
             {
                 status = "success",
                 data = categories,
@@ -32,10 +32,10 @@ namespace auth.Controllers
         public IActionResult addCategory(Category category)
         {
             _service.addCategory(category);
-            return Ok(new Response
+            return Ok(new  
             {
                 status = "success",
-                data = null,
+                 
                 message = "Thành công"
             }
             );
@@ -43,10 +43,10 @@ namespace auth.Controllers
         [HttpPost("updateCategory")]
         public IActionResult updateCategory(int id, Category category) { 
             _service.updateCategory(id, category);
-            return Ok(new Response
+            return Ok(new  
             {
                 status = "success",
-                data = null,
+                 
                 message = "Thành công"
             }
             );
@@ -54,10 +54,10 @@ namespace auth.Controllers
         [HttpPost("deteleCategory")]
         public IActionResult deleteCategory(int id) {
             _service.deleteCategory(id);
-            return Ok(new Response
+            return Ok(new  
             {
                 status = "success",
-                data = null,
+                 
                 message = "Thành công"
             }
             );

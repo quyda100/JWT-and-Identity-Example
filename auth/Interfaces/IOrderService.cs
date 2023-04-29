@@ -5,8 +5,11 @@ namespace auth.Interfaces
 {
     public interface IOrderService
     {
-        public void AddOrder(Order order);
         public void CreateOrder(OrderRequest order);
-        //public Task<List<int>> getDataOrder();
+
+        public List<Order> GetOrders();
+        public List<OrderProduct> GetOrderProducts(int orderId);
+        public void UpdateOrder(int id,Order order);
+
     }
 }

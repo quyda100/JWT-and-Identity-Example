@@ -18,14 +18,6 @@ namespace auth.Controllers
         {
             _service = service;
         }
-
-        [HttpPost("AddProduct")]
-        [Authorize]
-        public IActionResult Add(Order order)
-        {
-            _service.AddOrder(order);
-            return Ok(new { message = "Thêm hoa don thành công" });
-        }
         [HttpPost("CreateOrder")]
         [AllowAnonymous]
         public IActionResult CreateOrder(OrderRequest order)
@@ -33,11 +25,17 @@ namespace auth.Controllers
             _service.CreateOrder(order);
             return Ok(new { Message = "Tạo hóa đơn thành công" });
         }
-        //[HttpGet]
-        //[Route("getListOrders")]
-        //public IActionResult getListOrders()
-        //{
-        //    return Ok(_service.getDataOrder());
-        //}
+        [HttpGet]
+        public IActionResult getListOrders()
+        {
+            return Ok(_service.GetOrders());
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult updateOrder(int id, Order order)
+        {
+            _service.UpdateOrder(id, order);
+            return Ok(new { message = "Cập nhật thành công" });
+        }
     }
 }

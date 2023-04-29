@@ -41,7 +41,7 @@ namespace auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand");
+                    b.ToTable("Brands");
                 });
 
             modelBuilder.Entity("auth.Model.Category", b =>
@@ -63,7 +63,7 @@ namespace auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("auth.Model.Import", b =>
@@ -83,8 +83,8 @@ namespace auth.Migrations
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
-                    b.Property<float>("Total")
-                        .HasColumnType("real");
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -109,8 +109,8 @@ namespace auth.Migrations
                     b.Property<int>("ImportId")
                         .HasColumnType("int");
 
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -121,6 +121,8 @@ namespace auth.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ImportId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ImportDetail", (string)null);
                 });
@@ -309,6 +311,9 @@ namespace auth.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -557,12 +562,13 @@ namespace auth.Migrations
                     b.HasOne("auth.Model.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("auth.Model.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Supplier");
 
@@ -571,11 +577,21 @@ namespace auth.Migrations
 
             modelBuilder.Entity("auth.Model.ImportDetail", b =>
                 {
-                    b.HasOne("auth.Model.Import", null)
+                    b.HasOne("auth.Model.Import", "Import")
                         .WithMany("Details")
                         .HasForeignKey("ImportId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("auth.Model.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Import");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("auth.Model.OrderProduct", b =>
@@ -621,7 +637,7 @@ namespace auth.Migrations
                     b.HasOne("auth.Model.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");

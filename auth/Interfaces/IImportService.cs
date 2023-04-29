@@ -1,14 +1,13 @@
 ﻿using auth.Model;
+using auth.Model.Request;
 
 namespace auth.Interfaces
 {
     public interface IImportService
     {
-        public Task<IEnumerable<Import>> getImports();
-        public Task<IEnumerable<Import>> getImportDetail(int id);
+        public List<Import> getImports();
+        public List<ImportDetail> getImportDetail(int id);
 
-        public void addImport(Import model);
-        public void updateImport(int id, Import model);
-        public void deleteImport(int id);
+        public void addImport(ImportRequest model);
     }
 }

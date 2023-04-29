@@ -19,7 +19,7 @@ namespace auth.Controllers
         public IActionResult getNews()
         {
             var news = _service.getNews();
-            return Ok(new Response
+            return Ok(new
             {
                 status = "success",
                 data = news,
@@ -31,19 +31,19 @@ namespace auth.Controllers
         public IActionResult addNew(New New)
         {
             _service.addNew(New);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new { status = "success", message = "Thành công" });
         }
         [HttpPost("updateNew")]
         public IActionResult updateNew(int id, New New)
         {
             _service.updateNew(id, New);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new { status = "success", message = "Thành công" });
         }
         [HttpPost("deleteNew")]
         public IActionResult deleteNew(int id)
         {
             _service.deleteNew(id);
-            return Ok(new Response { status = "success", data = null, message = "Thành công" });
+            return Ok(new { status = "success", message = "Thành công" });
         }
     }
 }
