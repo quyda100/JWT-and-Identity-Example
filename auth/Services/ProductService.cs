@@ -12,7 +12,6 @@ namespace auth.Services
     {
         private readonly ApplicationDBContext _context;
         private readonly IMapper _mapper;
-
         public ProductService(ApplicationDBContext context, IMapper mapper)
         {
             _context = context;
@@ -20,12 +19,12 @@ namespace auth.Services
         }
         public async Task<IEnumerable<Product>> GetProducts()
         {
-            var products = await _context.Products.ToListAsync();
+            var products = await _context.Products.Include(p=>p.Brand).Include(p=>p.Category).ToListAsync();
             return products;
         }
         public async Task<IEnumerable<Product>> GetAvailableProducts()
         {
-            var products = await _context.Products.Where(product => product.Stock > 0).ToListAsync();
+            var products = await _context.Products.Where(product => product.Stock > 0).Include(p=>p.Brand).Include(p=>p.Category).ToListAsync();
             return products;
         }
         public void addProduct(Product product)

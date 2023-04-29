@@ -95,7 +95,7 @@ namespace auth.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Import", (string)null);
+                    b.ToTable("Imports", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.ImportDetail", b =>
@@ -124,7 +124,31 @@ namespace auth.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ImportDetail", (string)null);
+                    b.ToTable("ImportDetails", (string)null);
+                });
+
+            modelBuilder.Entity("auth.Model.Log", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Action")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TimeLog")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Logs", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.New", b =>
@@ -153,9 +177,14 @@ namespace auth.Migrations
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("New", (string)null);
+                    b.HasIndex("UserId");
+
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.Order", b =>
@@ -195,7 +224,7 @@ namespace auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Order", (string)null);
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.OrderProduct", b =>
@@ -325,7 +354,7 @@ namespace auth.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Review", (string)null);
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.Supplier", b =>
@@ -347,7 +376,7 @@ namespace auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppiler", (string)null);
+                    b.ToTable("Suppilers", (string)null);
                 });
 
             modelBuilder.Entity("auth.Model.User", b =>
@@ -594,6 +623,26 @@ namespace auth.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("auth.Model.Log", b =>
+                {
+                    b.HasOne("auth.Model.User", "User")
+                        .WithMany("Logs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("auth.Model.New", b =>
+                {
+                    b.HasOne("auth.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("auth.Model.OrderProduct", b =>
                 {
                     b.HasOne("auth.Model.Order", "Order")
@@ -702,6 +751,11 @@ namespace auth.Migrations
             modelBuilder.Entity("auth.Model.Order", b =>
                 {
                     b.Navigation("OrderProducts");
+                });
+
+            modelBuilder.Entity("auth.Model.User", b =>
+                {
+                    b.Navigation("Logs");
                 });
 #pragma warning restore 612, 618
         }

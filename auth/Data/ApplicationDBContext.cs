@@ -20,6 +20,7 @@ namespace auth.Data
         public DbSet<Import> Imports { get; set; }
         public DbSet<ImportDetail> ImportDetails { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Log> Logs {get;set;}
 
         #endregion
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -34,12 +35,13 @@ namespace auth.Data
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
             builder.Entity<Product>().ToTable("Products");
-            builder.Entity<Order>().ToTable("Order");
-            builder.Entity<Import>().ToTable("Import");
-            builder.Entity<ImportDetail>().ToTable("ImportDetail");
-            builder.Entity<Review>().ToTable("Review");
-            builder.Entity<Supplier>().ToTable("Suppiler");
-            builder.Entity<New>().ToTable("New");
+            builder.Entity<Order>().ToTable("Orders");
+            builder.Entity<Import>().ToTable("Imports");
+            builder.Entity<ImportDetail>().ToTable("ImportDetails");
+            builder.Entity<Review>().ToTable("Reviews");
+            builder.Entity<Supplier>().ToTable("Suppilers");
+            builder.Entity<New>().ToTable("News");
+            builder.Entity<Log>().ToTable("Logs");
         }
         #endregion
 

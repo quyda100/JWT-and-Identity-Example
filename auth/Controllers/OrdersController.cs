@@ -10,13 +10,22 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _service;
-
-        public OrdersController(IOrderService service)
+        private readonly ILogService _log;
+        public OrdersController(IOrderService service, ILogService log)
         {
             _service = service;
+            _log = log;
+        }
+
+        [HttpPost("AddProduct")]
+        public IActionResult Add(Order order)
+        {
+            _service.AddOrder(order);
+            return Ok(new { message = "Thêm hoa don thành công" });
         }
         [HttpPost("CreateOrder")]
         [AllowAnonymous]
