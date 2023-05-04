@@ -10,7 +10,7 @@ namespace auth.Model
         public string UserId {get; set; }
         [ForeignKey("Supplier")]
         public int SupplierId { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsDeleted { get; set; } = false;
         public List<ImportDetail> Details { get; set; }
         #region

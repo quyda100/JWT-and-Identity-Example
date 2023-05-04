@@ -50,6 +50,7 @@ namespace auth.Services
             var brand = GetBrand(id);
             if (model.Name != brand.Name && _context.Products.Any(pr => pr.Name == model.Name))
                 throw new Exception("Name " + brand.Name + " is already taken");
+            model.UpdatedAt = DateTime.Now;
             _context.Brands.Update(model);
             _context.SaveChangesAsync();
         }

@@ -21,12 +21,6 @@ namespace auth.Controllers
             _log = log;
         }
 
-        [HttpPost("AddProduct")]
-        public IActionResult Add(Order order)
-        {
-            _service.AddOrder(order);
-            return Ok(new { message = "Thêm hoa don thành công" });
-        }
         [HttpPost("CreateOrder")]
         [AllowAnonymous]
         public IActionResult CreateOrder(OrderRequest order)

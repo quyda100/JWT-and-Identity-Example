@@ -48,6 +48,7 @@ namespace auth.Services
             if (model.Id != id)
                 throw new Exception("Having trouble");
             var item = await _context.News.SingleOrDefaultAsync(x=>x.Id == id);
+            model.UpdatedAt = DateTime.Now;
             _context.News.Update(model);
             await _context.SaveChangesAsync();
         }

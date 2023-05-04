@@ -47,6 +47,7 @@ namespace auth.Services
             var category = getCategory(id);
             if (model.Name != category.Name && _context.Products.Any(pr => pr.Name == model.Name))
                 throw new Exception("Name " + category.Name + " is already taken");
+            model.UpdatedAt = DateTime.Now;
             _context.Categories.Update(model);
             _context.SaveChangesAsync();
         }

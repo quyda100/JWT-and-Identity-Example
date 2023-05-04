@@ -13,10 +13,9 @@ namespace auth.Interfaces
 
         //SimilarProduct
         public Task<List<Product>>  getSimilarProduct(int brandId, int caseSize);
-
-        public Task<List<Product>> getAddCart(string image, string name, int price);
-
-        
-    }
+        public List<Product> getProductsByBrand(int brandId);
+        public List<Product> getProductsByCategory(int categoryId);
+        public List<Product> getFeatureProduct();
+        public List<Product> getNewestProducts(int categoryId);
 }
 

@@ -71,18 +71,33 @@ namespace auth.Controllers
         }
 
         [HttpGet("SimilarProduct")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetSimilarProduct(int brandId, int caseSize)
         {
             var product = await _service.getSimilarProduct(brandId, caseSize);
 
             return Ok(product);
         }
-
-        [HttpGet("AddCart")]
-        public async Task <IActionResult> getAddCart(string image, string name, int price)
+        [HttpGet("GetProductsByBrand")]
+        [AllowAnonymous]
+        public IActionResult GetProductsByBrand(int brandId)
         {
-            var product = await _service.getAddCart(image, name, price);
-            return Ok(product);
+            var products = _service.getProductsByBrand(brandId);
+            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
+        }
+        [HttpGet("GetProductsByCategory")]
+        [AllowAnonymous]
+        public IActionResult GetProductsByCategory(int categoryId)
+        {
+            var products = _service.getProductsByCategory(categoryId);
+            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
+        }
+        [HttpGet("GetNewstProduct")]
+        [AllowAnonymous]
+        public IActionResult GetNewstProduct(int category)
+        {
+            var products = _service.getNewestProducts(category);
+            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
         }
     }
 }

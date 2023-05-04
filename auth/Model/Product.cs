@@ -13,7 +13,6 @@ namespace auth.Model
         public int Stock { get;set; }
         public string Image { get; set; }
         public string Color { get; set; }
-
         public string PreviewImages { get; set; }
 
         [DisplayName("Chất liệu vỏ")]
@@ -30,6 +29,8 @@ namespace auth.Model
         [DisplayName("Bảo hành")]
         public int Warranty { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; }
         [ForeignKey("Brand")]
         public int BrandId { get; set; }
         [ForeignKey("Category")]

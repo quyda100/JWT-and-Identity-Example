@@ -8,6 +8,6 @@ namespace auth.Interfaces
         public List<Import> getImports();
         public List<ImportDetail> getImportDetail(int id);
 
-        public void addImport(ImportRequest model);
+        public void addImport(ImportRequest model, string userId);
     }
 }

@@ -41,34 +41,6 @@ namespace auth.Services
             }
 
         }
-            
-        //public void addProduct(Product model)
-        //{
-        //    if (_context.Products.Any(x => x.Name == model.Name))
-        //        throw new Exception("Name '" + model.Name + "' Product is already");
-        //    var product = new Product()
-        //    {
-        //        Code = model.Code,
-        //        Name = model.Name,
-        //        Price = model.Price,
-        //        Stock = model.Stock,
-        //        Image = model.Image,
-        //        Color = model.Color,
-        //        CaseMeterial = model.CaseMeterial,
-        //        CaseSize = model.CaseSize,
-        //        GlassMaterial = model.GlassMaterial,
-        //        Movement = model.Movement,
-        //        WaterResistant = model.WaterResistant,
-        //        Description = model.Description,
-        //        Warranty = model.Warranty,
-        //        IsDeleted= model.IsDeleted,
-        //        BrandId= model.BrandId,
-        //        Gender = model.Gender,
-        //    };
-        //    _context.Products.Add(product);
-        //    _context.SaveChanges();
-        //}
-
         public void removeProduct(int id)
         {
             var product = getProduct(id);
@@ -84,11 +56,10 @@ namespace auth.Services
             var product = getProduct(id);
             if (product.Name != p.Name && _context.Products.Any(pr => pr.Name == p.Name))
                 throw new Exception("Name " + p.Name + " is already taken");
+            p.UpdatedAt = DateTime.Now;
             _context.Products.Update(p);
             _context.SaveChangesAsync();
         }
-
-
         public Product getProductById(int id)
         {
             return getProduct(id);
@@ -103,10 +74,6 @@ namespace auth.Services
             }
             return product;
         }
-
-
-
-        // api  SimilarProduct
         public Task<List<Product>> getSimilarProduct(int brandId, int caseSize)
         {
             var products = _context.Products.Where(p => p.BrandId == brandId && p.CaseSize==caseSize).ToList();
@@ -116,36 +83,6 @@ namespace auth.Services
             }
             return Task.FromResult(products);
         }
-
-        // api  add cart
-
-        public Task<List<Product>> getAddCart(string image, string name, int price)
-        {
-            var products = _context.Products.Where(p => p.Image == image && p.Name == name && p.Price == price).ToList();
-            if (products == null)
-            {
-                throw new Exception("not found");
-            }
-            return Task.FromResult(products);
-        }
-        
-        // api check stock products
-
-        public bool checkStock(int id)
-        {
-            var isCheckStock = true;
-            var product = _context.Products.FirstOrDefault(p => p.Id == id);
-            if (product == null || product.Stock == 0)
-            {
-                isCheckStock =false;
-            }
-            return isCheckStock;
-        }
-
-        // count product in store
-
-        // api search product
-
       
         public Product SearchProduct(string name)
         {
@@ -156,6 +93,42 @@ namespace auth.Services
             }
             return result;
         }
-       
-    }
+
+        public List<Product> getProductsByBrand(int brandId)
+        {
+            var brand = _context.Brands.First(b=>b.Id==brandId);
+            if (brand == null)
+            {
+                throw new Exception("Brand is not exist!");
+            }
+            var products = _context.Products.Where(p => p.BrandId == brandId).Include(p => p.Brand).Include(p => p.Category).ToList();
+            return products;
+        }
+        public List<Product> getProductsByCategory(int categoryId)
+        {
+            var category = _context.Categories.First(b => b.Id == categoryId);
+            if (category == null)
+            {
+                throw new Exception("Category is not exist!");
+            }
+            var products = _context.Products.Where(p => p.CategoryId == categoryId).Include(p => p.Brand).Include(p => p.Category).ToList();
+            return products;
+        }
+
+        public List<Product> getFeatureProduct()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Product> getNewestProducts(int categoryId)
+        {
+            var category = _context.Categories.First(b => b.Id == categoryId);
+            if (category == null)
+            {
+                throw new Exception("Category is not exist!");
+            }
+            var products = _context.Products.Where(p=>p.CategoryId == categoryId).OrderBy(p=>p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).ToList();
+            return products;
+        }
+        }
 }

@@ -74,6 +74,7 @@ namespace auth.Services
             if (id != order.Id)
                 throw new Exception("Having a trouble");
             var Order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            order.UpdatedAt = DateTime.Now;
             _context.Orders.Update(order);
         }
     }

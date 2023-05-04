@@ -13,11 +13,11 @@ namespace auth.Services
         {
             _context = context;
         }
-        public void addImport(ImportRequest model)
+        public void addImport(ImportRequest model, string userId)
         {
             var import = new Import
             {
-                UserId = model.UserId,
+                UserId = userId,
                 SupplierId = model.supplierId,
             };
             _context.Imports.Add(import);
@@ -42,6 +42,7 @@ namespace auth.Services
                 var product = getProductById(importProduct.Id);
                 product.Stock += importProduct.Quanlity;
                 product.Price = importProduct.Price;
+                product.UpdatedAt = DateTime.Now;
                 _context.Products.Update(product);
             });
             import.Total = total;

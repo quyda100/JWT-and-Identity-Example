@@ -2,7 +2,6 @@
 {
     public class ImportRequest
     {
-        public string UserId { get; set; }
         public int supplierId { get; set; }
         public List<ImportProductRequest> ImportProducts { get; set; }
     }
