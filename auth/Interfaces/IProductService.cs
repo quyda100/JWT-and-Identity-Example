@@ -12,10 +12,11 @@ namespace auth.Interfaces
         public void updateProduct(int id, Product product);
 
         //SimilarProduct
-        public Task<List<Product>>  getSimilarProduct(int brandId, int caseSize);
+        public Task<List<Product>> getSimilarProduct(int brandId, int caseSize);
         public List<Product> getProductsByBrand(int brandId);
         public List<Product> getProductsByCategory(int categoryId);
         public List<Product> getFeatureProduct();
         public List<Product> getNewestProducts(int categoryId);
+    }
 }
 

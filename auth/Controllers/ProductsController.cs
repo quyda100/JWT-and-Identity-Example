@@ -92,7 +92,7 @@ namespace auth.Controllers
             var products = _service.getProductsByCategory(categoryId);
             return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
         }
-        [HttpGet("GetNewstProduct")]
+        [HttpGet("GetNewestProduct")]
         [AllowAnonymous]
         public IActionResult GetNewstProduct(int category)
         {
