@@ -26,7 +26,7 @@ namespace auth.Controllers
         public IActionResult CreateOrder(OrderRequest order)
         {
             _service.CreateOrder(order);
-            return Ok(new { Message = "Tạo hóa đơn thành công" });
+            return Ok(new {status = "success", message = "Tạo hóa đơn thành công" });
         }
         [HttpGet]
         public IActionResult getListOrders()
@@ -38,7 +38,15 @@ namespace auth.Controllers
         public IActionResult updateOrder(int id, Order order)
         {
             _service.UpdateOrder(id, order);
-            return Ok(new { message = "Cập nhật thành công" });
+            return Ok(new { status = "success", message = "Cập nhật thành công" });
+        }
+
+        [HttpGet("GetOrdersByPhone")]
+        [AllowAnonymous]
+        public IActionResult getOrdersByPhone(string phone)
+        {
+            var orders = _service.GetOrdersByPhone(phone);
+            return Ok(new { status = "success", message = "Lấy dữ liệu thành công", data = orders });
         }
     }
 }

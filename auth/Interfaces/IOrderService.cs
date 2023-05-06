@@ -10,6 +10,7 @@ namespace auth.Interfaces
         public List<Order> GetOrders();
         public List<OrderProduct> GetOrderProducts(int orderId);
         public void UpdateOrder(int id,Order order);
+        public List<Order> GetOrdersByPhone(string phone);
 
     }
 }

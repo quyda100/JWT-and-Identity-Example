@@ -77,5 +77,11 @@ namespace auth.Services
             order.UpdatedAt = DateTime.Now;
             _context.Orders.Update(order);
         }
+
+        public List<Order> GetOrdersByPhone(string phone)
+        {
+            var orders = _context.Orders.Where(o => o.Phone == phone).Include(o=>o.OrderProducts).ToList();
+            return orders;
+        }
     }
 }
