@@ -8,6 +8,7 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountsController : ControllerBase
     {
         private readonly IAccountService _service;
@@ -25,9 +26,9 @@ namespace auth.Controllers
             var result = await _service.RegisterAsync(model);
             if (!result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Đăng ký thất bại" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng ký thất bại" });
             }
-            return Ok(new { Message = "Đăng ký thành công" });
+            return Ok(new { message = "Đăng ký thành công" });
         }
         [HttpPost]
         [Route("RegisterAdmin")]
@@ -37,9 +38,9 @@ namespace auth.Controllers
             var result = await _service.RegisterAdminAsync(model);
             if (!result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Đăng ký thất bại" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng ký thất bại" });
             }
-            return Ok(new { Message = "Đăng ký thành công" });
+            return Ok(new { message = "Đăng ký thành công" });
         }
 
         [HttpPost]
@@ -51,12 +52,25 @@ namespace auth.Controllers
             var result = await _service.LoginAsync(model);
             if (string.IsNullOrEmpty(result))
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Đăng nhập thất bại" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng nhập thất bại" });
             }
             return Ok(new
             {
-                Message = "Đăng nhập thành công",
-                Token = result
+                message = "Đăng nhập thành công",
+                token = result
+            });
+        }
+        [HttpPost("Changepassword")]
+        public async Task<IActionResult> ChangePassword (ChangepasswordRequest model)
+        {
+            var result = await _service.ChangePassword(model);
+            if (!result.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đổi mật khẩu thất bại", data = result.Errors });
+            }
+            return Ok(new
+            {
+                message = "Đổi mật khẩu thành công"
             });
         }
     }

@@ -141,5 +141,15 @@ namespace auth.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public async Task<IdentityResult> ChangePassword(ChangepasswordRequest model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.email);
+            if (user == null)
+            {
+                throw new Exception("User is not exist");
+            }
+            return await _userManager.ChangePasswordAsync(user, model.password, model.newpassword);
+        }
+
     }
 }
