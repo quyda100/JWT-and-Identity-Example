@@ -96,7 +96,7 @@ namespace auth.Services
 
         public List<Product> getProductsByBrand(int brandId)
         {
-            var brand = _context.Brands.First(b=>b.Id==brandId);
+            var brand = _context.Brands.FirstOrDefault(b=>b.Id==brandId);
             if (brand == null)
             {
                 throw new Exception("Brand is not exist!");
@@ -106,7 +106,7 @@ namespace auth.Services
         }
         public List<Product> getProductsByCategory(int categoryId)
         {
-            var category = _context.Categories.First(b => b.Id == categoryId);
+            var category = _context.Categories.FirstOrDefault(b => b.Id == categoryId);
             if (category == null)
             {
                 throw new Exception("Category is not exist!");
@@ -122,7 +122,7 @@ namespace auth.Services
 
         public List<Product> getNewestProducts(int categoryId)
         {
-            var category = _context.Categories.First(b => b.Id == categoryId);
+            var category = _context.Categories.FirstOrDefault(b => b.Id == categoryId);
             if (category == null)
             {
                 throw new Exception("Category is not exist!");
