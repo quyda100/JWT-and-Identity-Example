@@ -49,13 +49,8 @@ namespace auth.Services
             _context.SaveChangesAsync();
         }
 
-        public void updateProduct(int id, Product p)
+        public void updateProduct(Product p)
         {
-            if (p.Id != id)
-                throw new Exception("Having trouble");
-            var product = getProduct(id);
-            if (product.Name != p.Name && _context.Products.Any(pr => pr.Name == p.Name))
-                throw new Exception("Name " + p.Name + " is already taken");
             p.UpdatedAt = DateTime.Now;
             _context.Products.Update(p);
             _context.SaveChangesAsync();
@@ -130,5 +125,10 @@ namespace auth.Services
             var products = _context.Products.Where(p=>p.CategoryId == categoryId).OrderBy(p=>p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).ToList();
             return products;
         }
+
+        public bool checkExist(int id)
+        {
+            return _context.Products.Any(p => p.Id == id);
         }
+    }
 }

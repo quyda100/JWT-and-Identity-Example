@@ -18,17 +18,9 @@ namespace auth.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllProducts()
+        public IActionResult GetAllProducts()
         {
-            try
-            {
-                return Ok(await _service.GetProducts());
-            }
-            catch
-            {
-
-                return BadRequest();
-            }
+           return Ok(_service.GetProducts());
         }
         [HttpGet("GetAvailableProducts")]
         [AllowAnonymous]
@@ -54,20 +46,67 @@ namespace auth.Controllers
         [HttpPost("AddProduct")]
         public IActionResult Add(Product product)
         {
-            _service.addProduct(product);
-            return Ok(new {message = "Thêm sản phẩm thành công"});
+            try
+            {
+                if(product == null || !ModelState.IsValid) {
+                    return BadRequest("Lỗi: Data rỗng");
+                }
+                var isExist = _service.checkExist(product.Id);
+                if (isExist)
+                {
+                    return BadRequest(product.Id + " đã tồn tại!");
+                }
+                _service.addProduct(product);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest("Không thể tạo sản phẩm");
+            }
+            return Ok("Đã tạo thành công: "+ product.Name);
+           
         }
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, Product product)
+        [HttpPut]
+        public IActionResult Update(Product product)
         {
-            _service.updateProduct(id, product);
-            return Ok(new { message = "Cập nhật sản phẩm thành công" });
+            try
+            {
+                if (product == null || !ModelState.IsValid)
+                {
+                    return BadRequest("Lỗi: Data rỗng");
+                }
+                var isExist = _service.checkExist(product.Id);
+                if (!isExist)
+                {
+                    return NotFound(product.Name + " không tồn tại!");
+                }
+                _service.updateProduct(product);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest("Không thể sửa sản phẩm");
+            }
+            return NoContent();
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _service.removeProduct(id);
-            return Ok(new { message = "Xóa sản phẩm thành công" });
+            try
+            {
+                var isExist = _service.checkExist(id);
+                if (!isExist)
+                {
+                    return NotFound(id + " không tồn tại!");
+                }
+                _service.removeProduct(id);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest("Không thể xóa sản phẩm");
+            }
+            return NoContent();
         }
 
         [HttpGet("SimilarProduct")]
