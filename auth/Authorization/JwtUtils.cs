@@ -1,6 +1,6 @@
 ﻿using auth.Data;
 using auth.Helpers;
-using auth.Model;
+using auth.Model.Request;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,7 +9,7 @@ using System.Text;
 
 namespace auth.Authorization
 {
-        public interface IJwtUtils
+    public interface IJwtUtils
         {
             public string GenerateJwtToken(LoginRequest model);
             public string ValidateJwtToken(string token);

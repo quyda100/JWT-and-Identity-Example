@@ -1,6 +1,7 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.Request;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,33 +19,6 @@ namespace auth.Services
             _context = context;
         }
 
-        // add hoa don
-        public void AddOrder(Order order)
-        {
-            try
-            {
-                if (_context.Products.Any(x => x.Name == order.UserName))
-                    throw new Exception(order.UserName + " is exist");
-                _context.Orders.Add(order);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-            }
-
-        }
-
-        
-        
-        //public task<list<int>> getdataorder()
-        //{
-        //    list<int> lst = new list<int>();
-        //    for (int i = 1; i <= 12; i++)
-        //    {
-        //        lst.add(_context.orders.where(o => o.paymenttime.month == i && o.paymenttime.year == datetime.now.year).sum(o => o.total));
-        //    }
-        //    return task.fromresult(lst);
-        //}
         public void CreateOrder(OrderRequest model)
         {
             var order = new Order
@@ -64,12 +38,6 @@ namespace auth.Services
 
             _context.SaveChanges();
         }
-        public async Task<Order> AddOrderProducts(Order order)
-        {
-            await _context.Orders.AddAsync(order);
-            _context.SaveChanges();
-            return order;
-        }
         public List<OrderProduct> GetOrderProducts(List<OrderProductRequest> productRequests, int OrderId)
         {
             List<OrderProduct> orderProducts = new List<OrderProduct>();
@@ -87,6 +55,33 @@ namespace auth.Services
                 orderProducts.Add(orderProduct);
             }
             return orderProducts;
+        }
+
+        public List<Order> GetOrders()
+        {
+           var orders = _context.Orders.ToList();
+            return orders;
+        }
+
+        public List<OrderProduct> GetOrderProducts(int orderId)
+        {
+            var orderProducts = _context.OrderProducts.Where(o=>o.OrderId==orderId).ToList();
+            return orderProducts;
+        }
+
+        public void UpdateOrder(int id, Order order)
+        {
+            if (id != order.Id)
+                throw new Exception("Having a trouble");
+            var Order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            order.UpdatedAt = DateTime.Now;
+            _context.Orders.Update(order);
+        }
+
+        public List<Order> GetOrdersByPhone(string phone)
+        {
+            var orders = _context.Orders.Where(o => o.Phone == phone).Include(o=>o.OrderProducts).ToList();
+            return orders;
         }
     }
 }

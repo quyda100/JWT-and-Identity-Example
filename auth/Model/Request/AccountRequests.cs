@@ -1,10 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace auth.Model
+namespace auth.Model.Request
 {
+    public class LoginRequest
+    {
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public string Password { get; set; }
+    }
     public class RegisterRequest
     {
-        
+
         [Required, EmailAddress]
         public string Email { get; set; }
         [Required]
@@ -17,5 +24,14 @@ namespace auth.Model
         public string Address { get; set; }
         [Required]
         public string Phone { get; set; }
+    }
+    public class ChangepasswordRequest
+    {
+        [Required]
+        public string email { get; set; }
+        [Required]
+        public string password { get; set; }
+        [Required]
+        public string newpassword { get; set; }
     }
 }
