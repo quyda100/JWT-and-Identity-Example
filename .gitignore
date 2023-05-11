@@ -16,10 +16,6 @@
 # Mono auto generated files
 mono_crash.*
 
-Migrations/
-ApplicationDBContextModelSnapshot.cs
-
-
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

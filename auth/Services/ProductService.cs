@@ -29,16 +29,10 @@ namespace auth.Services
         }
         public void addProduct(Product product)
         {
-            try
-            {
                 if (_context.Products.Any(x => x.Name == product.Name))
                     throw new Exception(product.Name + " is exist");
                 _context.Products.Add(product);
                 _context.SaveChanges();
-            }
-            catch(Exception ex)
-            {
-            }
 
         }
         public void removeProduct(int id)

@@ -3,6 +3,7 @@ using auth.Helpers;
 using auth.Interfaces;
 using auth.Model;
 using auth.Model.Request;
+using auth.Model.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,8 +42,6 @@ namespace auth.Services
                 var claims = new List<Claim>
              {
                new Claim("UserId", user.Id),
-               new Claim("Name", user.FullName),
-               new Claim("Email", user.Email),
                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
              };
                 foreach (var role in roles)
@@ -64,7 +63,6 @@ namespace auth.Services
             }
             var user = new User
             {
-                UserName = model.Email,
                 Email = model.Email,
                 PhoneNumber = model.Phone,
                 FullName = model.FullName,
@@ -116,15 +114,6 @@ namespace auth.Services
             }
             return await _userManager.UpdateAsync(user);
         }
-        public User GetUserByEmail(string email)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Email == email);
-            if(user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-            return user;
-        }
         public string GenerateJwtToken(List<Claim> claims)
         {
             var token_key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
@@ -141,15 +130,80 @@ namespace auth.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<IdentityResult> ChangePassword(ChangepasswordRequest model)
+        public async Task<IdentityResult> ChangePassword(string Id, ChangepasswordRequest model)
         {
-            var user = await _userManager.FindByEmailAsync(model.email);
+            if(Id != model.Id)
+            {
+                throw new Exception("Có lỗi xảy ra");
+            }
+            var user = await _userManager.FindByIdAsync(model.Id);
             if (user == null)
             {
                 throw new Exception("User is not exist");
             }
-            return await _userManager.ChangePasswordAsync(user, model.password, model.newpassword);
+            return await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
         }
 
+        public Task<UserInfo> GetCurrentUser(string id)
+        {
+            var user = GetUserById(id);
+            var userInfo = new UserInfo
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Address = user.Address,
+                DateOfBirth = user.DateOfBirth,
+                Avatar = user.Avatar,
+                Phone = user.PhoneNumber,
+                FullName = user.FullName
+            };
+            return Task.FromResult(userInfo);
+        }
+        public void UpdateProfile(string id,UserInfo model)
+        {
+            if (!id.Equals(model.Id))
+            {
+                throw new Exception("Không thể lưu thông tin");
+            }
+            var user = GetUserById(id);
+            if (user.Email != model.Email && _context.Users.Any(u => u.FullName == model.FullName))
+            {
+                throw new Exception("Email này đã được sử dụng");
+            }
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.PhoneNumber = model.Phone;
+            user.Address = model.Address;
+            user.DateOfBirth = model.DateOfBirth;
+            user.Avatar = model.Avatar;
+            _context.Users.Update(user);
+            _context.SaveChanges();
+        }
+        public async void ChangeAvatar(string id, IFormFile file)
+        {
+            List<string> extensionAllowed = new List<string> { ".png",".jpg","jpeg" };
+            var user = GetUserById(id);
+            var fileExtension = Path.GetExtension(file.FileName);
+            if (!extensionAllowed.Contains(fileExtension)){
+                throw new Exception("Vui lòng tải lên đúng định dạng");
+            }
+            var fileName = Path.Combine("Uploads", "Avatar", id + fileExtension);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            using (var fs = File.Create(filePath))
+            {
+                file.CopyTo(fs);
+            }
+            user.Avatar = fileName;
+            await _userManager.UpdateAsync(user);
+        }
+        private User GetUserById(string id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+            return user;
+        }
     }
 }

@@ -1,4 +1,3 @@
-using auth.Authorization;
 using auth.Data;
 using auth.Helpers;
 using auth.Interfaces;
@@ -23,7 +22,6 @@ builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 builder.Services.AddTransient<INewService, NewService>();
 builder.Services.AddTransient<ILogService, LogService>();
-builder.Services.AddTransient<IJwtUtils, JwtUtils>();
 
 builder.Services.AddControllers().AddJsonOptions(option =>
 option.JsonSerializerOptions.PropertyNamingPolicy = null);
@@ -109,7 +107,13 @@ builder.Services.AddAuthentication(options =>
                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:key"]))
                   };
               });
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddAutoMapper(typeof(Program));
 /////////////////////////////
@@ -128,10 +132,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors(options =>
-     options.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+app.UseCors();
 
 app.MapControllers();
 

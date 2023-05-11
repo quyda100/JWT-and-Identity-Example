@@ -21,17 +21,27 @@ namespace auth.Model.Request
         [Required]
         public string FullName { get; set; }
         [Required]
+        public DateTime DateOfBirth { get; set; }
+        [Required]
         public string Address { get; set; }
         [Required]
         public string Phone { get; set; }
     }
     public class ChangepasswordRequest
     {
+        public string Id { get; set; }
         [Required]
-        public string email { get; set; }
+        public string Password { get; set; }
         [Required]
-        public string password { get; set; }
-        [Required]
-        public string newpassword { get; set; }
+        public string NewPassword { get; set; }
+    }
+    public class ProfileRequest
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public string PhoneNumber { get; set; }
+        public IFormFile Avatar { get; set; }
+
     }
 }
