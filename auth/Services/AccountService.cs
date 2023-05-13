@@ -35,23 +35,23 @@ namespace auth.Services
         public async Task<string> LoginAsync(LoginRequest model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if( user!= null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if( user == null && await _userManager.CheckPasswordAsync(user, model.Password) == false)
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                // generate token that is valid for 7 days
-                var claims = new List<Claim>
+                throw new Exception("Tài khoản hoặc mật khẩu không đúng");
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            // generate token that is valid for 7 days
+            var claims = new List<Claim>
              {
                new Claim("UserId", user.Id),
                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
              };
-                foreach (var role in roles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
-                return GenerateJwtToken(claims);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
-
-            return String.Empty;
+            return GenerateJwtToken(claims);
         }
 
         public async Task<IdentityResult> RegisterAsync(RegisterRequest model)
@@ -70,7 +70,7 @@ namespace auth.Services
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                throw new Exception("User creation failed!");
+                throw new Exception(result.Errors.ToString());
             }
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.User))
@@ -101,7 +101,7 @@ namespace auth.Services
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                throw new Exception("User creation failed!");
+                throw new Exception(result.Errors.ToString());
             }
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))

@@ -29,9 +29,9 @@ namespace auth.Controllers
                 var result = await _service.RegisterAsync(model);
                 if (!result.Succeeded)
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng ký thất bại" });
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Errors);
                 }
-                return Ok(new { message = "Đăng ký thành công" });
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -64,16 +64,15 @@ namespace auth.Controllers
         
         public async Task<IActionResult> Login(LoginRequest model)
         {
-            var result = await _service.LoginAsync(model);
-            if (string.IsNullOrEmpty(result))
+            try
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng nhập thất bại" });
+                var result = await _service.LoginAsync(model);
+                return Ok(result);
             }
-            return Ok(new
+            catch (Exception ex)
             {
-                message = "Đăng nhập thành công",
-                token = result
-            });
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost("Changepassword")]
         public async Task<IActionResult> ChangePassword (ChangepasswordRequest model)

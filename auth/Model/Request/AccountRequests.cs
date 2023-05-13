@@ -23,8 +23,6 @@ namespace auth.Model.Request
         [Required]
         public DateTime DateOfBirth { get; set; }
         [Required]
-        public string Address { get; set; }
-        [Required]
         public string Phone { get; set; }
     }
     public class ChangepasswordRequest
