@@ -53,8 +53,7 @@ namespace auth.Controllers
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                var userId = GetCurrentUserId();
-                _service.AddProduct(product, userId);
+                _service.AddProduct(product);
                 return Ok(product);
             }
             catch (Exception ex)
@@ -71,8 +70,7 @@ namespace auth.Controllers
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                var userId = GetCurrentUserId();
-                _service.UpdateProduct(id, product, userId);
+                _service.UpdateProduct(id, product);
             }
             catch (Exception ex)
             {
@@ -89,8 +87,7 @@ namespace auth.Controllers
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                var userId = GetCurrentUserId();
-                _service.RemoveProduct(id, userId);
+                _service.RemoveProduct(id);
             }
             catch (Exception ex)
             {
@@ -126,15 +123,6 @@ namespace auth.Controllers
         {
             var products = _service.GetNewestProducts(category);
             return Ok(products);
-        }
-        private string GetCurrentUserId()
-        {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            if (userId == null)
-            {
-                throw new Exception("Vui lòng đăng nhập lại!");
-            }
-            return userId;
         }
     }
 }

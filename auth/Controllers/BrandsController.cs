@@ -12,12 +12,9 @@ namespace auth.Controllers
     public class BrandsController : ControllerBase
     {
         private readonly IBrandService _service;
-        private readonly ILogService _log;
-
-        public BrandsController(IBrandService service, ILogService log)
+        public BrandsController(IBrandService service)
         {
             _service = service;
-            _log = log;
         }
         [AllowAnonymous]
         [HttpGet("GetBrands")]
@@ -36,11 +33,6 @@ namespace auth.Controllers
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
                 _service.AddBrand(brand);
-                _log.saveLog(new Log
-                {
-                    UserId = getCurrentUserId(),
-                    Action = "Tạo mới nhãn hàng: " + brand.Name
-                });
                 return Ok(brand);
             }
             catch (Exception ex)
@@ -58,11 +50,6 @@ namespace auth.Controllers
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
                 _service.UpdateBrand(id, brand);
-                _log.saveLog(new Log
-                {
-                    UserId = getCurrentUserId(),
-                    Action = "Cập nhật nhãn hàng: " + brand.Name
-                });
             }
             catch (Exception ex)
             {
@@ -80,26 +67,12 @@ namespace auth.Controllers
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
                 _service.DeleteBrand(id);
-                _log.saveLog(new Log
-                {
-                    UserId = getCurrentUserId(),
-                    Action = "Xóa nhãn hàng Id: " + id
-                });
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
             return NoContent();
-        }
-        private string getCurrentUserId()
-        {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            if (userId == null)
-            {
-                throw new Exception("Vui lòng đăng nhập lại");
-            }
-            return userId;
         }
     }
 }

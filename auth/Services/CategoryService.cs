@@ -8,13 +8,18 @@ namespace auth.Services
     public class CategoryService : ICategoryService
     {
         private readonly ApplicationDBContext _context;
+        private readonly ILogService _log;
 
-        public CategoryService(ApplicationDBContext context) { _context = context; }
+        public CategoryService(ApplicationDBContext context, ILogService log) { 
+            _context = context;
+            _log = log;
+        }
         public void AddCategory(Category model)
         {
 
             if (_context.Categories.Any(x => x.Name == model.Name))
-                throw new Exception(model.Name + " is exist");
+                throw new Exception(model.Name + " đã tồn tại!");
+            _log.SaveLog("Tạo mới loại sản phẩm: " + model.Name);
             _context.Categories.Add(model);
             _context.SaveChanges();
         }
@@ -23,6 +28,7 @@ namespace auth.Services
         {
             var category = GetCategory(id);
             category.IsDeleted = true;
+            _log.SaveLog("Xóa loại sản phẩm: "+category.Name);
             _context.Categories.Update(category);
             _context.SaveChanges();
         }
@@ -39,8 +45,9 @@ namespace auth.Services
                 throw new Exception("Having trouble");
             var category = GetCategory(id);
             if (model.Name != category.Name && _context.Products.Any(pr => pr.Name == model.Name))
-                throw new Exception("Name " + category.Name + " is already taken");
+                throw new Exception(category.Name + " đã tồn tại");
             model.UpdatedAt = DateTime.Now;
+            _log.SaveLog("Cập nhật dữ liệu: " + category.Name);
             _context.Categories.Update(model);
             _context.SaveChangesAsync();
         }

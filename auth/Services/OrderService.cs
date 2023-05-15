@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using System.Security.Claims;
 using System.Security.Principal;
 
 namespace auth.Services
@@ -13,13 +14,17 @@ namespace auth.Services
     public class OrderService: IOrderService
     {
         private readonly ApplicationDBContext _context;
+        private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly ILogService _log;
 
-        public OrderService(ApplicationDBContext context)
+        public OrderService(ApplicationDBContext context, HttpContextAccessor httpContextAccessor, ILogService log)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            _log = log;
         }
 
-        public void CreateOrder(OrderRequest model, string userId)
+        public void CreateOrder(OrderRequest model)
         {
             var order = new Order
             {
@@ -27,10 +32,9 @@ namespace auth.Services
                 Address = model.Address,
                 Phone = model.Phone,
                 Status = 0,
-                UserId = userId,
+                UserId = GetUserId(),
             };
             _context.Orders.Add(order);
-            
             _context.SaveChanges();
             //Tạo orderProduct
             var orderProducts = GetOrderProducts(model.orderProducts, order.Id);
@@ -87,18 +91,19 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy hóa đơn");
             }
             order.UpdatedAt = DateTime.Now;
+            _log.SaveLog("Cập nhật đơn hàng: " + id);
             _context.Orders.Update(order);
         }
 
-        public List<Order> GetOrdersByUserId(string userId)
+        public List<Order> GetOrdersByUserId()
         {
-            var orders = _context.Orders.Where(o => o.UserId == userId).Include(o=>o.OrderProducts).Include(o=>o.User).ToList();
+            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o=>o.OrderProducts).Include(o=>o.User).ToList();
             return orders;
         }
 
-        public void DeleteOrder(int id, string userId)
+        public void DeleteOrder(int id)
         {
-            var order = _context.Orders.FirstOrDefault(o => o.Id == id&&o.UserId == userId) ?? throw new Exception("Không tìm thấy hóa đơn");
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id&&o.UserId == GetUserId()) ?? throw new Exception("Không tìm thấy hóa đơn");
             if (order.Status != 0)
             {
                 throw new Exception("Không thể thực hiện yêu cầu");
@@ -108,5 +113,7 @@ namespace auth.Services
             _context.Orders.Update(order);
             _context.SaveChanges();
         }
+
+        private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

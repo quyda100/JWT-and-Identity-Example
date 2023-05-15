@@ -11,6 +11,8 @@ namespace auth.Model
         public DateTime DateOfBirth { get; set; }
         public string Avatar { get; set; } = "https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png";
         public List<Log> Logs {get;set;}
+        public List<Review> Reviews { get;set;}
+        public List<Order> Orders { get;set;}
     }
 
     public static class UserRoles

@@ -61,7 +61,7 @@ namespace auth.Services
             var productsDTO = products.Select(p => new ProductViewModel { Id = p.Id, Code = p.Code, Name = p.Name, Price = p.Price, Image = p.Image }).ToList();
             return productsDTO;
         }
-        public void AddProduct(ProductRequest productDTO, string userId)
+        public void AddProduct(ProductRequest productDTO)
         {
             if (_context.Products.Any(x => x.Name == productDTO.Name))
             {
@@ -92,20 +92,20 @@ namespace auth.Services
                 BrandId = productDTO.BrandId,
                 CategoryId = productDTO.CategoryId,
             };
-            _log.saveLog(new Log { UserId = userId, Action = "Tạo mới sản phẩm: " + product.Code });
+            _log.SaveLog("Tạo mới sản phẩm: " + product.Code);
             _context.Products.Add(product);
             _context.SaveChanges();
         }
-        public void RemoveProduct(int id, string userId)
+        public void RemoveProduct(int id)
         {
             var product = GetProduct(id);
             product.IsDeleted = true;
-            _log.saveLog(new Log { UserId = userId, Action = "Xóa sản phẩm: " + product.Code });
+            _log.SaveLog("Xóa sản phẩm: " + product.Code);
             _context.Products.Update(product);
             _context.SaveChangesAsync();
         }
 
-        public void UpdateProduct(int id, ProductRequest p, string userId)
+        public void UpdateProduct(int id, ProductRequest p)
         {
             if (p.Id != id)
                 throw new Exception("Having trouble");
@@ -130,7 +130,7 @@ namespace auth.Services
                 BrandId = p.BrandId,
                 CategoryId = p.CategoryId,
             };
-            _log.saveLog(new Log { UserId = userId, Action = "Cập nhật sản phẩm: " + product.Code });
+            _log.SaveLog("Cập nhật sản phẩm: " + product.Code);
             _context.Products.Update(productUpdate);
             _context.SaveChangesAsync();
         }

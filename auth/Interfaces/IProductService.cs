@@ -10,9 +10,9 @@ namespace auth.Interfaces
         public List<ProductDetailViewModel> GetProductsDetail();
         public List<ProductViewModel> GetAvailableProducts();
         public ProductDetailViewModel GetProductById(int id);
-        public void AddProduct(ProductRequest product, string userId);
-        public void RemoveProduct(int id, string userId);
-        public void UpdateProduct(int id, ProductRequest product, string userId);
+        public void AddProduct(ProductRequest product);
+        public void RemoveProduct(int id);
+        public void UpdateProduct(int id, ProductRequest product);
 
         //SimilarProduct
         public List<Product> GetSimilarProduct(int brandId, int caseSize);

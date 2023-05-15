@@ -35,11 +35,6 @@ namespace auth.Controllers
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
                 _service.AddCategory(category);
-                _log.saveLog(new Log
-                {
-                    UserId = getCurrentUserId(),
-                    Action = "Tạo mới loại sản phẩm: " + category.Name
-                });
                 return Ok(category);
             }
             catch (Exception ex)
@@ -57,11 +52,6 @@ namespace auth.Controllers
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
                 _service.UpdateCategory(id, category);
-                _log.saveLog(new Log
-                {
-                    UserId = getCurrentUserId(),
-                    Action = "Cập nhật loại sản phẩm " + category.Name
-                });
             }
             catch (Exception ex)
             {
@@ -79,26 +69,12 @@ namespace auth.Controllers
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
                 _service.DeleteCategory(id);
-                _log.saveLog(new Log
-                {
-                    UserId = getCurrentUserId(),
-                    Action = "Xóa loại sản phẩm id: " + id
-                });
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
             return NoContent();
-        }
-        private string getCurrentUserId()
-        {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            if (userId == null)
-            {
-                throw new Exception("Vui lòng đăng nhập lại");
-            }
-            return userId;
         }
     }
 }

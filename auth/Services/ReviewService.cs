@@ -2,43 +2,44 @@
 using auth.Interfaces;
 using auth.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace auth.Services
 {
     public class ReviewService : IReviewService
     {
         private readonly ApplicationDBContext _context;
+        private readonly ILogService _log;
+        private readonly HttpContextAccessor _httpContextAccessor;
 
-        public ReviewService(ApplicationDBContext context) { 
+        public ReviewService(ApplicationDBContext context, HttpContextAccessor httpContextAccessor, ILogService log)
+        {
             _context = context;
+            _log = log;
+            _httpContextAccessor = httpContextAccessor;
         }
-        public void addReview(Review model)
+        public void AddReview(Review model)
         {
-            try
-            {
-                _context.Reviews.Add(model);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-            }
+            model.UserId = GetUserId();
+            _context.Reviews.Add(model);
+            _context.SaveChanges();
         }
 
-        public void deleteReview(int id)
+        public void DeleteReview(int id)
         {
-            var review = findReview(id);
+            var review = FindReview(id);
             review.IsDeleted = true;
             _context.Reviews.Update(review);
             _context.SaveChanges();
         }
 
-        public async Task<IEnumerable<Review>> getReviews(int ProductId)
+        public async Task<IEnumerable<Review>> GetReviews(int ProductId)
         {
-            var reviews = await _context.Reviews.Where(x=>x.ProductId == ProductId).ToListAsync();
+            var reviews = await _context.Reviews.Where(x => x.ProductId == ProductId).ToListAsync();
             return reviews;
         }
 
-        public void updateReview(int id, Review model)
+        public void UpdateReview(int id, Review model)
         {
             if (model.Id != id)
                 throw new Exception("Having trouble");
@@ -46,13 +47,15 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        private Review findReview(int id) { 
+        private Review FindReview(int id)
+        {
             var review = _context.Reviews.SingleOrDefault(x => x.Id == id);
-            if(review == null)
+            if (review == null)
             {
                 throw new Exception("Review not found");
             }
             return review;
         }
+        private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

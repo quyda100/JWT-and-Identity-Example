@@ -23,27 +23,28 @@ namespace auth.Controllers
         [HttpGet]
         public IActionResult getImports()
         {
-            var result = _service.getImports();
-            return Ok(new { status = "success", data = result, message = "Lấy dữ liệu thành công"});
+            var result = _service.GetImports();
+            return Ok(result);
         }
         [HttpGet("{id}")]
-        public IActionResult getImportDetail(int importId)
+        public IActionResult GetImportDetail(int importId)
         {
-            var result = _service.getImportDetail(importId);
-            return Ok(new { status = "success", data = result, message = "Lấy dữ liệu thành công" });
+            var result = _service.GetImportDetail(importId);
+            return Ok(result);
         }
         [HttpPost]
-        public IActionResult addImport(ImportRequest request)
+        public IActionResult AddImport(ImportRequest request)
         {
-            string currenUser = getCurrentUserId();
-            _service.addImport(request, currenUser);
-            _log.saveLog(new Log { UserId = currenUser, Action = "Nhập sản phẩm" });
-            return Ok(new { status = "success", message = "Lưu thành công" });
-        }
-        private string getCurrentUserId()
-        {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            return userId;
+            try
+            {
+                _service.AddImport(request);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

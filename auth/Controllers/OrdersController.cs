@@ -14,11 +14,9 @@ namespace auth.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _service;
-        private readonly ILogService _log;
-        public OrdersController(IOrderService service, ILogService log)
+        public OrdersController(IOrderService service)
         {
             _service = service;
-            _log = log;
         }
 
         [HttpPost("CreateOrder")]
@@ -30,8 +28,7 @@ namespace auth.Controllers
                 if(order == null||!ModelState.IsValid) {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                var userId = GetCurrentUserId();
-                _service.CreateOrder(order, userId);
+                _service.CreateOrder(order);
                 return Ok(order);
             }
             catch (Exception ex)
@@ -53,9 +50,7 @@ namespace auth.Controllers
                 if(order==null ||!ModelState.IsValid) {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                var userId = GetCurrentUserId();
                 _service.UpdateOrder(id, order);
-                _log.saveLog(new Log { UserId = userId, Action = "Cập nhật trạng thái đơn hàng: " + order.Id});
             }
             catch (Exception ex)
             {
@@ -68,8 +63,7 @@ namespace auth.Controllers
         [Authorize(Roles = UserRoles.User)]
         public IActionResult GetOrdersByUserId()
         {
-            var userId = GetCurrentUserId() ;
-            var orders = _service.GetOrdersByUserId(userId);
+            var orders = _service.GetOrdersByUserId();
             return Ok(orders);
         }
         [HttpPost("DeleteOrder")]
@@ -78,23 +72,13 @@ namespace auth.Controllers
         {
             try
             {
-                var userId = GetCurrentUserId();
-                _service.DeleteOrder(id, userId);
+                _service.DeleteOrder(id);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
             return NoContent();
-        }
-        private string GetCurrentUserId()
-        {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            if (userId == null)
-            {
-                throw new Exception("Vui lòng đăng nhập lại");
-            }
-            return userId;
         }
     }
 }
