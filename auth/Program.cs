@@ -22,6 +22,7 @@ builder.Services.AddTransient<IReviewService, ReviewService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 builder.Services.AddTransient<INewService, NewService>();
 builder.Services.AddTransient<ILogService, LogService>();
+builder.Services.AddTransient<IUtilityService, UtilityService>();
 
 builder.Services.AddControllers().AddJsonOptions(option =>
 option.JsonSerializerOptions.PropertyNamingPolicy = null);

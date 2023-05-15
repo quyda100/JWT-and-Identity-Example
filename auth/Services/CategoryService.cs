@@ -10,48 +10,41 @@ namespace auth.Services
         private readonly ApplicationDBContext _context;
 
         public CategoryService(ApplicationDBContext context) { _context = context; }
-        public void addCategory(Category model)
+        public void AddCategory(Category model)
         {
-            try
-            {
-                if (_context.Categories.Any(x => x.Name == model.Name))
-                    throw new Exception(model.Name + " is exist");
-                _context.Categories.Add(model);
-                _context.SaveChanges();
-            }
-            catch (Exception)
-            {
 
-                throw;
-            }
+            if (_context.Categories.Any(x => x.Name == model.Name))
+                throw new Exception(model.Name + " is exist");
+            _context.Categories.Add(model);
+            _context.SaveChanges();
         }
 
-        public void deleteCategory(int id)
+        public void DeleteCategory(int id)
         {
-            var category = getCategory(id);
+            var category = GetCategory(id);
             category.IsDeleted = true;
             _context.Categories.Update(category);
             _context.SaveChanges();
         }
 
-        public async Task<IEnumerable<Category>> getCategories()
+        public List<Category> GetCategories()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = _context.Categories.ToList();
             return categories;
         }
 
-        public void updateCategory(int id, Category model)
+        public void UpdateCategory(int id, Category model)
         {
             if (model.Id != id)
                 throw new Exception("Having trouble");
-            var category = getCategory(id);
+            var category = GetCategory(id);
             if (model.Name != category.Name && _context.Products.Any(pr => pr.Name == model.Name))
                 throw new Exception("Name " + category.Name + " is already taken");
             model.UpdatedAt = DateTime.Now;
             _context.Categories.Update(model);
             _context.SaveChangesAsync();
         }
-        private Category getCategory(int id)
+        private Category GetCategory(int id)
         {
             var category = _context.Categories.SingleOrDefault(x => x.Id == id);
             if (category == null)

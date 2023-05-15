@@ -9,33 +9,26 @@ namespace auth.Services
     {
         private readonly ApplicationDBContext _context;
 
-        public BrandService(ApplicationDBContext context) {
+        public BrandService(ApplicationDBContext context)
+        {
             _context = context;
         }
 
-        public async Task<IEnumerable<Brand>> getBrands()
+        public List<Brand> getBrands()
         {
-            var brands = await _context.Brands.ToListAsync();
+            var brands = _context.Brands.ToList();
             return brands;
         }
 
-        void IBrandService.addBrand(Brand model)
+        public void AddBrand (Brand model)
         {
-            try
-            {
-                if (_context.Brands.Any(x => x.Name == model.Name))
-                    throw new Exception(model.Name + " is exist");
-                _context.Brands.Add(model);
-                _context.SaveChanges();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            if (_context.Brands.Any(x => x.Name == model.Name))
+                throw new Exception(model.Name + " is exist");
+            _context.Brands.Add(model);
+            _context.SaveChanges();
         }
 
-        void IBrandService.deleteBrand(int id)
+        public void DeleteBrand(int id)
         {
             var brand = GetBrand(id);
             brand.IsDeleted = true;
@@ -43,7 +36,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        void IBrandService.updateBrand(int id, Brand model)
+        public void UpdateBrand(int id, Brand model)
         {
             if (model.Id != id)
                 throw new Exception("Having trouble");
