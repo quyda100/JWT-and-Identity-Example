@@ -22,31 +22,79 @@ namespace auth.Controllers
         }
 
         [HttpPost("CreateOrder")]
-        [AllowAnonymous]
+        [Authorize(Roles = UserRoles.User)]
         public IActionResult CreateOrder(OrderRequest order)
         {
-            _service.CreateOrder(order);
-            return Ok(new {status = "success", message = "Tạo hóa đơn thành công" });
+            try
+            {
+                if(order == null||!ModelState.IsValid) {
+                    return BadRequest("Vui lòng nhập đúng thông tin");
+                }
+                var userId = GetCurrentUserId();
+                _service.CreateOrder(order, userId);
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpGet]
-        public IActionResult getListOrders()
+        public IActionResult GetListOrders()
         {
             return Ok(_service.GetOrders());
         }
 
         [HttpPut("{id}")]
-        public IActionResult updateOrder(int id, Order order)
+        public IActionResult UpdateOrder(int id, Order order)
         {
-            _service.UpdateOrder(id, order);
-            return Ok(new { status = "success", message = "Cập nhật thành công" });
+            try
+            {
+                if(order==null ||!ModelState.IsValid) {
+                    return BadRequest("Vui lòng nhập đúng thông tin");
+                }
+                var userId = GetCurrentUserId();
+                _service.UpdateOrder(id, order);
+                _log.saveLog(new Log { UserId = userId, Action = "Cập nhật trạng thái đơn hàng: " + order.Id});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
         }
 
-        [HttpGet("GetOrdersByPhone")]
-        [AllowAnonymous]
-        public IActionResult getOrdersByPhone(string phone)
+        [HttpGet("GetOrdersByUserId")]
+        [Authorize(Roles = UserRoles.User)]
+        public IActionResult GetOrdersByUserId()
         {
-            var orders = _service.GetOrdersByPhone(phone);
-            return Ok(new { status = "success", message = "Lấy dữ liệu thành công", data = orders });
+            var userId = GetCurrentUserId() ;
+            var orders = _service.GetOrdersByUserId(userId);
+            return Ok(orders);
+        }
+        [HttpPost("DeleteOrder")]
+        [Authorize(Roles = UserRoles.User)]
+        public IActionResult DeleteOrder(int id)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                _service.DeleteOrder(id, userId);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
+        private string GetCurrentUserId()
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
+            if (userId == null)
+            {
+                throw new Exception("Vui lòng đăng nhập lại");
+            }
+            return userId;
         }
     }
 }
