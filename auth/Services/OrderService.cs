@@ -98,10 +98,10 @@ namespace auth.Services
 
         public void DeleteOrder(int id, string userId)
         {
-            var order = _context.Orders.FirstOrDefault(o => o.Id == id&&o.UserId == userId);
-            if (order == null)
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id&&o.UserId == userId) ?? throw new Exception("Không tìm thấy hóa đơn");
+            if (order.Status != 0)
             {
-                throw new Exception("Không tìm thấy hóa đơn");
+                throw new Exception("Không thể thực hiện yêu cầu");
             }
             order.Status = -1;
             order.UpdatedAt = DateTime.Now;

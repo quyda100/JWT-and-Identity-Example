@@ -14,7 +14,7 @@ namespace auth.Services
             _context = context;
         }
 
-        public List<Brand> getBrands()
+        public List<Brand> GetBrands()
         {
             var brands = _context.Brands.ToList();
             return brands;
