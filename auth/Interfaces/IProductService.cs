@@ -1,22 +1,25 @@
 ﻿using auth.Model;
+using auth.Model.Request;
+using auth.Model.ViewModel;
 
 namespace auth.Interfaces
 {
     public interface IProductService
     {
-        public Task<IEnumerable<Product>> GetProducts();
-        public Task<IEnumerable<Product>> GetAvailableProducts();
-        public Product getProductById(int id);
-        public void addProduct(Product product);
-        public void removeProduct(int id);
-        public void updateProduct(int id, Product product);
+        public List<ProductViewModel> GetProducts();
+        public List<ProductDetailViewModel> GetProductsDetail();
+        public List<ProductViewModel> GetAvailableProducts();
+        public ProductDetailViewModel GetProductById(int id);
+        public void AddProduct(ProductRequest product, string userId);
+        public void RemoveProduct(int id, string userId);
+        public void UpdateProduct(int id, ProductRequest product, string userId);
 
         //SimilarProduct
-        public Task<List<Product>> getSimilarProduct(int brandId, int caseSize);
-        public List<Product> getProductsByBrand(int brandId);
-        public List<Product> getProductsByCategory(int categoryId);
-        public List<Product> getFeatureProduct();
-        public List<Product> getNewestProducts(int categoryId);
+        public List<Product> GetSimilarProduct(int brandId, int caseSize);
+        public List<Product> GetProductsByBrand(int brandId);
+        public List<Product> GetProductsByCategory(int categoryId);
+        public List<Product> GetFeatureProduct();
+        public List<Product> GetNewestProducts(int categoryId);
     }
 }
 
