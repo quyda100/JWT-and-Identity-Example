@@ -144,10 +144,10 @@ namespace auth.Services
             return await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
         }
 
-        public Task<UserInfo> GetCurrentUser(string id)
+        public Task<UserDTO> GetCurrentUser(string id)
         {
             var user = GetUserById(id);
-            var userInfo = new UserInfo
+            var userInfo = new UserDTO
             {
                 Id = user.Id,
                 Email = user.Email,
@@ -159,7 +159,7 @@ namespace auth.Services
             };
             return Task.FromResult(userInfo);
         }
-        public void UpdateProfile(string id,UserInfo model)
+        public void UpdateProfile(string id,UserDTO model)
         {
             if (!id.Equals(model.Id))
             {

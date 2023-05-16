@@ -10,9 +10,9 @@ namespace auth.Services
     {
         private readonly ApplicationDBContext _context;
         private readonly ILogService _log;
-        private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public NewService(ApplicationDBContext context, ILogService log, HttpContextAccessor httpContextAccessor) { 
+        public NewService(ApplicationDBContext context, ILogService log, IHttpContextAccessor httpContextAccessor) { 
             _context = context;
             _log = log;
             _httpContextAccessor = httpContextAccessor;

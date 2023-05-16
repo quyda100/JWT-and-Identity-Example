@@ -45,7 +45,7 @@ namespace auth.Controllers
             }
         }
         [HttpPost("AddProduct")]
-        public IActionResult Add(ProductRequest product)
+        public IActionResult Add([FromForm] ProductCreateRequest product)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace auth.Controllers
             }
         }
         [HttpPut("{id}")]
-        public IActionResult Update(int id, ProductRequest product)
+        public IActionResult Update(int id, [FromForm] ProductRequest product)
         {
             try
             {
@@ -94,6 +94,10 @@ namespace auth.Controllers
                 return BadRequest(ex.Message);
             }
             return NoContent();
+        }
+        [HttpGet("GetTrashedProducts")]
+        public IActionResult GetTrashedProducts() {
+            return Ok(_service.GetTrashedProducts());
         }
 
         [HttpGet("SimilarProduct")]

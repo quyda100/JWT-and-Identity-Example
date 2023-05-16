@@ -7,7 +7,7 @@ namespace auth.Services
     {
         public byte[] GetImage(string fileName)
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", fileName);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             Byte[] b = File.ReadAllBytes(path);
             return b;
         }
@@ -28,8 +28,14 @@ namespace auth.Services
             {
                 throw new Exception("Vui lòng tải lên đúng định dạng");
             }
-            var fileName = Path.Combine("Products", prefix, Guid.NewGuid().ToString() + fileExtension);
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", fileName);
+            var folder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Products");
+            var fileName = Path.Combine("Uploads","Products", prefix + "_" +Guid.NewGuid().ToString() + fileExtension);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
             using (var stream = File.Create(filePath))
             {
                 file.CopyTo(stream);
@@ -39,29 +45,14 @@ namespace auth.Services
 
         public List<string> UploadImages(List<IFormFile> files, string prefix)
         {
-            if (files.Count > 0)
+            if (files.Count == 0)
             {
                 return null;
             }
-            var acceptExtension = new List<string> { ".jpg", ".jpeg", ".png", ".gif" };
-            List<string> result = new List<string>();
+            List<string> result = new();
             foreach (var file in files)
             {
-                if (file.Length > 10485760)
-                {
-                    throw new Exception("Vui lòng tải lên tập tin < 10MB");
-                }
-                var fileExtension = Path.GetExtension(file.FileName);
-                if (!acceptExtension.Contains(fileExtension))
-                {
-                    throw new Exception("Vui lòng tải lên đúng định dạng");
-                }
-                var fileName = Path.Combine("Products", prefix, Guid.NewGuid().ToString() + fileExtension);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", fileName);
-                using (var stream = File.Create(filePath))
-                {
-                    file.CopyTo(stream);
-                }
+                var fileName = UploadImage(file, prefix);
                 result.Add(fileName);
             }
             return result;
