@@ -1,23 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
 
-namespace auth.Model.ViewModel
+namespace auth.Model.DTO
 {
-
-
-    public class ProductViewModel
+    public class ProductDTO
     {
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public int Price { get; set; }
         public string Image { get; set; }
-        public int BrandId { get; set; }
-        public int CategoryId { get; set; }
-        public int Stock { get; set; }
-    }
-    public class ProductDetailViewModel : ProductViewModel
-    {
         public string Color { get; set; }
         public string CaseMeterial { get; set; }
         public float CaseSize { get; set; }
@@ -27,7 +19,7 @@ namespace auth.Model.ViewModel
         public string Description { get; set; }
         public int Warranty { get; set; }
         public string BrandName { get; set; }
-        public string CatetoryName { get; set; }
+        public string CategoryName { get; set; }
         public string PreviewImages { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set;}

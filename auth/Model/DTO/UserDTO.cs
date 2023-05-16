@@ -2,7 +2,7 @@
 
 namespace auth.Model.ViewModel
 {
-    public class UserInfo
+    public class UserDTO
     {
         public string Id { get; set; }
         public string FullName { get; set; }

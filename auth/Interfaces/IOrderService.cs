@@ -1,4 +1,5 @@
 ﻿using auth.Model;
+using auth.Model.DTO;
 using auth.Model.Request;
 
 namespace auth.Interfaces
@@ -6,10 +7,10 @@ namespace auth.Interfaces
     public interface IOrderService
     {
         public void CreateOrder(OrderRequest order);
-        public List<Order> GetOrders();
-        public List<OrderProduct> GetOrderProducts(int orderId);
-        public void UpdateOrder(int id,Order order);
-        public List<Order> GetOrdersByUserId();
+        public List<OrderDTO> GetOrders();
+        public List<OrderProductDTO> GetOrderProducts(int orderId);
+        public void UpdateOrder(int id,OrderDTO order);
+        public List<OrderDTO> GetOrdersByUserId();
         public void DeleteOrder(int id);
 
     }

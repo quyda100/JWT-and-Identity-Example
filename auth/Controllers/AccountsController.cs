@@ -98,7 +98,7 @@ namespace auth.Controllers
             return Ok(userInfo);
         }
         [HttpPost("UpdateUserInfo")]
-        public IActionResult UpdateUserInfo(UserInfo model)
+        public IActionResult UpdateUserInfo(UserDTO model)
         {
             try
             {

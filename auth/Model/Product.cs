@@ -30,7 +30,7 @@ namespace auth.Model
         public int Warranty { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
         [ForeignKey("Brand")]
         public int BrandId { get; set; }
         [ForeignKey("Category")]
