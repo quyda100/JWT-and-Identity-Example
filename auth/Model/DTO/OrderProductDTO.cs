@@ -8,7 +8,7 @@
         public string ProductCode { get; set; }
         public string ProductImage { get; set; }
         public int Price { get; set; }
-        public int Quanlity { get; set; }
+        public int Quantity { get; set; }
 
     }
 }

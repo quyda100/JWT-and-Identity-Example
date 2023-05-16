@@ -94,6 +94,10 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy hóa đơn");
             }
             order.Status = model.Status;
+            if(order.Status == 1)
+            {
+                UpdateProductSales(order.OrderProducts);
+            }
             order.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật đơn hàng: " + id);
             _context.Orders.Update(order);
@@ -117,7 +121,17 @@ namespace auth.Services
             _context.Orders.Update(order);
             _context.SaveChanges();
         }
-
+        private void UpdateProductSales(List<OrderProduct> orderProducts)
+        {
+            foreach (var item in orderProducts)
+            {
+                var product = _context.Products.FirstOrDefault(p => p.Id == item.ProductId);
+                product.Stock -= item.Quantity;
+                product.Sales += item.Quantity;
+                _context.Products.Update(product);
+            }
+            _context.SaveChanges();
+        }
         private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

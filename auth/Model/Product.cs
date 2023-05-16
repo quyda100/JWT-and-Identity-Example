@@ -13,6 +13,7 @@ namespace auth.Model
         public int Stock { get; set; } = 0;
         public string Image { get; set; }
         public string Color { get; set; }
+        public int Sales { get; set; }
         public string PreviewImages { get; set; }
 
         [DisplayName("Chất liệu vỏ")]
