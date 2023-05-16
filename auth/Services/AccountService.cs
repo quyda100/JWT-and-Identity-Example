@@ -147,9 +147,9 @@ namespace auth.Services
             return await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
         }
 
-        public Task<UserDTO> GetCurrentUser(string id)
+        public Task<UserDTO> GetCurrentUser()
         {
-            var user = GetUserById(id);
+            var user = GetUserById();
             var userInfo = new UserDTO
             {
                 Id = user.Id,

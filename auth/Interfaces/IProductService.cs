@@ -12,13 +12,15 @@ namespace auth.Interfaces
         public void AddProduct(ProductCreateRequest product);
         public void RemoveProduct(int id);
         public void UpdateProduct(int id, ProductRequest product);
+        public ProductDTO GetProductByCode(string code);
 
         //SimilarProduct
-        public List<Product> GetSimilarProduct(int brandId, int caseSize);
-        public List<Product> GetProductsByBrand(int brandId);
-        public List<Product> GetProductsByCategory(int categoryId);
-        public List<Product> GetFeatureProduct();
-        public List<Product> GetNewestProducts(int categoryId);
+        public List<ProductDTO> GetSimilarProduct(int brandId);
+        public List<ProductDTO> GetProductsByBrand(int brandId);
+        public List<ProductDTO> GetProductsByCategory(int categoryId);
+        public List<ProductDTO> GetFeatureProduct();
+        public List<ProductDTO> GetNewestProducts(int categoryId);
+        public List<ProductDTO> GetTrashedProducts();
     }
 }
 

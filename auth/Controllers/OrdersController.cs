@@ -1,5 +1,6 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using auth.Model.Request;
 using auth.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -43,7 +44,7 @@ namespace auth.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateOrder(int id, Order order)
+        public IActionResult UpdateOrder(int id, OrderDTO order)
         {
             try
             {

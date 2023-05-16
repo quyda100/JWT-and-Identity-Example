@@ -31,36 +31,16 @@ namespace auth.Services
             var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
-        public List<ProductDetailViewModel> GetProductsDetail()
+        public List<ProductDTO> GetProductsDetail()
         {
-            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category);
-            var productDeTailDTO = products.Select(p => new ProductDetailViewModel
-            {
-                Id = p.Id,
-                Code = p.Code,
-                Name = p.Name,
-                Price = p.Price,
-                Image = p.Image,
-                Color = p.Color,
-                CaseMeterial = p.CaseMeterial,
-                CaseSize = p.CaseSize,
-                GlassMaterial = p.GlassMaterial,
-                Movement = p.Movement,
-                WaterResistant = p.WaterResistant,
-                Description = p.Description,
-                Warranty = p.Warranty,
-                BrandName = p.Brand.Name,
-                CatetoryName = p.Category.Name,
-                PreviewImages = p.PreviewImages,
-            }).ToList();
-            return productDeTailDTO;
+            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
+            return products;
         }
 
         public List<ProductDTO> GetAvailableProducts()
         {
-            var products = _context.Products.Where(product => product.Stock > 0).Include(p => p.Brand).Include(p => p.Category).ToList();
-            var productsDTO = products.Select(p => new ProductDTO { Id = p.Id, Code = p.Code, Name = p.Name, Price = p.Price, Image = p.Image }).ToList();
-            return productsDTO;
+            var products = _context.Products.Where(product => product.Stock > 0).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            return products;
         }
         public void AddProduct(ProductCreateRequest productDTO)
         {
@@ -153,9 +133,9 @@ namespace auth.Services
             }
             return product;
         }
-        public List<ProductDTO> GetSimilarProduct(int brandId, int caseSize)
+        public List<ProductDTO> GetSimilarProduct(int brandId)
         {
-            var products = _context.Products.Where(p => p.BrandId == brandId && p.CaseSize == caseSize).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.BrandId == brandId).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
             if (products == null)
             {
                 throw new Exception("Product not found");
@@ -214,6 +194,12 @@ namespace auth.Services
         {
             var products = _context.Products.Where(p => p.IsDeleted == false).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
+        }
+
+        public ProductDTO GetProductByCode(string code)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.Code == code);
+            return _mapper.Map<ProductDTO>(product);
         }
     }
 }
