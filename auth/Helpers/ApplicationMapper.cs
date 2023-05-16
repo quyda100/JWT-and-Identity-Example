@@ -1,5 +1,5 @@
 ﻿using auth.Model;
-using auth.Model.ViewModel;
+using auth.Model.DTO;
 using AutoMapper;
 
 namespace auth.Helpers
@@ -9,6 +9,7 @@ namespace auth.Helpers
         public ApplicationMapper()
         {
             CreateMap<Product, ProductDTO>();
+            CreateMap<Order, OrderDTO>();
         }
     }
 }

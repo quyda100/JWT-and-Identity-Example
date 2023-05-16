@@ -1,6 +1,7 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using auth.Model.Request;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,14 @@ namespace auth.Services
         private readonly ApplicationDBContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogService _log;
+        private readonly IMapper _mapper;
 
-        public OrderService(ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, ILogService log)
+        public OrderService(ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, ILogService log, IMapper mapper)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _log = log;
+            _mapper = mapper;
         }
 
         public void CreateOrder(OrderRequest model)
@@ -69,35 +72,36 @@ namespace auth.Services
             return orderProducts;
         }
 
-        public List<Order> GetOrders()
+        public List<OrderDTO> GetOrders()
         {
-           var orders = _context.Orders.ToList();
+           var orders = _context.Orders.Select(o=>_mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
-        public List<OrderProduct> GetOrderProducts(int orderId)
+        public List<OrderProductDTO> GetOrderProducts(int orderId)
         {
-            var orderProducts = _context.OrderProducts.Where(o=>o.OrderId==orderId).ToList();
+            var orderProducts = _context.OrderProducts.Where(o=>o.OrderId==orderId).Include(o=>o.Product).Select(o=>_mapper.Map<OrderProductDTO>(o)).ToList();
             return orderProducts;
         }
 
-        public void UpdateOrder(int id, Order order)
+        public void UpdateOrder(int id, OrderDTO model)
         {
-            if (id != order.Id)
+            if (id != model.Id)
                 throw new Exception("Having a trouble");
-            var Order = _context.Orders.FirstOrDefault(o => o.Id == id);
-            if (Order == null)
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            if (order == null)
             {
                 throw new Exception("Không tìm thấy hóa đơn");
             }
+            order.Status = model.Status;
             order.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật đơn hàng: " + id);
             _context.Orders.Update(order);
         }
 
-        public List<Order> GetOrdersByUserId()
+        public List<OrderDTO> GetOrdersByUserId()
         {
-            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o=>o.OrderProducts).Include(o=>o.User).ToList();
+            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o=>o.OrderProducts).Include(o=>o.User).Select(o=>_mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 

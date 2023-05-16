@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
 
-namespace auth.Model.ViewModel
+namespace auth.Model.DTO
 {
     public class ProductDTO
     {

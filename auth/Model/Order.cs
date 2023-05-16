@@ -7,7 +7,7 @@
         public string CustomerName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
-        public int Total { get; set; }
+        public long Total { get; set; }
         public int Status { get; set; } = 0;
         public string PaymentMethod { get; set; }
         public DateTime PaymentTime { get; set; }

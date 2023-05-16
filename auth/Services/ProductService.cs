@@ -2,7 +2,7 @@
 using auth.Interfaces;
 using auth.Model;
 using auth.Model.Request;
-using auth.Model.ViewModel;
+using auth.Model.DTO;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

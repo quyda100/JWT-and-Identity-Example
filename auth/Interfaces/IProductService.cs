@@ -1,6 +1,6 @@
 ﻿using auth.Model;
 using auth.Model.Request;
-using auth.Model.ViewModel;
+using auth.Model.DTO;
 
 namespace auth.Interfaces
 {
