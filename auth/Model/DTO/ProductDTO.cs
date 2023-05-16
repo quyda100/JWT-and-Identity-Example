@@ -11,6 +11,7 @@ namespace auth.Model.DTO
         public int Price { get; set; }
         public string Image { get; set; }
         public string Color { get; set; }
+        public int Stock { get; set; }
         public string CaseMeterial { get; set; }
         public float CaseSize { get; set; }
         public string GlassMaterial { get; set; }
