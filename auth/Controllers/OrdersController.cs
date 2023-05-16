@@ -11,7 +11,6 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = UserRoles.Admin)]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _service;
@@ -37,12 +36,13 @@ namespace auth.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
         public IActionResult GetListOrders()
         {
             return Ok(_service.GetOrders());
         }
-
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("{id}")]
         public IActionResult UpdateOrder(int id, OrderDTO order)
         {
