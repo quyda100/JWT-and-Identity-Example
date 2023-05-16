@@ -53,7 +53,7 @@ namespace auth.Controllers
         {
             try
             {
-                _service.deleteReview(id);
+                _service.DeleteReview(id);
             }
             catch (Exception)
             {

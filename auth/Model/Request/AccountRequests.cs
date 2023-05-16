@@ -17,7 +17,7 @@ namespace auth.Model.Request
         [Required]
         public string Password { get; set; }
         [Required]
-        public string ComfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; }
         [Required]
         public string FullName { get; set; }
         [Required]

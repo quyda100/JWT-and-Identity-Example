@@ -27,7 +27,7 @@ namespace auth.Services
         public List<ProductViewModel> GetProducts()
         {
             var products = _context.Products.Include(p => p.Brand).Include(p => p.Category);
-            var productsDTO = products.Select(p => new ProductViewModel { Id = p.Id, Code = p.Code, Name = p.Name, Price = p.Price, Image = p.Image }).ToList();
+            var productsDTO = products.Select(p => new ProductViewModel { Id = p.Id, Code = p.Code, Name = p.Name, Price = p.Price, Image = p.Image, BrandId = p.BrandId, CategoryId = p.CategoryId, Stock =p.Stock }).ToList();
             return productsDTO;
         }
         public List<ProductDetailViewModel> GetProductsDetail()
@@ -40,6 +40,7 @@ namespace auth.Services
                 Name = p.Name,
                 Price = p.Price,
                 Image = p.Image,
+                Stock = p.Stock,
                 Color = p.Color,
                 CaseMeterial = p.CaseMeterial,
                 CaseSize = p.CaseSize,
@@ -51,6 +52,8 @@ namespace auth.Services
                 BrandName = p.Brand.Name,
                 CatetoryName = p.Category.Name,
                 PreviewImages = p.PreviewImages,
+                BrandId = p.BrandId,
+                CategoryId = p.CategoryId
             }).ToList();
             return productDeTailDTO;
         }
@@ -58,7 +61,7 @@ namespace auth.Services
         public List<ProductViewModel> GetAvailableProducts()
         {
             var products = _context.Products.Where(product => product.Stock > 0).Include(p => p.Brand).Include(p => p.Category).ToList();
-            var productsDTO = products.Select(p => new ProductViewModel { Id = p.Id, Code = p.Code, Name = p.Name, Price = p.Price, Image = p.Image }).ToList();
+            var productsDTO = products.Select(p => new ProductViewModel { Id = p.Id, Code = p.Code, Name = p.Name, Price = p.Price, Stock = p.Stock, Image = p.Image, BrandId = p.BrandId, CategoryId = p.CategoryId }).ToList();
             return productsDTO;
         }
         public void AddProduct(ProductRequest productDTO)
@@ -119,6 +122,7 @@ namespace auth.Services
                 Price = p.Price,
                 Image = p.Image,
                 Color = p.Color,
+                Stock = product.Stock,
                 PreviewImages = p.PreviewImages,
                 CaseMeterial = p.CaseMeterial,
                 CaseSize = p.CaseSize,
@@ -134,17 +138,22 @@ namespace auth.Services
             _context.Products.Update(productUpdate);
             _context.SaveChangesAsync();
         }
-        public ProductDetailViewModel GetProductById(int id)
+        public ProductDetailViewModel GetProductByCode(string code)
         {
-            var product = GetProduct(id);
+            var product = _context.Products.Include(p => p.Brand).Include(p => p.Category).FirstOrDefault(p => p.Code == code);
+            if(product == null)
+            {
+                throw new Exception("Không tìm thấy sản phẩm: " + code);
+            }
             var productDTO = new ProductDetailViewModel
             {
-                Id = id,
+                Id = product.Id,
                 Code = product.Code,
                 Name = product.Name,
                 Price = product.Price,
                 Image = product.Image,
                 Color = product.Color,
+                Stock = product.Stock,
                 CaseMeterial = product.CaseMeterial,
                 CaseSize = product.CaseSize,
                 GlassMaterial = product.GlassMaterial,
@@ -152,6 +161,8 @@ namespace auth.Services
                 WaterResistant = product.WaterResistant,
                 Description = product.Description,
                 Warranty = product.Warranty,
+                BrandId = product.BrandId,
+                CategoryId = product.CategoryId,
                 BrandName = product.Brand.Name,
                 CatetoryName = product.Category.Name,
                 PreviewImages = product.PreviewImages,
@@ -168,9 +179,9 @@ namespace auth.Services
             }
             return product;
         }
-        public List<Product> GetSimilarProduct(int brandId, int caseSize)
+        public List<Product> GetSimilarProduct(int brandId)
         {
-            var products = _context.Products.Where(p => p.BrandId == brandId && p.CaseSize == caseSize).ToList();
+            var products = _context.Products.Where(p => p.BrandId == brandId).ToList();
             if (products == null)
             {
                 throw new Exception("Product not found");

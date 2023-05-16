@@ -22,14 +22,16 @@ namespace auth.Services
         private readonly IConfiguration _configuration;
         private readonly ApplicationDBContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(UserManager<User> userManager,RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context)
+        public AccountService(UserManager<User> userManager,RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _context = context;
             _roleManager = roleManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<string> LoginAsync(LoginRequest model)
@@ -63,6 +65,7 @@ namespace auth.Services
             }
             var user = new User
             {
+                UserName = model.Email,
                 Email = model.Email,
                 PhoneNumber = model.Phone,
                 FullName = model.FullName,
@@ -130,9 +133,9 @@ namespace auth.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<IdentityResult> ChangePassword(string Id, ChangepasswordRequest model)
+        public async Task<IdentityResult> ChangePassword(ChangepasswordRequest model)
         {
-            if(Id != model.Id)
+            if(GetUserId() != model.Id)
             {
                 throw new Exception("Có lỗi xảy ra");
             }
@@ -144,9 +147,9 @@ namespace auth.Services
             return await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
         }
 
-        public Task<UserInfo> GetCurrentUser(string id)
+        public Task<UserInfo> GetCurrentUser()
         {
-            var user = GetUserById(id);
+            var user = GetUserById();
             var userInfo = new UserInfo
             {
                 Id = user.Id,
@@ -159,13 +162,13 @@ namespace auth.Services
             };
             return Task.FromResult(userInfo);
         }
-        public void UpdateProfile(string id,UserInfo model)
+        public void UpdateProfile(UserInfo model)
         {
-            if (!id.Equals(model.Id))
+            if (!GetUserId().Equals(model.Id))
             {
                 throw new Exception("Không thể lưu thông tin");
             }
-            var user = GetUserById(id);
+            var user = GetUserById();
             if (user.Email != model.Email && _context.Users.Any(u => u.FullName == model.FullName))
             {
                 throw new Exception("Email này đã được sử dụng");
@@ -179,15 +182,15 @@ namespace auth.Services
             _context.Users.Update(user);
             _context.SaveChanges();
         }
-        public async void ChangeAvatar(string id, IFormFile file)
+        public async void ChangeAvatar(IFormFile file)
         {
             List<string> extensionAllowed = new List<string> { ".png",".jpg","jpeg" };
-            var user = GetUserById(id);
+            var user = GetUserById();
             var fileExtension = Path.GetExtension(file.FileName);
             if (!extensionAllowed.Contains(fileExtension)){
                 throw new Exception("Vui lòng tải lên đúng định dạng");
             }
-            var fileName = Path.Combine("Uploads", "Avatar", id + fileExtension);
+            var fileName = Path.Combine("Uploads", "Avatar", GetUserId() + fileExtension);
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             using (var fs = File.Create(filePath))
             {
@@ -196,14 +199,15 @@ namespace auth.Services
             user.Avatar = fileName;
             await _userManager.UpdateAsync(user);
         }
-        private User GetUserById(string id)
+        private User GetUserById()
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            var user = _context.Users.FirstOrDefault(u => u.Id == GetUserId());
             if (user == null)
             {
                 throw new Exception("User not found");
             }
             return user;
         }
+        private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

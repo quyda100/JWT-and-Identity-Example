@@ -29,7 +29,7 @@ namespace auth.Controllers
                 var result = await _service.RegisterAsync(model);
                 if (!result.Succeeded)
                 {
-                    return StatusCode(StatusCodes.Status400BadRequest, result.Errors);
+                    return StatusCode(StatusCodes.Status400BadRequest, "Vui lòng nhập đúng yêu cầu!");
                 }
                 return NoContent();
             }
@@ -79,12 +79,7 @@ namespace auth.Controllers
         {
             try
             {
-                var userId = getCurrentUserId();
-                if (userId == null)
-                {
-                    return BadRequest("Bạn chưa đăng nhập");
-                }
-                var result = await _service.ChangePassword(userId,model);
+                var result = await _service.ChangePassword(model);
                 if (!result.Succeeded)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
@@ -99,7 +94,7 @@ namespace auth.Controllers
         [HttpGet("GetCurrentUserInfo")]
         public async Task<IActionResult> GetUserInfo()
         {
-            var userInfo = await _service.GetCurrentUser(getCurrentUserId());
+            var userInfo = await _service.GetCurrentUser();
             return Ok(userInfo);
         }
         [HttpPost("UpdateUserInfo")]
@@ -111,12 +106,7 @@ namespace auth.Controllers
                 {
                     return BadRequest("Vui lòng nhập đúng dữ liệu");
                 }
-                var userId = getCurrentUserId();
-                if(userId == null)
-                {
-                    return BadRequest("Bạn chưa đăng nhập");
-                }
-                _service.UpdateProfile(userId, model);
+                _service.UpdateProfile(model);
             }
             catch (Exception ex)
             {
@@ -133,23 +123,13 @@ namespace auth.Controllers
                 {
                     return BadRequest("Vui lòng tải lên file");
                 }
-                var userId = getCurrentUserId();
-                if (userId == null)
-                {
-                    return BadRequest("Bạn chưa đăng nhập");
-                }
-                _service.ChangeAvatar(userId, file);
+                _service.ChangeAvatar(file);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
             return NoContent();
-        }
-        private string getCurrentUserId()
-        {
-            var userEmail = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            return userEmail;
         }
     }
 }

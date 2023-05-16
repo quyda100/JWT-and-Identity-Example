@@ -14,10 +14,10 @@ namespace auth.Services
     public class OrderService: IOrderService
     {
         private readonly ApplicationDBContext _context;
-        private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogService _log;
 
-        public OrderService(ApplicationDBContext context, HttpContextAccessor httpContextAccessor, ILogService log)
+        public OrderService(ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, ILogService log)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;

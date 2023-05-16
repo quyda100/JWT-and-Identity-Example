@@ -29,13 +29,13 @@ namespace auth.Controllers
         {
             return Ok(_service.GetAvailableProducts());
         }
-        [HttpGet("{id}")]
+        [HttpGet("{code}")]
         [AllowAnonymous]
-        public IActionResult GetProductById(int id)
+        public IActionResult GetProductByCode(string code)
         {
             try
             {
-                var product = _service.GetProductById(id);
+                var product = _service.GetProductByCode(code);
                 return Ok(product);
             }
             catch (Exception ex)
@@ -96,11 +96,11 @@ namespace auth.Controllers
             return NoContent();
         }
 
-        [HttpGet("SimilarProduct")]
+        [HttpGet("SimilarProduct/{brandId}")]
         [AllowAnonymous]
-        public  IActionResult GetSimilarProduct(int brandId, int caseSize)
+        public  IActionResult GetSimilarProduct(int brandId)
         {
-            var product =  _service.GetSimilarProduct(brandId, caseSize);
+            var product =  _service.GetSimilarProduct(brandId);
             return Ok(product);
         }
         [HttpGet("GetProductsByBrand")]
