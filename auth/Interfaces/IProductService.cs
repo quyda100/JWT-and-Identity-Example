@@ -15,7 +15,7 @@ namespace auth.Interfaces
         public ProductDTO GetProductByCode(string code);
 
         //SimilarProduct
-        public List<ProductDTO> GetSimilarProduct(int brandId);
+        public List<ProductDTO> GetSimilarProduct(string brandName);
         public List<ProductDTO> GetProductsByBrand(int brandId);
         public List<ProductDTO> GetProductsByCategory(int categoryId);
         public List<ProductDTO> GetFeatureProduct();

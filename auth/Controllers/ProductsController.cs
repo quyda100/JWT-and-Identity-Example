@@ -100,11 +100,11 @@ namespace auth.Controllers
             return Ok(_service.GetTrashedProducts());
         }
 
-        [HttpGet("SimilarProduct/{brandId}")]
+        [HttpGet("SimilarProduct/{brandName}")]
         [AllowAnonymous]
-        public  IActionResult GetSimilarProduct(int brandId)
+        public  IActionResult GetSimilarProduct(string brandName)
         {
-            var product =  _service.GetSimilarProduct(brandId);
+            var product =  _service.GetSimilarProduct(brandName);
             return Ok(product);
         }
         [HttpGet("GetProductsByBrand")]

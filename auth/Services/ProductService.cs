@@ -133,9 +133,9 @@ namespace auth.Services
             }
             return product;
         }
-        public List<ProductDTO> GetSimilarProduct(int brandId)
+        public List<ProductDTO> GetSimilarProduct(string brandName)
         {
-            var products = _context.Products.Where(p => p.BrandId == brandId).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.Brand.Name == brandName).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
             if (products == null)
             {
                 throw new Exception("Product not found");
