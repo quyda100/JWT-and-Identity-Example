@@ -10,7 +10,7 @@ namespace auth.Model
         public string Code { get; set; }
         public string Name { get; set; }
         public int Price { get; set; }
-        public int Stock { get;set; }
+        public int Stock { get; set; } = 0;
         public string Image { get; set; }
         public string Color { get; set; }
         public string PreviewImages { get; set; }
@@ -30,7 +30,7 @@ namespace auth.Model
         public int Warranty { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
         [ForeignKey("Brand")]
         public int BrandId { get; set; }
         [ForeignKey("Category")]

@@ -4,10 +4,10 @@ namespace auth.Interfaces
 {
     public interface INewService
     {
-        public Task<IEnumerable<New>> getNews();
-        public New getNew(int id);
-        public void addNew(New model);
-        public void updateNew(int id, New model);
-        public void deleteNew(int id);
+        public Task<IEnumerable<New>> GetNews();
+        public New GetNew(int id);
+        public void AddNew(New model);
+        public void UpdateNew(int id, New model);
+        public void DeleteNew(int id);
     }
 }

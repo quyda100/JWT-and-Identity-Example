@@ -15,28 +15,52 @@ namespace auth.Controllers
             _service = service;
         }
         [HttpGet("getReviews")]
-        public IActionResult getReview(int id)
+        public IActionResult GetReview(int id)
         {
-            var reviews = _service.getReviews(id);
-            return Ok(new{ status = "success", data = reviews, message = "Lấy dữ liệu thành công" });
+            var reviews = _service.GetReviews(id);
+            return Ok(reviews);
         }
         [HttpPost("addReview")]
-        public IActionResult addReview(Review Review)
+        public IActionResult AddReview(Review review)
         {
-            _service.addReview(Review);
-            return Ok(new{ status = "success", message = "Thêm review thành công" });
+            try
+            {
+                _service.AddReview(review);
+                return Ok(review);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
         [HttpPost("updateReview")]
-        public IActionResult updateReview(int id, Review Review)
+        public IActionResult UpdateReview(int id, Review Review)
         {
-            _service.updateReview(id, Review);
-            return Ok(new{ status = "success", message = "Cập nhật review thành công" });
+            try
+            {
+                _service.UpdateReview(id, Review);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return NoContent();
         }
         [HttpPost("deleteReview")]
         public IActionResult deleteReview(int id)
         {
-            _service.deleteReview(id);
-            return Ok(new{ status = "success", message = "Xóa review thành công" });
+            try
+            {
+                _service.DeleteReview(id);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return NoContent();
         }
     }
 }

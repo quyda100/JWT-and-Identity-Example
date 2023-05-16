@@ -1,5 +1,6 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using auth.Model.Request;
 using auth.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -10,43 +11,75 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = UserRoles.Admin)]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _service;
-        private readonly ILogService _log;
-        public OrdersController(IOrderService service, ILogService log)
+        public OrdersController(IOrderService service)
         {
             _service = service;
-            _log = log;
         }
 
         [HttpPost("CreateOrder")]
-        [AllowAnonymous]
+        [Authorize(Roles = UserRoles.User)]
         public IActionResult CreateOrder(OrderRequest order)
         {
-            _service.CreateOrder(order);
-            return Ok(new {status = "success", message = "Tạo hóa đơn thành công" });
+            try
+            {
+                if(order == null||!ModelState.IsValid) {
+                    return BadRequest("Vui lòng nhập đúng thông tin");
+                }
+                _service.CreateOrder(order);
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
-        public IActionResult getListOrders()
+        public IActionResult GetListOrders()
         {
             return Ok(_service.GetOrders());
         }
-
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("{id}")]
-        public IActionResult updateOrder(int id, Order order)
+        public IActionResult UpdateOrder(int id, OrderDTO order)
         {
-            _service.UpdateOrder(id, order);
-            return Ok(new { status = "success", message = "Cập nhật thành công" });
+            try
+            {
+                if(order==null ||!ModelState.IsValid) {
+                    return BadRequest("Vui lòng nhập đúng thông tin");
+                }
+                _service.UpdateOrder(id, order);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
         }
 
-        [HttpGet("GetOrdersByPhone")]
-        [AllowAnonymous]
-        public IActionResult getOrdersByPhone(string phone)
+        [HttpGet("GetOrdersByUserId")]
+        [Authorize(Roles = UserRoles.User)]
+        public IActionResult GetOrdersByUserId()
         {
-            var orders = _service.GetOrdersByPhone(phone);
-            return Ok(new { status = "success", message = "Lấy dữ liệu thành công", data = orders });
+            var orders = _service.GetOrdersByUserId();
+            return Ok(orders);
+        }
+        [HttpPost("DeleteOrder")]
+        [Authorize(Roles = UserRoles.User)]
+        public IActionResult DeleteOrder(int id)
+        {
+            try
+            {
+                _service.DeleteOrder(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
         }
     }
 }

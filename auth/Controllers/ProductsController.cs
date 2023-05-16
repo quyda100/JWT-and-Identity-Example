@@ -1,5 +1,6 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using auth.Model.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,86 +19,114 @@ namespace auth.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllProducts()
+        public IActionResult GetAllProducts()
         {
-            try
-            {
-                return Ok(await _service.GetProducts());
-            }
-            catch
-            {
-
-                return BadRequest();
-            }
+           return Ok(_service.GetProducts());
         }
         [HttpGet("GetAvailableProducts")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAvailableProducts()
+        public IActionResult GetAvailableProducts()
+        {
+            return Ok(_service.GetAvailableProducts());
+        }
+        [HttpGet("{code}")]
+        [AllowAnonymous]
+        public IActionResult GetProductByCode(string code)
         {
             try
             {
-                return Ok(await _service.GetAvailableProducts());
+                var product = _service.GetProductByCode(code);
+                return Ok(product);
             }
-            catch
+            catch (Exception ex)
             {
 
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
-        [HttpGet("{id}")]
-        [AllowAnonymous]
-        public IActionResult GetProductById(int id)
-        {
-            var product = _service.getProductById(id);
-            return Ok(product);
-        }
         [HttpPost("AddProduct")]
-        public IActionResult Add(Product product)
+        public IActionResult Add([FromForm] ProductCreateRequest product)
         {
-            _service.addProduct(product);
-            return Ok(new {message = "Thêm sản phẩm thành công"});
+            try
+            {
+                if(!ModelState.IsValid || product == null)
+                {
+                    return BadRequest("Vui lòng nhập đúng thông tin");
+                }
+                _service.AddProduct(product);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut("{id}")]
-        public IActionResult Update(int id, Product product)
+        public IActionResult Update(int id, [FromForm] ProductRequest product)
         {
-            _service.updateProduct(id, product);
-            return Ok(new { message = "Cập nhật sản phẩm thành công" });
+            try
+            {
+                if (!ModelState.IsValid || product == null)
+                {
+                    return BadRequest("Vui lòng nhập đúng thông tin");
+                }
+                _service.UpdateProduct(id, product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _service.removeProduct(id);
-            return Ok(new { message = "Xóa sản phẩm thành công" });
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Vui lòng nhập đúng thông tin");
+                }
+                _service.RemoveProduct(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
+        [HttpGet("GetTrashedProducts")]
+        public IActionResult GetTrashedProducts() {
+            return Ok(_service.GetTrashedProducts());
         }
 
-        [HttpGet("SimilarProduct")]
+        [HttpGet("SimilarProduct/{brandName}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSimilarProduct(int brandId, int caseSize)
+        public  IActionResult GetSimilarProduct(string brandName)
         {
-            var product = await _service.getSimilarProduct(brandId, caseSize);
-
+            var product =  _service.GetSimilarProduct(brandName);
             return Ok(product);
         }
         [HttpGet("GetProductsByBrand")]
         [AllowAnonymous]
         public IActionResult GetProductsByBrand(int brandId)
         {
-            var products = _service.getProductsByBrand(brandId);
-            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
+            var products = _service.GetProductsByBrand(brandId);
+            return Ok(products);
         }
         [HttpGet("GetProductsByCategory")]
         [AllowAnonymous]
         public IActionResult GetProductsByCategory(int categoryId)
         {
-            var products = _service.getProductsByCategory(categoryId);
-            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
+            var products = _service.GetProductsByCategory(categoryId);
+            return Ok(products);
         }
         [HttpGet("GetNewestProduct")]
         [AllowAnonymous]
         public IActionResult GetNewstProduct(int category)
         {
-            var products = _service.getNewestProducts(category);
-            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
+            var products = _service.GetNewestProducts(category);
+            return Ok(products);
         }
     }
 }

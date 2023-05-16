@@ -4,9 +4,9 @@ namespace auth.Interfaces
 {
     public interface IReviewService
     {
-        public Task<IEnumerable<Review>> getReviews(int ProductId);
-        public void addReview(Review model);
-        public void updateReview(int id, Review model);
-        public void deleteReview(int id);
+        public List<Review> GetReviews(int ProductId);
+        public void AddReview(Review model);
+        public void UpdateReview(int id, Review model);
+        public void DeleteReview(int id);
     }
 }

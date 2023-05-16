@@ -12,60 +12,58 @@ namespace auth.Controllers
     public class NewsController : ControllerBase
     {
         private readonly INewService _service;
-        private readonly ILogService _log;
 
-        public NewsController(INewService service, ILogService log)
+        public NewsController(INewService service)
         {
             _service = service;
-            _log = log;
         }
         [HttpGet("getNews")]
         [AllowAnonymous]
-        public IActionResult getNews()
+        public IActionResult GetNews()
         {
-            var news = _service.getNews();
-            return Ok(new
-            {
-                status = "success",
-                data = news,
-                message = "Thành công"
-            }
-            );
+            var news = _service.GetNews();
+            return Ok(news);
         }
         [HttpPost("addNew")]
-        public IActionResult addNew(New New)
+        public IActionResult AddNew(New New)
         {
-            _service.addNew(New);
-            _log.saveLog(new Log{
-                UserId = getCurrentUserId(),
-                Action = "Created new " + New.Title
-            });
-            return Ok(new { status = "success", message = "Tạo tin tức thành công" });
+            try
+            {
+                _service.AddNew(New);
+                return Ok(New);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost("updateNew")]
-        public IActionResult updateNew(int id, New New)
+        public IActionResult UpdateNew(int id, New New)
         {
-            _service.updateNew(id, New);
-            _log.saveLog(new Log{
-                UserId = getCurrentUserId(),
-                Action = "Updated new " + New.Title
-            });
-            return Ok(new { status = "success", message = "Thành công" });
+            try
+            {
+                _service.UpdateNew(id, New);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return NoContent();
         }
         [HttpPost("deleteNew")]
-        public IActionResult deleteNew(int id)
+        public IActionResult DeleteNew(int id)
         {
-            _service.deleteNew(id);
-            _log.saveLog(new Log{
-                UserId = getCurrentUserId(),
-                Action = "Deleted new " + id
-            });
-            return Ok(new { status = "success", message = "Thành công" });
-        }
+            try
+            {
+                _service.DeleteNew(id);
+            }
+            catch (Exception)
+            {
 
-        private string getCurrentUserId(){
-            var userId = HttpContext.User.Claims.FirstOrDefault(c=>c.Type == "UserId").Value;
-            return userId;
+                throw;
+            }
+            return NoContent();
         }
     }
 }

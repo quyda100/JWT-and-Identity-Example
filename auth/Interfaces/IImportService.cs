@@ -5,9 +5,8 @@ namespace auth.Interfaces
 {
     public interface IImportService
     {
-        public List<Import> getImports();
-        public List<ImportDetail> getImportDetail(int id);
-
-        public void addImport(ImportRequest model, string userId);
+        public List<Import> GetImports();
+        public List<ImportDetail> GetImportDetail(int id);
+        public void AddImport(ImportRequest model);
     }
 }

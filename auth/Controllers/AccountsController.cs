@@ -1,5 +1,6 @@
 ﻿using auth.Interfaces;
 using auth.Model.Request;
+using auth.Model.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,24 +24,38 @@ namespace auth.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterRequest model)
         {
-            var result = await _service.RegisterAsync(model);
-            if (!result.Succeeded)
+            try
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng ký thất bại" });
+                var result = await _service.RegisterAsync(model);
+                if (!result.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "Vui lòng nhập đúng yêu cầu!");
+                }
+                return NoContent();
             }
-            return Ok(new { message = "Đăng ký thành công" });
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost]
         [Route("RegisterAdmin")]
         [AllowAnonymous]
         public async Task<IActionResult> RegisterAdmin(RegisterRequest model)
         {
-            var result = await _service.RegisterAdminAsync(model);
-            if (!result.Succeeded)
+            try
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng ký thất bại" });
+                var result = await _service.RegisterAdminAsync(model);
+                if (!result.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng ký thất bại" });
+                }
+                return Ok(new { message = "Đăng ký thành công" });
             }
-            return Ok(new { message = "Đăng ký thành công" });
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -49,29 +64,72 @@ namespace auth.Controllers
         
         public async Task<IActionResult> Login(LoginRequest model)
         {
-            var result = await _service.LoginAsync(model);
-            if (string.IsNullOrEmpty(result))
+            try
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đăng nhập thất bại" });
+                var result = await _service.LoginAsync(model);
+                return Ok(result);
             }
-            return Ok(new
+            catch (Exception ex)
             {
-                message = "Đăng nhập thành công",
-                token = result
-            });
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost("Changepassword")]
         public async Task<IActionResult> ChangePassword (ChangepasswordRequest model)
         {
-            var result = await _service.ChangePassword(model);
-            if (!result.Succeeded)
+            try
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đổi mật khẩu thất bại", data = result.Errors });
+                var result = await _service.ChangePassword(model);
+                if (!result.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+                }
             }
-            return Ok(new
+            catch (Exception ex)
             {
-                message = "Đổi mật khẩu thành công"
-            });
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
+        [HttpGet("GetCurrentUserInfo")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            var userInfo = await _service.GetCurrentUser();
+            return Ok(userInfo);
+        }
+        [HttpPost("UpdateUserInfo")]
+        public IActionResult UpdateUserInfo(UserDTO model)
+        {
+            try
+            {
+                if(model == null || !ModelState.IsValid)
+                {
+                    return BadRequest("Vui lòng nhập đúng dữ liệu");
+                }
+                _service.UpdateProfile(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
+        [HttpPost("UpdateAvatar")]
+        public IActionResult UpdateAvatar(IFormFile file)
+        {
+            try
+            {
+                if (file == null || !ModelState.IsValid)
+                {
+                    return BadRequest("Vui lòng tải lên file");
+                }
+                _service.ChangeAvatar(file);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
         }
     }
 }
