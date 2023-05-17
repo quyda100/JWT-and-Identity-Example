@@ -1,5 +1,6 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using auth.Model.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,68 +25,56 @@ namespace auth.Controllers
         }
         [HttpGet("GetAvailableProducts")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAvailableProducts()
+        public IActionResult GetAvailableProducts()
+        {
+            return Ok(_service.GetAvailableProducts());
+        }
+        [HttpGet("{code}")]
+        [AllowAnonymous]
+        public IActionResult GetProductByCode(string code)
         {
             try
             {
-                return Ok(await _service.GetAvailableProducts());
+                var product = _service.GetProductByCode(code);
+                return Ok(product);
             }
-            catch
+            catch (Exception ex)
             {
 
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
-        }
-        [HttpGet("{id}")]
-        [AllowAnonymous]
-        public IActionResult GetProductById(int id)
-        {
-            var product = _service.getProductById(id);
-            return Ok(product);
         }
         [HttpPost("AddProduct")]
-        public IActionResult Add(Product product)
+        public IActionResult Add([FromForm] ProductCreateRequest product)
         {
             try
             {
-                if(product == null || !ModelState.IsValid) {
-                    return BadRequest("Lỗi: Data rỗng");
-                }
-                var isExist = _service.checkExist(product.Id);
-                if (isExist)
+                if(!ModelState.IsValid || product == null)
                 {
-                    return BadRequest(product.Id + " đã tồn tại!");
+                    return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                _service.addProduct(product);
+                _service.AddProduct(product);
+                return Ok(product);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                return BadRequest("Không thể tạo sản phẩm");
+                return BadRequest(ex.Message);
             }
-            return Ok("Đã tạo thành công: "+ product.Name);
-           
         }
-        [HttpPut]
-        public IActionResult Update(Product product)
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromForm] ProductRequest product)
         {
             try
             {
-                if (product == null || !ModelState.IsValid)
+                if (!ModelState.IsValid || product == null)
                 {
-                    return BadRequest("Lỗi: Data rỗng");
+                    return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                var isExist = _service.checkExist(product.Id);
-                if (!isExist)
-                {
-                    return NotFound(product.Name + " không tồn tại!");
-                }
-                _service.updateProduct(product);
+                _service.UpdateProduct(id, product);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                return BadRequest("Không thể sửa sản phẩm");
+                return BadRequest(ex.Message);
             }
             return NoContent();
         }
@@ -94,49 +83,50 @@ namespace auth.Controllers
         {
             try
             {
-                var isExist = _service.checkExist(id);
-                if (!isExist)
+                if (!ModelState.IsValid)
                 {
-                    return NotFound(id + " không tồn tại!");
+                    return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                _service.removeProduct(id);
+                _service.RemoveProduct(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                return BadRequest("Không thể xóa sản phẩm");
+                return BadRequest(ex.Message);
             }
             return NoContent();
         }
+        [HttpGet("GetTrashedProducts")]
+        public IActionResult GetTrashedProducts() {
+            return Ok(_service.GetTrashedProducts());
+        }
 
-        [HttpGet("SimilarProduct")]
+        [HttpGet("SimilarProduct/{brandName}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSimilarProduct(int brandId, int caseSize)
+        public  IActionResult GetSimilarProduct(string brandName)
         {
-            var product = await _service.getSimilarProduct(brandId, caseSize);
-
+            var product =  _service.GetSimilarProduct(brandName);
             return Ok(product);
         }
         [HttpGet("GetProductsByBrand")]
         [AllowAnonymous]
         public IActionResult GetProductsByBrand(int brandId)
         {
-            var products = _service.getProductsByBrand(brandId);
-            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
+            var products = _service.GetProductsByBrand(brandId);
+            return Ok(products);
         }
         [HttpGet("GetProductsByCategory")]
         [AllowAnonymous]
         public IActionResult GetProductsByCategory(int categoryId)
         {
-            var products = _service.getProductsByCategory(categoryId);
-            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
+            var products = _service.GetProductsByCategory(categoryId);
+            return Ok(products);
         }
         [HttpGet("GetNewestProduct")]
         [AllowAnonymous]
         public IActionResult GetNewstProduct(int category)
         {
-            var products = _service.getNewestProducts(category);
-            return Ok(new { status = "success", data = products, message = "Lấy sản phẩm thành công" });
+            var products = _service.GetNewestProducts(category);
+            return Ok(products);
         }
     }
 }

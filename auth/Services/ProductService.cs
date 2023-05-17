@@ -1,134 +1,205 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.Request;
+using auth.Model.DTO;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace auth.Services
 {
     public class ProductService : IProductService
     {
+        private readonly IUtilityService _utility;
         private readonly ApplicationDBContext _context;
+        private readonly ILogService _log;
         private readonly IMapper _mapper;
-        public ProductService(ApplicationDBContext context, IMapper mapper)
+
+        public ProductService(ApplicationDBContext context, IUtilityService utility, ILogService log, IMapper mapper)
         {
+            _utility = utility;
             _context = context;
+            _log = log;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<Product>> GetProducts()
+        public List<ProductDTO> GetProducts()
         {
-            var products = await _context.Products.Include(p=>p.Brand).Include(p=>p.Category).ToListAsync();
+            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
-        public async Task<IEnumerable<Product>> GetAvailableProducts()
+        public List<ProductDTO> GetProductsDetail()
         {
-            var products = await _context.Products.Where(product => product.Stock > 0).Include(p=>p.Brand).Include(p=>p.Category).ToListAsync();
+            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
-        public void addProduct(Product product)
-        {
-            try
-            {
-                if (_context.Products.Any(x => x.Name == product.Name))
-                    throw new Exception(product.Name + " is exist");
-                _context.Products.Add(product);
-                _context.SaveChanges();
-            }
-            catch(Exception ex)
-            {
-            }
 
-        }
-        public void removeProduct(int id)
+        public List<ProductDTO> GetAvailableProducts()
         {
-            var product = getProduct(id);
+            var products = _context.Products.Where(product => product.Stock > 0).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            return products;
+        }
+        public void AddProduct(ProductCreateRequest productDTO)
+        {
+            if (_context.Products.Any(x => x.Name == productDTO.Name))
+            {
+                throw new Exception(productDTO.Name + " đã tồn tại!");
+            }
+            if (_context.Products.Any(p => p.Code == productDTO.Code))
+            {
+                throw new Exception($"'{productDTO.Code}' đã tồn tại");
+            }
+            var image = _utility.UploadImage(productDTO.ImageFile, productDTO.Code);
+            var lstPreviewImages = _utility.UploadImages(productDTO.PreviewImageFiles, productDTO.Code);
+            var previewImages = lstPreviewImages == null ? null : JsonSerializer.Serialize(lstPreviewImages);
+            var product = new Product
+            {
+                Code = productDTO.Code,
+                Name = productDTO.Name,
+                Price = productDTO.Price,
+                Image = image,
+                Color = productDTO.Color,
+                PreviewImages = previewImages,
+                CaseMeterial = productDTO.CaseMeterial,
+                CaseSize = productDTO.CaseSize,
+                GlassMaterial = productDTO.GlassMaterial,
+                Movement = productDTO.Movement,
+                WaterResistant = productDTO.WaterResistant,
+                Description = productDTO.Description,
+                Warranty = productDTO.Warranty,
+                BrandId = productDTO.BrandId,
+                CategoryId = productDTO.CategoryId,
+            };
+            _log.SaveLog("Tạo mới sản phẩm: " + product.Code);
+            _context.Products.Add(product);
+            _context.SaveChanges();
+        }
+        public void RemoveProduct(int id)
+        {
+            var product = GetProduct(id);
             product.IsDeleted = true;
+            _log.SaveLog("Xóa sản phẩm: " + product.Code);
             _context.Products.Update(product);
             _context.SaveChangesAsync();
         }
 
-        public void updateProduct(Product p)
+        public void UpdateProduct(int id, ProductRequest p)
         {
-            p.UpdatedAt = DateTime.Now;
-            _context.Products.Update(p);
+            if (p.Id != id)
+                throw new Exception("Having trouble");
+            var product = GetProduct(id);
+            if (product.Name != p.Name && _context.Products.Any(pr => pr.Name == p.Name))
+                throw new Exception("Name " + p.Name + " is already taken");
+            List<string> previewImages = JsonSerializer.Deserialize<List<string>>(p.PreviewImages);
+            var uploadImage = _utility.UploadImage(p.ImageFile, p.Code);
+            var uploadPreviewImages = _utility.UploadImages(p.PreviewImageFiles, p.Code);
+            previewImages.AddRange(uploadPreviewImages);
+
+            product.Code = p.Code;
+            product.Name = p.Name;
+            product.Price = p.Price;
+            product.Image = p.Image;
+            product.Color = p.Color;
+            product.PreviewImages = JsonSerializer.Serialize(previewImages);
+            product.CaseMeterial = p.CaseMeterial;
+            product.CaseSize = p.CaseSize;
+            product.GlassMaterial = p.GlassMaterial;
+            product.Movement = p.Movement;
+            product.WaterResistant = p.WaterResistant;
+            product.Description = p.Description;
+            product.Warranty = p.Warranty;
+            product.BrandId = p.BrandId;
+            product.CategoryId = p.CategoryId;
+
+            _log.SaveLog("Cập nhật sản phẩm: " + product.Code);
+            _context.Products.Update(product);
             _context.SaveChangesAsync();
         }
-        public Product getProductById(int id)
+        public ProductDTO GetProductById(int id)
         {
-            return getProduct(id);
+            var product = GetProduct(id);
+            return _mapper.Map<ProductDTO>(product);
         }
 
-        private Product getProduct(int id)
+        private Product GetProduct(int id)
         {
-            var product = _context.Products.SingleOrDefault(p => p.Id == id);
+            var product = _context.Products.Include(p => p.Brand).Include(p => p.Category).SingleOrDefault(p => p.Id == id);
             if (product == null)
             {
                 throw new Exception("Product not found");
             }
             return product;
         }
-        public Task<List<Product>> getSimilarProduct(int brandId, int caseSize)
+        public List<ProductDTO> GetSimilarProduct(string brandName)
         {
-            var products = _context.Products.Where(p => p.BrandId == brandId && p.CaseSize==caseSize).ToList();
-            if(products == null)
+            var products = _context.Products.Where(p => p.Brand.Name == brandName).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
+            if (products == null)
             {
                 throw new Exception("Product not found");
             }
-            return Task.FromResult(products);
+            return products;
         }
-      
-        public Product SearchProduct(string name)
+
+        public ProductDTO SearchProduct(string name)
         {
             var result = _context.Products.FirstOrDefault(n => n.Name == name);
             if (result == null)
             {
                 throw new Exception("Product not found");
             }
-            return result;
+            return _mapper.Map<ProductDTO>(result);
         }
 
-        public List<Product> getProductsByBrand(int brandId)
+        public List<ProductDTO> GetProductsByBrand(int brandId)
         {
-            var brand = _context.Brands.FirstOrDefault(b=>b.Id==brandId);
+            var brand = _context.Brands.FirstOrDefault(b => b.Id == brandId);
             if (brand == null)
             {
                 throw new Exception("Brand is not exist!");
             }
-            var products = _context.Products.Where(p => p.BrandId == brandId).Include(p => p.Brand).Include(p => p.Category).ToList();
+            var products = _context.Products.Where(p => p.BrandId == brandId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
-        public List<Product> getProductsByCategory(int categoryId)
+        public List<ProductDTO> GetProductsByCategory(int categoryId)
         {
             var category = _context.Categories.FirstOrDefault(b => b.Id == categoryId);
             if (category == null)
             {
                 throw new Exception("Category is not exist!");
             }
-            var products = _context.Products.Where(p => p.CategoryId == categoryId).Include(p => p.Brand).Include(p => p.Category).ToList();
+            var products = _context.Products.Where(p => p.CategoryId == categoryId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 
-        public List<Product> getFeatureProduct()
+        public List<ProductDTO> GetFeatureProduct()
         {
             throw new NotImplementedException();
         }
 
-        public List<Product> getNewestProducts(int categoryId)
+        public List<ProductDTO> GetNewestProducts(int categoryId)
         {
             var category = _context.Categories.FirstOrDefault(b => b.Id == categoryId);
             if (category == null)
             {
                 throw new Exception("Category is not exist!");
             }
-            var products = _context.Products.Where(p=>p.CategoryId == categoryId).OrderBy(p=>p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).ToList();
+            var products = _context.Products.Where(p => p.CategoryId == categoryId).OrderBy(p => p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 
-        public bool checkExist(int id)
+        public List<ProductDTO> GetTrashedProducts()
         {
-            return _context.Products.Any(p => p.Id == id);
+            var products = _context.Products.Where(p => p.IsDeleted == false).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            return products;
+        }
+
+        public ProductDTO GetProductByCode(string code)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.Code == code);
+            return _mapper.Map<ProductDTO>(product);
         }
     }
 }

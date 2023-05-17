@@ -3,6 +3,7 @@ using auth.Helpers;
 using auth.Interfaces;
 using auth.Model;
 using auth.Model.Request;
+using auth.Model.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,38 +22,38 @@ namespace auth.Services
         private readonly IConfiguration _configuration;
         private readonly ApplicationDBContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(UserManager<User> userManager,RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context)
+        public AccountService(UserManager<User> userManager,RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _context = context;
             _roleManager = roleManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<string> LoginAsync(LoginRequest model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if( user!= null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if( user == null && await _userManager.CheckPasswordAsync(user, model.Password) == false)
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                // generate token that is valid for 7 days
-                var claims = new List<Claim>
-             {
-               new Claim("UserId", user.Id),
-               new Claim("Name", user.FullName),
-               new Claim("Email", user.Email),
-               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-             };
-                foreach (var role in roles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
-                return GenerateJwtToken(claims);
+                throw new Exception("Tài khoản hoặc mật khẩu không đúng");
             }
 
-            return String.Empty;
+            var roles = await _userManager.GetRolesAsync(user);
+            // generate token that is valid for 7 days
+            var claims = new List<Claim>
+             {
+               new Claim(ClaimTypes.NameIdentifier, user.Id),
+               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+             };
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+            return GenerateJwtToken(claims);
         }
 
         public async Task<IdentityResult> RegisterAsync(RegisterRequest model)
@@ -72,7 +73,7 @@ namespace auth.Services
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                throw new Exception("User creation failed!");
+                throw new Exception(result.Errors.ToString());
             }
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.User))
@@ -103,7 +104,7 @@ namespace auth.Services
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                throw new Exception("User creation failed!");
+                throw new Exception(result.Errors.ToString());
             }
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
@@ -115,15 +116,6 @@ namespace auth.Services
                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
             }
             return await _userManager.UpdateAsync(user);
-        }
-        public User GetUserByEmail(string email)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Email == email);
-            if(user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-            return user;
         }
         public string GenerateJwtToken(List<Claim> claims)
         {
@@ -143,13 +135,79 @@ namespace auth.Services
 
         public async Task<IdentityResult> ChangePassword(ChangepasswordRequest model)
         {
-            var user = await _userManager.FindByEmailAsync(model.email);
+            if(GetUserId() != model.Id)
+            {
+                throw new Exception("Có lỗi xảy ra");
+            }
+            var user = await _userManager.FindByIdAsync(model.Id);
             if (user == null)
             {
                 throw new Exception("User is not exist");
             }
-            return await _userManager.ChangePasswordAsync(user, model.password, model.newpassword);
+            return await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
         }
 
+        public Task<UserDTO> GetCurrentUser()
+        {
+            var user = GetUserById();
+            var userInfo = new UserDTO
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Address = user.Address,
+                DateOfBirth = user.DateOfBirth,
+                Avatar = user.Avatar,
+                Phone = user.PhoneNumber,
+                FullName = user.FullName
+            };
+            return Task.FromResult(userInfo);
+        }
+        public void UpdateProfile(UserDTO model)
+        {
+            if (!GetUserId().Equals(model.Id))
+            {
+                throw new Exception("Không thể lưu thông tin");
+            }
+            var user = GetUserById();
+            if (user.Email != model.Email && _context.Users.Any(u => u.FullName == model.FullName))
+            {
+                throw new Exception("Email này đã được sử dụng");
+            }
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.PhoneNumber = model.Phone;
+            user.Address = model.Address;
+            user.DateOfBirth = model.DateOfBirth;
+            user.Avatar = model.Avatar;
+            _context.Users.Update(user);
+            _context.SaveChanges();
+        }
+        public async void ChangeAvatar(IFormFile file)
+        {
+            List<string> extensionAllowed = new List<string> { ".png",".jpg","jpeg" };
+            var user = GetUserById();
+            var fileExtension = Path.GetExtension(file.FileName);
+            if (!extensionAllowed.Contains(fileExtension)){
+                throw new Exception("Vui lòng tải lên đúng định dạng");
+            }
+            var fileName = Path.Combine("Uploads", "Avatar", GetUserId() + fileExtension);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            using (var fs = File.Create(filePath))
+            {
+                file.CopyTo(fs);
+            }
+            user.Avatar = fileName;
+            await _userManager.UpdateAsync(user);
+        }
+        private User GetUserById()
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == GetUserId());
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+            return user;
+        }
+        private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }
