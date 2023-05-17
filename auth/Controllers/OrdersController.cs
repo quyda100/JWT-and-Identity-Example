@@ -1,5 +1,6 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using auth.Model.Request;
 using auth.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +36,7 @@ namespace auth.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult updateOrder(int id, Order order)
+        public IActionResult UpdateOrder(int id, OrderDTO order)
         {
             _service.UpdateOrder(id, order);
             return Ok(new { status = "success", message = "Cập nhật thành công" });
