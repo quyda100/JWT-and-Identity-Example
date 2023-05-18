@@ -2,6 +2,7 @@
 using auth.Interfaces;
 using auth.Model.DTO;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace auth.Services
 {
@@ -17,34 +18,52 @@ namespace auth.Services
         }
         public int DailyOrderCount()
         {
-            var count = _context.Orders.Where(o=>o.CreatedAt.Day == DateTime.Now.Day).Count();
+            var count = _context.Orders.Where(o=>o.CreatedAt.Date == DateTime.Now.Date).Count();
             return count;
         }
 
         public long DailyOrderSales()
         {
-            var sales = _context.Orders.Where(o => o.CreatedAt.Day == DateTime.Now.Day && o.Status == 3).Sum(o=>o.Total);
+            var sales = _context.Orders.Where(o => o.CreatedAt.Date == DateTime.Now.Date && o.Status != -1 && o.Status != -2).Sum(o=>o.Total);
             return sales;
         }
 
         public long DailyProductSales()
         {
-            throw new NotImplementedException();
+            long sum = 0;
+            var orders = _context.Orders.Where(o => o.CreatedAt.Date == DateTime.Now.Date).Include(o => o.OrderProducts).ToList();
+            foreach (var item in orders)
+            {
+                sum += item.OrderProducts.Sum(o => o.Quantity);
+            }
+            return sum;
         }
 
         public List<ProductDTO> GetBestProductsSale()
         {
-            throw new NotImplementedException();
+            var products = _context.Products.OrderByDescending(p=>p.Sales).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
+            return products;
         }
 
         public List<object> GetYearlySales()
         {
-            throw new NotImplementedException();
+            List<object> result = new List<object>();
+            for (int i = 1; i <= 12; i++)
+            {
+                int count = 0;
+                var orders = _context.Orders.Where(o => o.CreatedAt.Year == DateTime.Now.Year && o.CreatedAt.Month == i).Include(o=>o.OrderProducts).ToList();
+                foreach (var item in orders)
+                {
+                    count += item.OrderProducts.Sum(o=>o.Quantity);
+                }
+                result.Add(new {Month = i, Count = count});
+            }
+            return result;
         }
 
         public int UsersCount()
         {
-            throw new NotImplementedException();
+            return _context.Users.Count();
         }
     }
 }

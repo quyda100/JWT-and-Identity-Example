@@ -5,9 +5,15 @@ namespace auth.Services
 {
     public class UtilityService : IUtilityService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public UtilityService(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
         public byte[] GetImage(string fileName)
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            var path = Path.Combine(Directory.GetCurrentDirectory(),"Uploads", fileName);
             Byte[] b = File.ReadAllBytes(path);
             return b;
         }
@@ -29,8 +35,8 @@ namespace auth.Services
                 throw new Exception("Vui lòng tải lên đúng định dạng");
             }
             var folder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Products");
-            var fileName = Path.Combine("Uploads","Products", prefix + "_" +Guid.NewGuid().ToString() + fileExtension);
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            var fileName = prefix + "_" + Guid.NewGuid().ToString() + fileExtension;
+            var filePath = Path.Combine(folder, fileName);
             
             if (!Directory.Exists(folder))
             {
@@ -40,7 +46,7 @@ namespace auth.Services
             {
                 file.CopyTo(stream);
             }
-            return fileName;
+            return FormatFileURL(fileName);
         }
 
         public List<string> UploadImages(List<IFormFile> files, string prefix)
@@ -56,6 +62,13 @@ namespace auth.Services
                 result.Add(fileName);
             }
             return result;
+        }
+
+        private string FormatFileURL(string fileName)
+        {
+            var currentReq = _httpContextAccessor.HttpContext.Request;
+            string baseURL = $"{currentReq.Scheme}://{currentReq.Host}/images/products/";
+            return baseURL + fileName;
         }
     }
 }

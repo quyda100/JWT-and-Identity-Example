@@ -51,7 +51,7 @@ namespace auth.Services
             List<OrderProduct> orderProducts = new List<OrderProduct>();
             foreach (var productRequest in productRequests)
             {
-                var product = _context.Products.First(p => p.Id == productRequest.ProductId);
+                var product = _context.Products.FirstOrDefault(p => p.Id == productRequest.ProductId);
                 if(product == null)
                 {
                     throw new Exception("Không tìm thấy sản phẩm: " + productRequest.ProductId);
@@ -105,7 +105,7 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrdersByUserId()
         {
-            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o=>o.OrderProducts).Include(o=>o.User).Select(o=>_mapper.Map<OrderDTO>(o)).ToList();
+            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o=>o.OrderProducts).ThenInclude(p=>p.Product).Include(o=>o.User).Select(o=>_mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 

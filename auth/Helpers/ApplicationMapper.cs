@@ -10,6 +10,7 @@ namespace auth.Helpers
         {
             CreateMap<Product, ProductDTO>();
             CreateMap<Order, OrderDTO>();
+            CreateMap<OrderProduct, OrderProductDTO>();
         }
     }
 }
