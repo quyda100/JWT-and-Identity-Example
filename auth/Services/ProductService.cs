@@ -52,8 +52,8 @@ namespace auth.Services
             {
                 throw new Exception($"'{productDTO.Code}' đã tồn tại");
             }
-            var image = _utility.UploadImage(productDTO.ImageFile, productDTO.Code);
-            var lstPreviewImages = _utility.UploadImages(productDTO.PreviewImageFiles, productDTO.Code);
+            var image = _utility.UploadImage(productDTO.ImageFile, productDTO.Code, "Products");
+            var lstPreviewImages = _utility.UploadImages(productDTO.PreviewImageFiles, productDTO.Code, "Products");
             var previewImages = lstPreviewImages == null ? null : JsonSerializer.Serialize(lstPreviewImages);
             var product = new Product
             {
@@ -94,8 +94,8 @@ namespace auth.Services
             if (product.Name != p.Name && _context.Products.Any(pr => pr.Name == p.Name))
                 throw new Exception("Name " + p.Name + " is already taken");
             List<string> previewImages = JsonSerializer.Deserialize<List<string>>(p.PreviewImages);
-            var uploadImage = _utility.UploadImage(p.ImageFile, p.Code);
-            var uploadPreviewImages = _utility.UploadImages(p.PreviewImageFiles, p.Code);
+            var uploadImage = _utility.UploadImage(p.ImageFile, p.Code, "Products");
+            var uploadPreviewImages = _utility.UploadImages(p.PreviewImageFiles, p.Code, "Products");
             previewImages.AddRange(uploadPreviewImages);
 
             product.Code = p.Code;
@@ -145,7 +145,7 @@ namespace auth.Services
 
         public ProductDTO SearchProduct(string name)
         {
-            var result = _context.Products.FirstOrDefault(n => n.Name == name);
+            var result = _context.Products.Where(p=>p.Name.Contains(name)).ToList();
             if (result == null)
             {
                 throw new Exception("Product not found");

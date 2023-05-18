@@ -17,7 +17,7 @@ namespace auth.Controllers
 
         [HttpGet("images/products/{name}")]
         public IActionResult GetProductImage(string name) {
-            name = Path.Combine("Products", name);
+            name = Path.Combine("products", name);
             return File(_service.GetImage(name), "image/jpeg");
         }
     }

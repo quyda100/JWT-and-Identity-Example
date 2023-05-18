@@ -13,12 +13,12 @@ namespace auth.Services
         }
         public byte[] GetImage(string fileName)
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(),"Uploads", fileName);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", fileName);
             Byte[] b = File.ReadAllBytes(path);
             return b;
         }
 
-        public string UploadImage(IFormFile file, string prefix)
+        public string UploadImage(IFormFile file, string prefix, string type)
         {
             if (file == null)
             {
@@ -34,10 +34,10 @@ namespace auth.Services
             {
                 throw new Exception("Vui lòng tải lên đúng định dạng");
             }
-            var folder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Products");
-            var fileName = prefix + "_" + Guid.NewGuid().ToString() + fileExtension;
+            var folder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", type);
+            var fileName = prefix+"-"+ Guid.NewGuid().ToString() + fileExtension;
             var filePath = Path.Combine(folder, fileName);
-            
+
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
@@ -46,10 +46,10 @@ namespace auth.Services
             {
                 file.CopyTo(stream);
             }
-            return FormatFileURL(fileName);
+            return FormatFileURL(fileName, type);
         }
 
-        public List<string> UploadImages(List<IFormFile> files, string prefix)
+        public List<string> UploadImages(List<IFormFile> files, string prefix, string type)
         {
             if (files.Count == 0)
             {
@@ -58,16 +58,16 @@ namespace auth.Services
             List<string> result = new();
             foreach (var file in files)
             {
-                var fileName = UploadImage(file, prefix);
+                var fileName = UploadImage(file, prefix, type);
                 result.Add(fileName);
             }
             return result;
         }
 
-        private string FormatFileURL(string fileName)
+        private string FormatFileURL(string fileName, string type)
         {
             var currentReq = _httpContextAccessor.HttpContext.Request;
-            string baseURL = $"{currentReq.Scheme}://{currentReq.Host}/images/products/";
+            string baseURL = $"{currentReq.Scheme}://{currentReq.Host}/images/{type}/";
             return baseURL + fileName;
         }
     }
