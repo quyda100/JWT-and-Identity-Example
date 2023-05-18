@@ -41,7 +41,7 @@ namespace auth.Services
 
         public List<ProductDTO> GetBestProductsSale()
         {
-            var products = _context.Products.OrderByDescending(p=>p.Sales).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.OrderByDescending(p=>p.Sales).Take(4).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 
@@ -56,7 +56,7 @@ namespace auth.Services
                 {
                     count += item.OrderProducts.Sum(o=>o.Quantity);
                 }
-                result.Add(new {Month = i, Count = count});
+                result.Add(new {month = $"Tháng {i}", value = count});
             }
             return result;
         }
