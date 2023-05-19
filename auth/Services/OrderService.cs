@@ -74,7 +74,7 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrders()
         {
-           var orders = _context.Orders.Select(o=>_mapper.Map<OrderDTO>(o)).ToList();
+           var orders = _context.Orders.Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
