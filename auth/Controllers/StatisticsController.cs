@@ -10,11 +10,13 @@ namespace auth.Controllers
     {
         private readonly IStatisticService _service;
 
-        public StatisticsController(IStatisticService service) {
+        public StatisticsController(IStatisticService service)
+        {
             _service = service;
         }
         [HttpGet("DailyOrderSales")]
-        public IActionResult GetDailyOrderSales() {
+        public IActionResult GetDailyOrderSales()
+        {
             return Ok(_service.DailyOrderSales());
         }
         [HttpGet("UsersCount")]
@@ -42,6 +44,35 @@ namespace auth.Controllers
         {
             return Ok(_service.GetBestProductsSale());
         }
-
+        [HttpGet("TotalProductsCategoryOfWeek")]
+        public IActionResult TotalProductsCategoryOfWeek()
+        {
+            return Ok(_service.TotalProductsCategoryOfWeek());
+        }
+        [HttpGet("OrderSalesTotalMonth/{month}")]
+        public IActionResult OrderSalesTotalMonth(int month)
+        {
+            return Ok(_service.OrderSalesTotalMonth(month));
+        }
+        [HttpGet("CountOrdersMonth/{month}")]
+        public IActionResult CountOrdersMonth(int month)
+        {
+            return Ok(_service.CountOrdersMonth(month));
+        }
+        [HttpGet("ImportTotalMonth/{month}")]
+        public IActionResult ImportTotalMonth(int month)
+        {
+            return Ok(_service.ImportTotalMonth(month));
+        }
+        [HttpGet("BrandCountSales/{month}")]
+        public IActionResult BrandCountSales(int month)
+        {
+            return Ok(_service.BrandCountSales(month));
+        }
+        [HttpGet("BrandCountStock")]
+        public IActionResult BrandCountStock()
+        {
+            return Ok(_service.BrandCountStock());
+        }
     }
 }

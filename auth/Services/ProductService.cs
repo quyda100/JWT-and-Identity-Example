@@ -33,7 +33,7 @@ namespace auth.Services
         }
         public List<ProductDTO> GetProductsDetail()
         {
-            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 
@@ -53,7 +53,9 @@ namespace auth.Services
                 throw new Exception($"'{productDTO.Code}' đã tồn tại");
             }
             var image = _utility.UploadImage(productDTO.ImageFile, productDTO.Code, "Products");
-            var lstPreviewImages = _utility.UploadImages(productDTO.PreviewImageFiles, productDTO.Code, "Products");
+            var lstPreviewImages = new List<string>();
+            lstPreviewImages.Add(image);
+            lstPreviewImages.AddRange(_utility.UploadImages(productDTO.PreviewImageFiles, productDTO.Code, "Products"));
             var previewImages = lstPreviewImages == null ? null : JsonSerializer.Serialize(lstPreviewImages);
             var product = new Product
             {
@@ -135,7 +137,7 @@ namespace auth.Services
         }
         public List<ProductDTO> GetSimilarProduct(string brandName)
         {
-            var products = _context.Products.Where(p => p.Brand.Name == brandName).Select(p=>_mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.Brand.Name == brandName).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             if (products == null)
             {
                 throw new Exception("Product not found");
@@ -145,7 +147,7 @@ namespace auth.Services
 
         public ProductDTO SearchProduct(string name)
         {
-            var result = _context.Products.Where(p=>p.Name.Contains(name)).ToList();
+            var result = _context.Products.Where(p => p.Name.Contains(name)).ToList();
             if (result == null)
             {
                 throw new Exception("Product not found");
