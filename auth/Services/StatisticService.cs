@@ -68,7 +68,7 @@ namespace auth.Services
         public long OrderSalesTotalMonth(int month)
         {
             var orders = _context.Orders.Where(o => o.CreatedAt.Month == month && o.CreatedAt.Year == DateTime.Now.Year);
-            long total = orders.Where(o => o.PaymentTime != null).Sum(o => o.Total);
+            long total = orders.Where(o => o.PaymentTime != new DateTime()).Sum(o => o.Total);
             return total;
         }
         public long ImportTotalMonth(int month)
@@ -80,7 +80,7 @@ namespace auth.Services
         public int CountOrdersMonth(int month)
         {
             var orders = _context.Orders.Where(o => o.CreatedAt.Month == month && o.CreatedAt.Year == DateTime.Now.Year);
-            var count = orders.Where(o => o.PaymentTime != null).Count();
+            var count = orders.Where(o => o.PaymentTime != new DateTime()).Count();
             return count;
         }
         public List<object> TotalProductsCategoryOfWeek()
@@ -105,7 +105,7 @@ namespace auth.Services
         public List<object> BrandCountSales(int month)
         {
             var result = new List<object>();
-            var orders = _context.Orders.Where(o => o.PaymentTime != null && o.CreatedAt.Month == month && o.CreatedAt.Year == DateTime.Now.Year).Include(o => o.OrderProducts).ThenInclude(p => p.Product).ToList();
+            var orders = _context.Orders.Where(o => o.PaymentTime != new DateTime() && o.CreatedAt.Month == month && o.CreatedAt.Year == DateTime.Now.Year).Include(o => o.OrderProducts).ThenInclude(p => p.Product).ToList();
             var brands = _context.Brands.ToList();
             foreach (var brand in brands)
             {
