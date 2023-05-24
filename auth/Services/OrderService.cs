@@ -12,7 +12,7 @@ using System.Security.Principal;
 
 namespace auth.Services
 {
-    public class OrderService: IOrderService
+    public class OrderService : IOrderService
     {
         private readonly ApplicationDBContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -52,11 +52,11 @@ namespace auth.Services
             foreach (var productRequest in productRequests)
             {
                 var product = _context.Products.FirstOrDefault(p => p.Id == productRequest.ProductId);
-                if(product == null)
+                if (product == null)
                 {
                     throw new Exception("Không tìm thấy sản phẩm: " + productRequest.ProductId);
                 }
-                if(product.Stock < productRequest.Quanlity)
+                if (product.Stock < productRequest.Quanlity)
                 {
                     throw new Exception("Sản phẩm: " + product.Code + " tồn kho không đủ");
                 }
@@ -74,13 +74,13 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrders()
         {
-           var orders = _context.Orders.Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
+            var orders = _context.Orders.Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
         public List<OrderProductDTO> GetOrderProducts(int orderId)
         {
-            var orderProducts = _context.OrderProducts.Where(o=>o.OrderId==orderId).Include(o=>o.Product).Select(o=>_mapper.Map<OrderProductDTO>(o)).ToList();
+            var orderProducts = _context.OrderProducts.Where(o => o.OrderId == orderId).Include(o => o.Product).Select(o => _mapper.Map<OrderProductDTO>(o)).ToList();
             return orderProducts;
         }
 
@@ -94,7 +94,7 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy hóa đơn");
             }
             order.Status = model.Status;
-            if(order.Status == 1)
+            if (order.Status == 1)
             {
                 UpdateProductSales(order.OrderProducts);
             }
@@ -105,13 +105,13 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrdersByUserId()
         {
-            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o=>o.OrderProducts).ThenInclude(p=>p.Product).Include(o=>o.User).Select(o=>_mapper.Map<OrderDTO>(o)).ToList();
+            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
         public void DeleteOrder(int id)
         {
-            var order = _context.Orders.FirstOrDefault(o => o.Id == id&&o.UserId == GetUserId()) ?? throw new Exception("Không tìm thấy hóa đơn");
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id && o.UserId == GetUserId()) ?? throw new Exception("Không tìm thấy hóa đơn");
             if (order.Status != 0)
             {
                 throw new Exception("Không thể thực hiện yêu cầu");
@@ -134,23 +134,19 @@ namespace auth.Services
         }
         private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        public void UpdateOrderStatus(int id, int status)
-        {
-            var order = _context.Orders.FirstOrDefault(o=>o.Id == id);
-            if(order == null){
-                throw new Exception("Không tìm thấy hóa đơn: " + id);
-            }
-            order.Status = status;
-            _context.Orders.Update(order);
-            _context.SaveChanges();
-            _log.SaveLog($"Cập nhật hóa đơn: {id} thành {status}");
-        }
-
         public void UpdateOrderStatus(List<int> ids, int status)
         {
             foreach (var id in ids)
             {
-                UpdateOrderStatus(id, status);
+                var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+                if (order == null)
+                {
+                    throw new Exception("Không tìm thấy hóa đơn: " + id);
+                }
+                order.Status = status;
+                _context.Orders.Update(order);
+                _context.SaveChanges();
+                _log.SaveLog($"Cập nhật hóa đơn: {id} thành {status}");
             }
         }
     }

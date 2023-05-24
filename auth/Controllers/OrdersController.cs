@@ -25,7 +25,8 @@ namespace auth.Controllers
         {
             try
             {
-                if(order == null||!ModelState.IsValid) {
+                if (order == null || !ModelState.IsValid)
+                {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
                 _service.CreateOrder(order);
@@ -48,7 +49,8 @@ namespace auth.Controllers
         {
             try
             {
-                if(order==null ||!ModelState.IsValid) {
+                if (order == null || !ModelState.IsValid)
+                {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
                 _service.UpdateOrder(id, order);
@@ -60,23 +62,15 @@ namespace auth.Controllers
             return NoContent();
         }
         [Authorize(Roles = UserRoles.Admin)]
-        [HttpPut("UpdateOrderStatus/{id}")]
-        public IActionResult UpdateOrderStatus(int id, int status){
-            try
-            {
-                _service.UpdateOrderStatus(id, status);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            return NoContent();
-        }
-        [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("UpdateOrderStatus")]
-        public IActionResult UpdateOrderStatus(List<int> id,int status){
+        public IActionResult UpdateOrderStatus(List<int> id, int status)
+        {
             try
             {
+                if (id.Count <= 0)
+                {
+                    return BadRequest("Vui lòng chọn hóa đơn");
+                }
                 _service.UpdateOrderStatus(id, status);
             }
             catch (Exception ex)
