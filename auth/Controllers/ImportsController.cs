@@ -13,12 +13,9 @@ namespace auth.Controllers
     public class ImportsController : ControllerBase
     {
         private readonly IImportService _service;
-        private readonly ILogService _log;
-
-        public ImportsController(IImportService service, ILogService log)
+        public ImportsController(IImportService service)
         {
             _service = service;
-            _log = log;
         }
         [HttpGet]
         public IActionResult getImports()
@@ -40,11 +37,25 @@ namespace auth.Controllers
                 _service.AddImport(request);
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return BadRequest(ex.Message);
             }
+        }
+        [HttpPost("ImportFromFile")]
+        public IActionResult ImportByCSV([FromForm]ImportFileRequest request){
+            try
+            {
+                if(!ModelState.IsValid || request == null){
+                    return BadRequest("Vui lòng nhập đúng thông tin");
+                }
+                _service.ImportByCSV(request);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
         }
     }
 }

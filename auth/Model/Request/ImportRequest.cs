@@ -11,4 +11,9 @@
         public int Price { get; set; }
         public int Quanlity { get; set; }
     }
+    public class ImportFileRequest
+    {
+        public int supplierId {get; set;}
+        public IFormFile file {get;set;}
+    }
 }

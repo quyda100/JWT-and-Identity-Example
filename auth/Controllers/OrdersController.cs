@@ -59,6 +59,32 @@ namespace auth.Controllers
             }
             return NoContent();
         }
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPut("UpdateOrderStatus/{id}")]
+        public IActionResult UpdateOrderStatus(int id, int status){
+            try
+            {
+                _service.UpdateOrderStatus(id, status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPut("UpdateOrderStatus")]
+        public IActionResult UpdateOrderStatus(List<int> id,int status){
+            try
+            {
+                _service.UpdateOrderStatus(id, status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
 
         [HttpGet("GetOrdersByUserId")]
         [Authorize(Roles = UserRoles.User)]
@@ -81,5 +107,6 @@ namespace auth.Controllers
             }
             return NoContent();
         }
+
     }
 }

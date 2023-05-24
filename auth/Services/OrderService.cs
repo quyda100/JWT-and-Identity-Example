@@ -133,5 +133,25 @@ namespace auth.Services
             _context.SaveChanges();
         }
         private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        public void UpdateOrderStatus(int id, int status)
+        {
+            var order = _context.Orders.FirstOrDefault(o=>o.Id == id);
+            if(order == null){
+                throw new Exception("Không tìm thấy hóa đơn: " + id);
+            }
+            order.Status = status;
+            _context.Orders.Update(order);
+            _context.SaveChanges();
+            _log.SaveLog($"Cập nhật hóa đơn: {id} thành {status}");
+        }
+
+        public void UpdateOrderStatus(List<int> ids, int status)
+        {
+            foreach (var id in ids)
+            {
+                UpdateOrderStatus(id, status);
+            }
+        }
     }
 }

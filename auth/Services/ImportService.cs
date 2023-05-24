@@ -2,6 +2,8 @@
 using auth.Interfaces;
 using auth.Model;
 using auth.Model.Request;
+using CsvHelper;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace auth.Services
@@ -51,15 +53,53 @@ namespace auth.Services
                 _context.Products.Update(product);
             });
             import.Total = total;
-            _log.SaveLog("Nhập sản phẩm: "+import.Id);
+            _log.SaveLog("Tạo hóa đơn nhập: "+import.Id);
             _context.Imports.Update(import);
             _context.SaveChanges();
+        }
+        public void ImportByCSV(ImportFileRequest request){
+            var fileExtension = Path.GetExtension(request.file.FileName);
+            if(!fileExtension.Equals(".csv"))
+            {
+                throw new Exception("You must upload .csv file");
+            }
+            /*
+            *   Create path of file
+            */
+            var fileName = DateTime.Now.ToString() + fileExtension;
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "CSV");
+            var filePath = Path.Combine(folderPath,fileName);
+             if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            using (var stream = File.Create(filePath))
+            {
+                request.file.CopyTo(stream);
+            }
+            /*
+            *   Reading file
+            */
+            var items = new List<ImportProductRequest>();
+            using (var reader = new StreamReader(filePath))
+            {
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    var records = csv.GetRecords<ImportProductRequest>().ToList();
+                    items.AddRange(records);
+                }
+            }
+            /*
+            *   Call back to AddImport
+            */
+            var ImportRequest = new ImportRequest{supplierId = request.supplierId, ImportProducts = items};
+            AddImport(ImportRequest);
         }
         private Product GetProductById(int id)
         {
             var product = _context.Products.FirstOrDefault(p => p.Id == id);
             if (product == null)
-                throw new Exception("Product not found");
+                throw new Exception("Không tìm thấy sản phẩm");
             return product;
         }
         public List<ImportDetail> GetImportDetail(int id)
