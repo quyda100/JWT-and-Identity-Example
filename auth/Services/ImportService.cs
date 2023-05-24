@@ -30,24 +30,24 @@ namespace auth.Services
             _context.Imports.Add(import);
             _context.SaveChanges();
             var total = 0;
-            model.ImportProducts.ForEach(Iproduct =>
+            model.ImportProducts.ForEach(item =>
             {
                 /*
                  *  Create Import Product
                  */
                 var importProduct = new ImportDetail
                 {
-                    ProductId = Iproduct.ProductId,
-                    Quanlity = Iproduct.Quanlity,
-                    Price = Iproduct.Price,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
                 };
-                total += importProduct.Quanlity * importProduct.Price;
+                total += importProduct.Quantity * importProduct.Price;
                 _context.ImportDetails.Add(importProduct);
                 /*
                  *  Update Product
                  */
                 var product = GetProductById(importProduct.Id);
-                product.Stock += importProduct.Quanlity;
+                product.Stock += importProduct.Quantity;
                 product.Price = importProduct.Price;
                 product.UpdatedAt = DateTime.Now;
                 _context.Products.Update(product);

@@ -65,7 +65,7 @@ namespace auth.Services
                 Image = image,
                 Color = productDTO.Color,
                 PreviewImages = previewImages,
-                CaseMeterial = productDTO.CaseMeterial,
+                CaseMaterial = productDTO.CaseMaterial,
                 CaseSize = productDTO.CaseSize,
                 GlassMaterial = productDTO.GlassMaterial,
                 Movement = productDTO.Movement,
@@ -106,7 +106,7 @@ namespace auth.Services
             product.Image = p.Image;
             product.Color = p.Color;
             product.PreviewImages = JsonSerializer.Serialize(previewImages);
-            product.CaseMeterial = p.CaseMeterial;
+            product.CaseMaterial = p.CaseMaterial;
             product.CaseSize = p.CaseSize;
             product.GlassMaterial = p.GlassMaterial;
             product.Movement = p.Movement;

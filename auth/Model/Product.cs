@@ -17,7 +17,7 @@ namespace auth.Model
         public string PreviewImages { get; set; }
 
         [DisplayName("Chất liệu vỏ")]
-        public string CaseMeterial { get; set; }
+        public string CaseMaterial { get; set; }
         [DisplayName("Kích thước mặt")]
         public float CaseSize { get; set; }
         [DisplayName("Chất liệu kính")]

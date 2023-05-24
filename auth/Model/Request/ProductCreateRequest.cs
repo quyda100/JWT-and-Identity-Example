@@ -8,7 +8,7 @@
         public IFormFile ImageFile { get; set; }
         public string Color { get; set; }
         public List<IFormFile> PreviewImageFiles { get; set; }
-        public string CaseMeterial { get; set; }
+        public string CaseMaterial { get; set; }
         public float CaseSize { get; set; }
         public string GlassMaterial { get; set; }
         public string Movement { get; set; }
