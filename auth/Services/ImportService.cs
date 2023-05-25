@@ -1,8 +1,11 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using auth.Model.Request;
+using AutoMapper;
 using CsvHelper;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -13,12 +16,14 @@ namespace auth.Services
         private readonly ApplicationDBContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogService _log;
+        private readonly IMapper _mapper;
 
-        ImportService(ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, ILogService log)
+        public ImportService(ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, ILogService log, IMapper mapper)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _log = log;
+            _mapper = mapper;
         }
         public void AddImport(ImportRequest model)
         {
@@ -53,13 +58,14 @@ namespace auth.Services
                 _context.Products.Update(product);
             });
             import.Total = total;
-            _log.SaveLog("Tạo hóa đơn nhập: "+import.Id);
+            _log.SaveLog("Tạo hóa đơn nhập: " + import.Id);
             _context.Imports.Update(import);
             _context.SaveChanges();
         }
-        public void ImportByCSV(ImportFileRequest request){
+        public void ImportByCSV(ImportFileRequest request)
+        {
             var fileExtension = Path.GetExtension(request.file.FileName);
-            if(!fileExtension.Equals(".csv"))
+            if (!fileExtension.Equals(".csv"))
             {
                 throw new Exception("You must upload .csv file");
             }
@@ -68,8 +74,8 @@ namespace auth.Services
             */
             var fileName = DateTime.Now.ToString() + fileExtension;
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "CSV");
-            var filePath = Path.Combine(folderPath,fileName);
-             if (!Directory.Exists(folderPath))
+            var filePath = Path.Combine(folderPath, fileName);
+            if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
             }
@@ -92,7 +98,7 @@ namespace auth.Services
             /*
             *   Call back to AddImport
             */
-            var ImportRequest = new ImportRequest{supplierId = request.supplierId, ImportProducts = items};
+            var ImportRequest = new ImportRequest { supplierId = request.supplierId, ImportProducts = items };
             AddImport(ImportRequest);
         }
         private Product GetProductById(int id)
@@ -102,15 +108,15 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy sản phẩm");
             return product;
         }
-        public List<ImportDetail> GetImportDetail(int id)
+        public List<ImportProductDTO> GetImportDetail(int id)
         {
-            var importDetails = _context.ImportDetails.Where(i => i.ImportId == id).ToList();
+            var importDetails = _context.ImportDetails.Where(i => i.ImportId == id).Include(i => i.Product).Select(i => _mapper.Map<ImportProductDTO>(i)).ToList();
             return importDetails;
         }
 
-        public List<Import> GetImports()
+        public List<ImportDTO> GetImports()
         {
-            var imports = _context.Imports.ToList();
+            var imports = _context.Imports.Include(i => i.User).Select(i => _mapper.Map<ImportDTO>(i)).ToList();
             return imports;
         }
         private string GetUserId()

@@ -14,16 +14,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Life cycle DI: AddSingleton(), AddTransient(), AddScoped()
-builder.Services.AddTransient<IAccountService, AccountService>();
-builder.Services.AddTransient<IProductService, ProductService>();
-builder.Services.AddTransient<IBrandService, BrandService>();
-builder.Services.AddTransient<ICategoryService, CategoryService>();
-builder.Services.AddTransient<IReviewService, ReviewService>();
-builder.Services.AddTransient<IOrderService, OrderService>();
-builder.Services.AddTransient<INewService, NewService>();
-builder.Services.AddTransient<ILogService, LogService>();
-builder.Services.AddTransient<IUtilityService, UtilityService>();
-builder.Services.AddTransient<IStatisticService, StatisticService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IBrandService, BrandService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<INewService, NewService>();
+builder.Services.AddScoped<ILogService, LogService>();
+builder.Services.AddScoped<IImportService, ImportService>();
+builder.Services.AddScoped<IUtilityService, UtilityService>();
+builder.Services.AddScoped<IStatisticService, StatisticService>();
 
 builder.Services.AddControllers().AddJsonOptions(option =>
 option.JsonSerializerOptions.PropertyNamingPolicy = null);
