@@ -59,11 +59,11 @@ namespace auth.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            return NoContent();
+            return Ok();
         }
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("UpdateOrderStatus")]
-        public IActionResult UpdateOrderStatus(List<int> id, int status)
+        public async Task<IActionResult> UpdateOrderStatus(List<int> id, int status)
         {
             try
             {
@@ -71,13 +71,13 @@ namespace auth.Controllers
                 {
                     return BadRequest("Vui lòng chọn hóa đơn");
                 }
-                _service.UpdateOrderStatus(id, status);
+                await _service.UpdateOrderStatus(id, status);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            return NoContent();
+            return Ok();
         }
 
         [HttpGet("GetOrdersByUserId")]
@@ -99,7 +99,7 @@ namespace auth.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            return NoContent();
+            return Ok();
         }
 
     }

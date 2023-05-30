@@ -13,6 +13,5 @@ namespace auth.Model
         public int Quantity { get; set; }
         public int Price { get; set; }
         public float DiscountPrice { get; set; }
-      
     }
 }

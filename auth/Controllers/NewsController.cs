@@ -1,5 +1,7 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
+using auth.Model.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +19,15 @@ namespace auth.Controllers
         {
             _service = service;
         }
-        [HttpGet("getNews")]
+        [HttpGet]
         [AllowAnonymous]
         public IActionResult GetNews()
         {
             var news = _service.GetNews();
             return Ok(news);
         }
-        [HttpPost("addNew")]
-        public IActionResult AddNew(New New)
+        [HttpPost]
+        public IActionResult AddNew(NewRequest New)
         {
             try
             {
@@ -37,31 +39,29 @@ namespace auth.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost("updateNew")]
-        public IActionResult UpdateNew(int id, New New)
+        [HttpPut("{id}")]
+        public IActionResult UpdateNew(int id, NewDTO New)
         {
             try
             {
                 _service.UpdateNew(id, New);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return BadRequest(ex.Message);
             }
             return NoContent();
         }
-        [HttpPost("deleteNew")]
+        [HttpDelete("{id}")]
         public IActionResult DeleteNew(int id)
         {
             try
             {
                 _service.DeleteNew(id);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return BadRequest(ex.Message);
             }
             return NoContent();
         }

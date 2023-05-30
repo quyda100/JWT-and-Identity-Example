@@ -3,6 +3,7 @@
     public class Order
     {
         public int Id { get; set; }
+        public string Code { get; set; } = "";
         public string UserId { get; set; }
         public string CustomerName { get; set; }
         public string Address { get; set; }
@@ -13,6 +14,7 @@
         public DateTime PaymentTime { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime DeliveryTime { get; set; }
         public List<OrderProduct> OrderProducts { get; set; }
         public User User { get; set; }
 

@@ -13,6 +13,7 @@ namespace auth.Helpers
             CreateMap<OrderProduct, OrderProductDTO>();
             CreateMap<Import, ImportDTO>();
             CreateMap<ImportDetail, ImportProductDTO>();
+            CreateMap<New, NewDTO>();
         }
     }
 }

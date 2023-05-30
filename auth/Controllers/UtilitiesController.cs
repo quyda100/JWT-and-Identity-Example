@@ -16,9 +16,15 @@ namespace auth.Controllers
         }
 
         [HttpGet("images/products/{name}")]
-        public IActionResult GetProductImage(string name) {
+        public IActionResult GetProductImage(string name)
+        {
             name = Path.Combine("products", name);
             return File(_service.GetImage(name), "image/jpeg");
+        }
+        [HttpGet]
+        public async Task<IActionResult> getPost()
+        {
+            return Ok(await _service.CallHttp());
         }
     }
 }

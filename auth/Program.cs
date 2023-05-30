@@ -23,6 +23,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<INewService, NewService>();
 builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<IImportService, ImportService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IUtilityService, UtilityService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 
@@ -120,6 +121,7 @@ builder.Services.AddCors(options =>
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 /////////////////////////////
 
 var app = builder.Build();
