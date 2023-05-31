@@ -26,6 +26,7 @@ builder.Services.AddScoped<IImportService, ImportService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IUtilityService, UtilityService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
+builder.Services.AddScoped<INganLuongService, NganLuongService>();
 
 builder.Services.AddControllers().AddJsonOptions(option =>
 option.JsonSerializerOptions.PropertyNamingPolicy = null);
