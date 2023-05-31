@@ -16,12 +16,13 @@ namespace auth.Controllers
         [HttpGet("GetURL")]
         public IActionResult BuildURL(string transactionInfo, int orderId, int price)
         {
-            return Ok(_service.BuildCheckOutURL(transactionInfo, orderId.ToString(), price.ToString()));
+            return Ok(_service.BuildCheckOutURL(transactionInfo, orderId.ToString(), price));
         }
         [HttpGet("Receiver")]
         public IActionResult GetURL (string transaction_info, string order_code, string price, string payment_id, string payment_type, string error_text, string secure_code)
         {
             bool result = _service.VerifyPaymentUrl(transaction_info, order_code, price, payment_id, payment_type, error_text, secure_code);
+            Console.WriteLine(result + error_text);
             return result ? Ok(result) : BadRequest(error_text);
         }
     }
