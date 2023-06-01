@@ -201,7 +201,7 @@ namespace auth.Services
 
         public ProductDTO GetProductByCode(string code)
         {
-            var product = _context.Products.FirstOrDefault(p => p.Code == code);
+            var product = _context.Products.Include(p => p.Brand).Include(p => p.Category).FirstOrDefault(p => p.Code == code);
             return _mapper.Map<ProductDTO>(product);
         }
     }
