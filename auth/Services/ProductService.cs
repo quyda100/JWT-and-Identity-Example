@@ -137,7 +137,7 @@ namespace auth.Services
         }
         public List<ProductDTO> GetSimilarProduct(string brandName)
         {
-            var products = _context.Products.Where(p => p.Brand.Name == brandName).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.Brand.Name == brandName).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             if (products == null)
             {
                 throw new Exception("Product not found");
