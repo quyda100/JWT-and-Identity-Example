@@ -45,6 +45,7 @@ namespace auth.Controllers
             }
         }
         [HttpPost("AddProduct")]
+        [Consumes("multipart/form-data")]
         public IActionResult Add([FromForm] ProductCreateRequest product)
         {
             try

@@ -10,7 +10,7 @@ namespace auth.Interfaces
         public List<OrderDTO> GetOrders();
         public List<OrderProductDTO> GetOrderProducts(int orderId);
         public void UpdateOrder(int id, OrderDTO order);
-        public void UpdateOrderStatus(List<int> ids, int status);
+        public Task UpdateOrderStatus(List<int> ids, int status);
         public List<OrderDTO> GetOrdersByUserId();
         public void DeleteOrder(int id);
 

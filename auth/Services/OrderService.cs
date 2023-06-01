@@ -6,9 +6,14 @@ using auth.Model.Request;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using Microsoft.VisualBasic;
+using Newtonsoft.Json;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
+using System.Text.Json;
 
 namespace auth.Services
 {
@@ -18,19 +23,22 @@ namespace auth.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogService _log;
         private readonly IMapper _mapper;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public OrderService(ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, ILogService log, IMapper mapper)
+        public OrderService(ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, ILogService log, IMapper mapper, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _log = log;
             _mapper = mapper;
+            _httpClientFactory = httpClientFactory;
         }
 
         public void CreateOrder(OrderRequest model)
         {
             var order = new Order
             {
+                PaymentMethod = "COD",
                 CustomerName = model.Name,
                 Address = model.Address,
                 Phone = model.Phone,
@@ -74,7 +82,7 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrders()
         {
-            var orders = _context.Orders.Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
+            var orders = _context.Orders.Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).OrderBy(p => p.CreatedAt).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
@@ -105,7 +113,7 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrdersByUserId()
         {
-            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
+            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).OrderBy(p => p.CreatedAt).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
@@ -134,20 +142,102 @@ namespace auth.Services
         }
         private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        public void UpdateOrderStatus(List<int> ids, int status)
+        public async Task UpdateOrderStatus(List<int> ids, int status)
         {
             foreach (var id in ids)
             {
-                var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+                var order = await _context.Orders.Include(o => o.OrderProducts).ThenInclude(p => p.Product).FirstOrDefaultAsync(o => o.Id == id);
                 if (order == null)
                 {
                     throw new Exception("Không tìm thấy hóa đơn: " + id);
                 }
+                if (status == 1)
+                {
+                    var temp = await CreateOrderGHN(order);
+                    order.Code = temp.Code;
+                    order.DeliveryTime = temp.DeliveryTime;
+                }
+                if (status == 2)
+                {
+                    UpdateProductSales(order.OrderProducts);
+                }
                 order.Status = status;
+                order.UpdatedAt = DateTime.Now;
                 _context.Orders.Update(order);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 _log.SaveLog($"Cập nhật hóa đơn: {id} thành {status}");
             }
+        }
+        /*
+         * Tạo đơn hàng và gửi qua GHN
+         */
+        private async Task<Order> CreateOrderGHN(Order order)
+        {
+            /*
+             * Khai báo dữ liệu cần gửi đi
+             */
+            var address = order.Address.Split(',');
+            IEnumerable<object> items = order.OrderProducts.Select(p => new
+            {
+                name = p.Product.Name,
+                code = p.Product.Code,
+                quantity = p.Quantity,
+                price = p.Price / 1000,
+            });
+            string item = JsonConvert.SerializeObject(items);
+            object data = new
+            {
+                payment_type_id = 2,
+                to_name = order.CustomerName,
+                to_phone = order.Phone,
+                to_address = address[0],
+                to_ward_name = address[address.Length - 3].Trim(),
+                to_district_name = address[address.Length - 2].Trim(),
+                to_province_name = address[address.Length - 1].Trim(),
+                cod_amount = order.PaymentMethod == "COD" ? order.Total / 1000 : 0,
+                weight = 200,
+                length = 10,
+                width = 5,
+                height = 10,
+                service_type_id = 2,
+                service_id = 0,
+                required_note = "CHOTHUHANG",
+                Items = items,
+            };
+            string dataSend = JsonConvert.SerializeObject(data);
+            /*
+             * Khai báo HTTP
+             */
+            var stringContent = new StringContent(dataSend, Encoding.UTF8, "application/json");
+            HttpClient client = _httpClientFactory.CreateClient();
+            var uri = new Uri("https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create");
+            client.DefaultRequestHeaders.Add("ShopId", "124347");
+            client.DefaultRequestHeaders.Add("Token", "c0ad7ca7-fb92-11ed-92f3-0e596e5953f1");
+            /*
+             * Gửi dữ liệu thông qua HTTP Post
+             */
+            var response = await client.PostAsync(uri, stringContent);
+            if (response.IsSuccessStatusCode)
+            {
+                /*
+                * Lấy dữ liệu trả về và convert
+                */
+                var jsonData = await response.Content.ReadAsStringAsync();
+                dynamic json = JsonConvert.DeserializeObject(jsonData);
+                /*
+                * Cập nhật thông tin hóa đơn
+                */
+                order.Code = json.data.order_code;
+                order.DeliveryTime = json.data.expected_delivery_time;
+            }
+            else
+            {
+                var jsonData = await response.Content.ReadAsStringAsync();
+                dynamic json = JsonConvert.DeserializeObject(jsonData);
+                string ex = json.code_message_value;
+                throw new Exception(ex);
+            }
+            return order;
         }
     }
 }

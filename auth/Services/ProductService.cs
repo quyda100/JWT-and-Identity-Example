@@ -115,7 +115,7 @@ namespace auth.Services
             product.Warranty = p.Warranty;
             product.BrandId = p.BrandId;
             product.CategoryId = p.CategoryId;
-
+            product.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật sản phẩm: " + product.Code);
             _context.Products.Update(product);
             _context.SaveChangesAsync();

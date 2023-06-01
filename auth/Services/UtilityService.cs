@@ -6,10 +6,12 @@ namespace auth.Services
     public class UtilityService : IUtilityService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public UtilityService(IHttpContextAccessor httpContextAccessor)
+        public UtilityService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory)
         {
             _httpContextAccessor = httpContextAccessor;
+            _httpClientFactory = httpClientFactory;
         }
         public byte[] GetImage(string fileName)
         {
@@ -35,7 +37,7 @@ namespace auth.Services
                 throw new Exception("Vui lòng tải lên đúng định dạng");
             }
             var folder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", type);
-            var fileName = prefix+"-"+ Guid.NewGuid().ToString() + fileExtension;
+            var fileName = prefix + "-" + Guid.NewGuid().ToString() + fileExtension;
             var filePath = Path.Combine(folder, fileName);
 
             if (!Directory.Exists(folder))
@@ -51,7 +53,7 @@ namespace auth.Services
 
         public List<string> UploadImages(List<IFormFile> files, string prefix, string type)
         {
-            if (files.Count == 0)
+            if (files.Count() == 0)
             {
                 return null;
             }
@@ -60,6 +62,22 @@ namespace auth.Services
             {
                 var fileName = UploadImage(file, prefix, type);
                 result.Add(fileName);
+            }
+            return result;
+        }
+        public async Task<string> CallHttp()
+        {
+            string result = string.Empty;
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://dummyjson.com/todos");
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                result = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                result = $"There is some errors : {response.ReasonPhrase}";
             }
             return result;
         }

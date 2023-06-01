@@ -1,6 +1,9 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
+using auth.Model.Request;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -11,18 +14,27 @@ namespace auth.Services
         private readonly ApplicationDBContext _context;
         private readonly ILogService _log;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
-        public NewService(ApplicationDBContext context, ILogService log, IHttpContextAccessor httpContextAccessor) { 
+        public NewService(ApplicationDBContext context, ILogService log, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        {
             _context = context;
             _log = log;
             _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
-        public void AddNew(New model)
+        public void AddNew(NewRequest model)
         {
-            model.UserId = GetUserId();
+            var post = new New
+            {
+                Title = model.Title,
+                Description = model.Description,
+                Content = model.Content,
+                UserId = GetUserId()
+            };
             _log.SaveLog("Tạo bài viết mới: " + model.Title);
-                _context.News.Add(model);
-                _context.SaveChanges();
+            _context.News.Add(post);
+            _context.SaveChanges();
 
         }
 
@@ -40,20 +52,23 @@ namespace auth.Services
             return findNew(id);
         }
 
-        public async Task<IEnumerable<New>> GetNews()
+        public List<NewDTO> GetNews()
         {
-            var news = await _context.News.ToListAsync();
+            var news = _context.News.Include(n => n.User).Select(n => _mapper.Map<NewDTO>(n)).ToList();
             return news;
         }
 
-        public async void UpdateNew(int id, New model)
+        public async void UpdateNew(int id, NewDTO model)
         {
             if (model.Id != id)
                 throw new Exception("Having trouble");
-            var item = await _context.News.SingleOrDefaultAsync(x=>x.Id == id);
-            model.UpdatedAt = DateTime.Now;
-            _context.News.Update(model);
-            _log.SaveLog("Cập nhât bài viết: " + item.Title);
+            var item = findNew(id);
+            item.Title = model.Title;
+            item.Description = model.Description;
+            item.Content = model.Content;
+            item.UpdatedAt = DateTime.Now;
+            _context.News.Update(item);
+            _log.SaveLog("Cập nhật bài viết: " + item.Title);
             await _context.SaveChangesAsync();
         }
         private New findNew(int id)
@@ -61,7 +76,7 @@ namespace auth.Services
             var item = _context.News.SingleOrDefault(p => p.Id == id);
             if (item == null)
             {
-                throw new Exception("New not found");
+                throw new Exception("Không tìm thấy bài viết");
             }
             return item;
         }
