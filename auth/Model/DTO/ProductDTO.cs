@@ -13,7 +13,7 @@ namespace auth.Model.DTO
         public string Color { get; set; }
         public int Stock { get; set; }
         public int Sales { get; set; }
-        public string CaseMeterial { get; set; }
+        public string CaseMaterial { get; set; }
         public float CaseSize { get; set; }
         public string GlassMaterial { get; set; }
         public string Movement { get; set; }

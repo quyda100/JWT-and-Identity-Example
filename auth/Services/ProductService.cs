@@ -160,7 +160,8 @@ namespace auth.Services
             var brand = _context.Brands.FirstOrDefault(b => b.Id == brandId);
             if (brand == null)
             {
-                throw new Exception("Brand is not exist!");
+                //throw new Exception("Brand is not exist!");
+                return null;
             }
             var products = _context.Products.Where(p => p.BrandId == brandId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
