@@ -136,9 +136,23 @@ namespace auth.Services
             }
         }
 
-        public Task UpdateOrder(string order_code, string payment_id, string payment_type, string secure_code, string transaction_info)
+        public bool UpdateOrder(string order_code, string payment_id, string payment_type, string secure_code, string transaction_info)
         {
-            throw new NotImplementedException();
+            string str = "";
+
+            str += " " + transaction_info;
+
+            str += " " + order_code;
+
+            str += " " + payment_id;
+
+            str += " " + payment_type;
+
+            str += " " + securePass;
+
+            string verify = GetMD5Hash(str);
+
+            return verify == secure_code;
         }
     }
 }
