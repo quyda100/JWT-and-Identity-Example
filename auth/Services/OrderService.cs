@@ -92,11 +92,11 @@ namespace auth.Services
             return orderProducts;
         }
 
-        public void UpdateOrder(int id, OrderDTO model)
+        public async Task UpdateOrder(int id, OrderDTO model)
         {
             if (id != model.Id)
                 throw new Exception("Having a trouble");
-            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            var order = await FindOrder(id);
             if (order == null)
             {
                 throw new Exception("Không tìm thấy hóa đơn");
@@ -238,6 +238,46 @@ namespace auth.Services
                 throw new Exception(ex);
             }
             return order;
+        }
+
+        public async Task<Order> FindOrder(int id)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o=>o.Id == id);
+            return order;
+        }
+        public async Task UpdateOrderCheckout(int id, long price)
+        {
+            var order =  await FindOrder(id);
+            if(order == null)
+            {
+                throw new Exception("Không tìm thấy hóa đơn");
+            }
+            if(order.PaymentTime != DateTime.MinValue) {
+                throw new Exception("Đơn hàng đã được thanh toán");
+            }
+            if(price != order.Total) {
+                throw new Exception("Sai thông tin sản phẩm");
+            }
+            order.PaymentMethod = "NganLuong";
+            order.PaymentTime = DateTime.Now;
+            _context.Update(order);
+            await _context.SaveChangesAsync();
+        }
+        public async Task UpdateOrderCheckout(int id)
+        {
+            var order =  await FindOrder(id);
+            if(order == null)
+            {
+                throw new Exception("Không tìm thấy hóa đơn");
+            }
+            if (order.PaymentTime != DateTime.MinValue)
+            {
+                throw new Exception("Đơn hàng đã được thanh toán");
+            }
+            order.PaymentMethod = "NganLuong";
+            order.PaymentTime = DateTime.Now;
+            _context.Update(order);
+            await _context.SaveChangesAsync();
         }
     }
 }
