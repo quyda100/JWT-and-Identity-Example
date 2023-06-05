@@ -15,13 +15,15 @@ namespace auth.Services
         private readonly ILogService _log;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly IUtilityService _utility;
 
-        public NewService(ApplicationDBContext context, ILogService log, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public NewService(ApplicationDBContext context, ILogService log, IHttpContextAccessor httpContextAccessor, IMapper mapper, IUtilityService utility)
         {
             _context = context;
             _log = log;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _utility = utility;
         }
         public void AddNew(NewRequest model)
         {
@@ -34,6 +36,9 @@ namespace auth.Services
             };
             _log.SaveLog("Tạo bài viết mới: " + model.Title);
             _context.News.Add(post);
+            var thumbnail = _utility.UploadImage(model.Thumbnail, $"{post.Id}", "Posts");
+            post.Thumbnail = thumbnail;
+            _context.News.Update(post);
             _context.SaveChanges();
 
         }
@@ -58,13 +63,18 @@ namespace auth.Services
             return news;
         }
 
-        public async void UpdateNew(int id, NewDTO model)
+        public async void UpdateNew(int id, NewUpdateRequest model)
         {
             if (model.Id != id)
                 throw new Exception("Having trouble");
             var item = findNew(id);
+            if (model.Thumbnail != null)
+            {
+                item.Thumbnail = _utility.UploadImage(model.Thumbnail, $"{item.Id}", "Posts");
+            }
             item.Title = model.Title;
             item.Description = model.Description;
+            item.IsDeleted = model.IsDeleted;
             item.Content = model.Content;
             item.UpdatedAt = DateTime.Now;
             _context.News.Update(item);

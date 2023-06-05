@@ -24,7 +24,7 @@ namespace auth.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(UserManager<User> userManager,RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context, IHttpContextAccessor httpContextAccessor)
+        public AccountService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -37,7 +37,7 @@ namespace auth.Services
         public async Task<string> LoginAsync(LoginRequest model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if( user == null && await _userManager.CheckPasswordAsync(user, model.Password) == false)
+            if (user == null || await _userManager.CheckPasswordAsync(user, model.Password) == false)
             {
                 throw new Exception("Tài khoản hoặc mật khẩu không đúng");
             }
@@ -59,7 +59,7 @@ namespace auth.Services
         public async Task<IdentityResult> RegisterAsync(RegisterRequest model)
         {
             var userExists = await _userManager.FindByEmailAsync(model.Email);
-            if(userExists != null)
+            if (userExists != null)
             {
                 throw new Exception("Email already exists!");
             }
@@ -78,11 +78,11 @@ namespace auth.Services
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.User))
             {
-               await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
             }
             if (await _roleManager.RoleExistsAsync(UserRoles.User))
             {
-               await _userManager.AddToRoleAsync(user, UserRoles.User);
+                await _userManager.AddToRoleAsync(user, UserRoles.User);
             }
             return await _userManager.UpdateAsync(user);
         }
@@ -90,7 +90,7 @@ namespace auth.Services
         public async Task<IdentityResult> RegisterAdminAsync(RegisterRequest model)
         {
             var userExists = await _userManager.FindByEmailAsync(model.Email);
-            if(userExists != null)
+            if (userExists != null)
             {
                 throw new Exception("Email already exists!");
             }
@@ -109,11 +109,11 @@ namespace auth.Services
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
             {
-               await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
             }
             if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
             {
-               await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
             }
             return await _userManager.UpdateAsync(user);
         }
@@ -135,7 +135,7 @@ namespace auth.Services
 
         public async Task<IdentityResult> ChangePassword(ChangepasswordRequest model)
         {
-            if(GetUserId() != model.Id)
+            if (GetUserId() != model.Id)
             {
                 throw new Exception("Có lỗi xảy ra");
             }
@@ -184,10 +184,11 @@ namespace auth.Services
         }
         public async void ChangeAvatar(IFormFile file)
         {
-            List<string> extensionAllowed = new List<string> { ".png",".jpg","jpeg" };
+            List<string> extensionAllowed = new List<string> { ".png", ".jpg", "jpeg" };
             var user = GetUserById();
             var fileExtension = Path.GetExtension(file.FileName);
-            if (!extensionAllowed.Contains(fileExtension)){
+            if (!extensionAllowed.Contains(fileExtension))
+            {
                 throw new Exception("Vui lòng tải lên đúng định dạng");
             }
             var fileName = Path.Combine("Uploads", "Avatar", GetUserId() + fileExtension);
