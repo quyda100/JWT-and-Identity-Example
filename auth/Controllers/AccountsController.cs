@@ -3,7 +3,9 @@ using auth.Model.Request;
 using auth.Model.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace auth.Controllers
 {
@@ -130,6 +132,6 @@ namespace auth.Controllers
                 return BadRequest(ex.Message);
             }
             return NoContent();
-        }
+        } 
     }
 }

@@ -1,4 +1,4 @@
-using auth.Data;
+﻿using auth.Data;
 using auth.Helpers;
 using auth.Interfaces;
 using auth.Model;
@@ -123,6 +123,8 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
+// quên mật khẩu
+builder.Services.AddTransient<IEmailService, EmailService>();
 /////////////////////////////
 
 var app = builder.Build();
