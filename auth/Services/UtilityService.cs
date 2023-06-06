@@ -88,12 +88,12 @@ namespace auth.Services
                 Text = $"<h3>Chào: {name}</h3>" +
                 $"<p>Bạn vui lòng truy cập vào đường dẫn:</p>" +
                 $"<a href ='{token}' target='_blank'>{token}</a>" +
-                $"<p>Hoặc nhấp <a href ='{ token }' target='_blank'>vào đây</a> để đặt lại mật khẩu"
+                $"<p>Hoặc nhấp <a href ='{token}' target='_blank'>vào đây</a> để đặt lại mật khẩu"
             };
 
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(_configuration["Mail:Host"], int.Parse(_configuration["Mail:Port"]),SecureSocketOptions.StartTls);
+                await client.ConnectAsync(_configuration["Mail:Host"], int.Parse(_configuration["Mail:Port"]), SecureSocketOptions.StartTls);
                 await client.AuthenticateAsync(_configuration["Mail:Email"], _configuration["Mail:Password"]);
                 await client.SendAsync(message);
             }
