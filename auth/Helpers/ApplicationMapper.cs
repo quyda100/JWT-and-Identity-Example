@@ -14,6 +14,7 @@ namespace auth.Helpers
             CreateMap<Import, ImportDTO>();
             CreateMap<ImportDetail, ImportProductDTO>();
             CreateMap<New, NewDTO>();
+            CreateMap<Log, LogDTO>();
         }
     }
 }

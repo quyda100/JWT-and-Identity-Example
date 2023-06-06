@@ -40,7 +40,7 @@ namespace auth.Controllers
             }
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateNew(int id, NewDTO New)
+        public IActionResult UpdateNew(int id, NewUpdateRequest New)
         {
             try
             {
