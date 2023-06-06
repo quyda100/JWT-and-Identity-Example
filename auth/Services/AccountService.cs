@@ -22,15 +22,17 @@ namespace auth.Services
         private readonly IConfiguration _configuration;
         private readonly ApplicationDBContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUtilityService _utility;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context, IHttpContextAccessor httpContextAccessor)
+        public AccountService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, IUtilityService utility)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _context = context;
             _roleManager = roleManager;
+            _utility = utility;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -210,5 +212,35 @@ namespace auth.Services
             return user;
         }
         private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        public async Task SendResetPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new Exception("Vui lòng nhập Email");
+            }
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception("Không tìm thấy người dùng");
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var link = $"https://localhost:3000?email={email}&token={token}";
+            await _utility.SendEmailAsync(user.FullName,email, link);
+        }
+
+        public async Task ResetPassword(string email, string token, string newPassword)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new Exception("Vui lòng nhập Email");
+            }
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception("Không tìm thấy người dùng");
+            }
+            await _userManager.ResetPasswordAsync(user, token, newPassword);
+        }
     }
 }

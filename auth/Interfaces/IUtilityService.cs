@@ -5,6 +5,6 @@
         string UploadImage(IFormFile file, string prefix, string type);
         List<string> UploadImages(List<IFormFile> files, string prefix, string type);
         Byte[] GetImage(string fileName);
-        Task<string> CallHttp();
+        Task SendEmailAsync(string name,string email, string token);
     }
 }

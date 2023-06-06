@@ -131,5 +131,33 @@ namespace auth.Controllers
             }
             return NoContent();
         }
+        [AllowAnonymous]
+        [HttpGet("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            try
+            {
+                await _service.SendResetPassword(email);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(string email, string token, string newPassword)
+        {
+            try
+            {
+                await _service.ResetPassword(email, token, newPassword);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
