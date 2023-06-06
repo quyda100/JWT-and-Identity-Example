@@ -14,5 +14,7 @@ namespace auth.Interfaces
         public Task<IdentityResult> ChangePassword(ChangepasswordRequest model);
         public Task<UserDTO> GetCurrentUser();
         public void ChangeAvatar(IFormFile file);
+        public Task SendResetPassword(string email);
+        public Task ResetPassword(string email, string token, string newPassword);
     }
 }
