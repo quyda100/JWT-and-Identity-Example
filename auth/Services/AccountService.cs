@@ -12,6 +12,7 @@ using Microsoft.VisualBasic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Xml.Linq;
 
 namespace auth.Services
 {
@@ -225,8 +226,12 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy người dùng");
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var link = $"https://localhost:3000?email={email}&token={token}";
-            await _utility.SendEmailAsync(user.FullName,email, link);
+            var link = $"https://localhost:3000/resetpassword?email={email}&token={token}";
+            var content = $"<h3>Chào: {user.FullName}</h3>" +
+                $"<p>Bạn vui lòng truy cập vào đường dẫn:</p>" +
+                $"<a href ='{link}' target='_blank'>{link}</a>" +
+                $"<p>Hoặc nhấp <a href ='{link}' target='_blank'>vào đây</a> để đặt lại mật khẩu";
+            await _utility.SendEmailAsync(user.FullName,email, content);
         }
 
         public async Task ResetPassword(string email, string token, string newPassword)

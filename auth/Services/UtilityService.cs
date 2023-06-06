@@ -77,7 +77,7 @@ namespace auth.Services
             string baseURL = $"{currentReq.Scheme}://{currentReq.Host}/images/{type}/";
             return baseURL + fileName;
         }
-        public async Task SendEmailAsync(string name, string email, string token)
+        public async Task SendEmailAsync(string name, string email, string content)
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(_configuration["Mail:DisplayName"], _configuration["Mail:Email"]));
@@ -85,15 +85,12 @@ namespace auth.Services
             message.Subject = "Đặt Lại Mật Khẩu";
             message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
-                Text = $"<h3>Chào: {name}</h3>" +
-                $"<p>Bạn vui lòng truy cập vào đường dẫn:</p>" +
-                $"<a href ='{token}' target='_blank'>{token}</a>" +
-                $"<p>Hoặc nhấp <a href ='{ token }' target='_blank'>vào đây</a> để đặt lại mật khẩu"
+                Text = content
             };
 
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(_configuration["Mail:Host"], int.Parse(_configuration["Mail:Port"]),SecureSocketOptions.StartTls);
+                await client.ConnectAsync(_configuration["Mail:Host"], int.Parse(_configuration["Mail:Port"]), SecureSocketOptions.StartTls);
                 await client.AuthenticateAsync(_configuration["Mail:Email"], _configuration["Mail:Password"]);
                 await client.SendAsync(message);
             }
