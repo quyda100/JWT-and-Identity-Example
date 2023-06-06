@@ -9,9 +9,9 @@ namespace auth.Interfaces
         public List<ProductDTO> GetProducts();
         public List<ProductDTO> GetAvailableProducts();
         public ProductDTO GetProductById(int id);
-        public void AddProduct(ProductCreateRequest product);
+        public void AddProduct(ProductRequest product);
         public void RemoveProduct(int id);
-        public void UpdateProduct(int id, ProductRequest product);
+        public Task UpdateProduct(int id, ProductRequest product);
         public ProductDTO GetProductByCode(string code);
 
         //SimilarProduct

@@ -42,7 +42,7 @@ namespace auth.Services
             var products = _context.Products.Where(product => product.Stock > 0).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
-        public void AddProduct(ProductCreateRequest productDTO)
+        public void AddProduct(ProductRequest productDTO)
         {
             if (_context.Products.Any(x => x.Name == productDTO.Name))
             {
@@ -54,7 +54,6 @@ namespace auth.Services
             }
             var image = _utility.UploadImage(productDTO.ImageFile, productDTO.Code, "Products");
             var lstPreviewImages = new List<string>();
-            lstPreviewImages.Add(image);
             lstPreviewImages.AddRange(_utility.UploadImages(productDTO.PreviewImageFiles, productDTO.Code, "Products"));
             var previewImages = lstPreviewImages == null ? null : JsonSerializer.Serialize(lstPreviewImages);
             var product = new Product
@@ -88,24 +87,33 @@ namespace auth.Services
             _context.SaveChangesAsync();
         }
 
-        public void UpdateProduct(int id, ProductRequest p)
+        public async Task UpdateProduct(int id, ProductRequest p)
         {
             if (p.Id != id)
                 throw new Exception("Having trouble");
             var product = GetProduct(id);
+            if (product.Code != p.Code && _context.Products.Any(pr => pr.Code == p.Code))
+                throw new Exception(p.Code + " đã tồn tại");
             if (product.Name != p.Name && _context.Products.Any(pr => pr.Name == p.Name))
-                throw new Exception("Name " + p.Name + " is already taken");
-            List<string> previewImages = JsonSerializer.Deserialize<List<string>>(p.PreviewImages);
-            var uploadImage = _utility.UploadImage(p.ImageFile, p.Code, "Products");
-            var uploadPreviewImages = _utility.UploadImages(p.PreviewImageFiles, p.Code, "Products");
-            previewImages.AddRange(uploadPreviewImages);
-
+                throw new Exception(p.Name + " đã tồn tại");
+            var image = _utility.UploadImage(p.ImageFile, p.Code, "Products");
+            var previewImages = _utility.UploadImages(p.PreviewImageFiles, p.Code, "Products");
+            if (!String.IsNullOrEmpty(image))
+            {
+                product.Image = image;
+            }
+            if (previewImages != null)
+            {
+                var images = JsonSerializer.Deserialize<List<string>>(product.PreviewImages);
+                var deleted = images.Where(i => previewImages.Contains(i)).ToList();
+                deleted.ForEach(i => images.Remove(i));
+                var combine = images.Concat(previewImages);
+                product.PreviewImages = JsonSerializer.Serialize(combine);
+            }
             product.Code = p.Code;
             product.Name = p.Name;
             product.Price = p.Price;
-            product.Image = p.Image;
             product.Color = p.Color;
-            product.PreviewImages = JsonSerializer.Serialize(previewImages);
             product.CaseMaterial = p.CaseMaterial;
             product.CaseSize = p.CaseSize;
             product.GlassMaterial = p.GlassMaterial;
@@ -118,7 +126,7 @@ namespace auth.Services
             product.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật sản phẩm: " + product.Code);
             _context.Products.Update(product);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
         public ProductDTO GetProductById(int id)
         {

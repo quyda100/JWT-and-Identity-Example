@@ -21,7 +21,7 @@ namespace auth.Controllers
         [AllowAnonymous]
         public IActionResult GetAllProducts()
         {
-           return Ok(_service.GetProducts());
+            return Ok(_service.GetProducts());
         }
         [HttpGet("GetAvailableProducts")]
         [AllowAnonymous]
@@ -46,11 +46,11 @@ namespace auth.Controllers
         }
         [HttpPost("AddProduct")]
         [Consumes("multipart/form-data")]
-        public IActionResult Add([FromForm] ProductCreateRequest product)
+        public IActionResult Add([FromForm] ProductRequest product)
         {
             try
             {
-                if(!ModelState.IsValid || product == null)
+                if (!ModelState.IsValid || product == null)
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
@@ -63,7 +63,7 @@ namespace auth.Controllers
             }
         }
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromForm] ProductRequest product)
+        public async Task<IActionResult> Update(int id, [FromForm] ProductRequest product)
         {
             try
             {
@@ -71,13 +71,13 @@ namespace auth.Controllers
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                _service.UpdateProduct(id, product);
+                await _service.UpdateProduct(id, product);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            return NoContent();
+            return Ok();
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
@@ -97,15 +97,16 @@ namespace auth.Controllers
             return NoContent();
         }
         [HttpGet("GetTrashedProducts")]
-        public IActionResult GetTrashedProducts() {
+        public IActionResult GetTrashedProducts()
+        {
             return Ok(_service.GetTrashedProducts());
         }
 
         [HttpGet("SimilarProduct/{brandName}")]
         [AllowAnonymous]
-        public  IActionResult GetSimilarProduct(string brandName)
+        public IActionResult GetSimilarProduct(string brandName)
         {
-            var product =  _service.GetSimilarProduct(brandName);
+            var product = _service.GetSimilarProduct(brandName);
             return Ok(product);
         }
         [HttpGet("GetProductsByBrand")]

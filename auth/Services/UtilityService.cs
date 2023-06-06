@@ -24,7 +24,7 @@ namespace auth.Services
         {
             if (file == null)
             {
-                return null;
+                return String.Empty;
             }
             var acceptExtension = new List<string> { ".jpg", ".jpeg", ".png", ".gif" };
             if (file.Length > 10485760)
@@ -53,7 +53,7 @@ namespace auth.Services
 
         public List<string> UploadImages(List<IFormFile> files, string prefix, string type)
         {
-            if (files.Count() == 0)
+            if (files == null)
             {
                 return null;
             }
