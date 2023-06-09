@@ -1,6 +1,7 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace auth.Services
@@ -16,18 +17,27 @@ namespace auth.Services
             _log = log;
         }
 
-        public List<Brand> GetBrands()
+        public List<BrandDTO> GetBrands()
         {
-            var brands = _context.Brands.ToList();
+            var brands = _context.Brands.Select(b => new BrandDTO
+            {
+                Id = b.Id,
+                Name = b.Name,
+                CreatedAt = b.CreatedAt
+            }).ToList();
             return brands;
         }
 
-        public void AddBrand (Brand model)
+        public void AddBrand(string name)
         {
-            if (_context.Brands.Any(x => x.Name == model.Name))
-                throw new Exception(model.Name + " đã tồn tại!");
-            _log.SaveLog("Tạo nhãn hàng mới: " + model.Name);
-            _context.Brands.Add(model);
+            if (_context.Brands.Any(x => x.Name == name))
+                throw new Exception(name + " đã tồn tại!");
+            _log.SaveLog("Tạo nhãn hàng mới: " + name);
+            var brand = new Brand
+            {
+                Name = name
+            };
+            _context.Brands.Add(brand);
             _context.SaveChanges();
         }
 
@@ -40,16 +50,17 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public void UpdateBrand(int id, Brand model)
+        public void UpdateBrand(int id, BrandDTO model)
         {
             if (model.Id != id)
                 throw new Exception("Có lỗi xảy ra");
             var brand = GetBrand(id);
             if (model.Name != brand.Name && _context.Products.Any(pr => pr.Name == model.Name))
                 throw new Exception("Tên " + brand.Name + " đã tồn tại");
-            model.UpdatedAt = DateTime.Now;
-            _log.SaveLog("Cập nhật dữ liệu: "+brand.Name);
-            _context.Brands.Update(model);
+            brand.Name = model.Name;
+            brand.UpdatedAt = DateTime.Now;
+            _log.SaveLog("Cập nhật dữ liệu: " + brand.Name);
+            _context.Brands.Update(brand);
             _context.SaveChangesAsync();
         }
 

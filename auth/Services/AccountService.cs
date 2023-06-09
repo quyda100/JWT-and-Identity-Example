@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Xml.Linq;
 
 namespace auth.Services
 {
@@ -18,15 +19,17 @@ namespace auth.Services
         private readonly IConfiguration _configuration;
         private readonly ApplicationDBContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUtilityService _utility;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context, IHttpContextAccessor httpContextAccessor)
+        public AccountService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDBContext context, IHttpContextAccessor httpContextAccessor, IUtilityService utility)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _context = context;
             _roleManager = roleManager;
+            _utility = utility;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -206,5 +209,39 @@ namespace auth.Services
             return user;
         }
         private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        public async Task SendResetPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new Exception("Vui lòng nhập Email");
+            }
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception("Không tìm thấy người dùng");
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var link = $"https://localhost:3000/resetpassword?email={email}&token={token}";
+            var content = $"<h3>Chào: {user.FullName}</h3>" +
+                $"<p>Bạn vui lòng truy cập vào đường dẫn:</p>" +
+                $"<a href ='{link}' target='_blank'>{link}</a>" +
+                $"<p>Hoặc nhấp <a href ='{link}' target='_blank'>vào đây</a> để đặt lại mật khẩu";
+            await _utility.SendEmailAsync(user.FullName,email, content);
+        }
+
+        public async Task ResetPassword(string email, string token, string newPassword)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new Exception("Vui lòng nhập Email");
+            }
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception("Không tìm thấy người dùng");
+            }
+            await _userManager.ResetPasswordAsync(user, token, newPassword);
+        }
     }
 }

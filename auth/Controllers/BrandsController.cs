@@ -3,6 +3,7 @@ using auth.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using auth.Model.DTO;
 
 namespace auth.Controllers
 {
@@ -24,16 +25,16 @@ namespace auth.Controllers
             return Ok(brands);
         }
         [HttpPost]
-        public IActionResult AddBrand(Brand brand)
+        public IActionResult AddBrand(string name)
         {
             try
             {
-                if (brand == null || !ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                _service.AddBrand(brand);
-                return Ok(brand);
+                _service.AddBrand(name);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -41,7 +42,7 @@ namespace auth.Controllers
             }
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateBrand(int id, Brand brand)
+        public IActionResult UpdateBrand(int id, BrandDTO brand)
         {
             try
             {
@@ -55,7 +56,7 @@ namespace auth.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            return NoContent();
+            return Ok();
         }
         [HttpDelete("{id}")]
         public IActionResult DeleteBrand(int id)
@@ -72,7 +73,7 @@ namespace auth.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            return NoContent();
+            return Ok();
         }
     }
 }

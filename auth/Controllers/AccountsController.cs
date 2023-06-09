@@ -63,7 +63,7 @@ namespace auth.Controllers
         [HttpPost]
         [Route("Login")]
         [AllowAnonymous]
-        
+
         public async Task<IActionResult> Login(LoginRequest model)
         {
             try
@@ -77,7 +77,7 @@ namespace auth.Controllers
             }
         }
         [HttpPost("Changepassword")]
-        public async Task<IActionResult> ChangePassword (ChangepasswordRequest model)
+        public async Task<IActionResult> ChangePassword(ChangepasswordRequest model)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace auth.Controllers
         {
             try
             {
-                if(model == null || !ModelState.IsValid)
+                if (model == null || !ModelState.IsValid)
                 {
                     return BadRequest("Vui lòng nhập đúng dữ liệu");
                 }
@@ -132,6 +132,34 @@ namespace auth.Controllers
                 return BadRequest(ex.Message);
             }
             return NoContent();
-        } 
+        }
+        [AllowAnonymous]
+        [HttpGet("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            try
+            {
+                await _service.SendResetPassword(email);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(string email, string token, string newPassword)
+        {
+            try
+            {
+                await _service.ResetPassword(email, token, newPassword);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

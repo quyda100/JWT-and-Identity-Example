@@ -1,5 +1,9 @@
 ﻿using auth.Interfaces;
+using MailKit.Net.Smtp;
+using MailKit;
+using MimeKit;
 using System.Xml.Linq;
+using MailKit.Security;
 
 namespace auth.Services
 {
@@ -7,11 +11,13 @@ namespace auth.Services
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConfiguration _configuration;
 
-        public UtilityService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory)
+        public UtilityService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
             _httpClientFactory = httpClientFactory;
+            _configuration = configuration;
         }
         public byte[] GetImage(string fileName)
         {
@@ -65,28 +71,29 @@ namespace auth.Services
             }
             return result;
         }
-        public async Task<string> CallHttp()
-        {
-            string result = string.Empty;
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://dummyjson.com/todos");
-            var client = _httpClientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                result = await response.Content.ReadAsStringAsync();
-            }
-            else
-            {
-                result = $"There is some errors : {response.ReasonPhrase}";
-            }
-            return result;
-        }
-
         private string FormatFileURL(string fileName, string type)
         {
             var currentReq = _httpContextAccessor.HttpContext.Request;
             string baseURL = $"{currentReq.Scheme}://{currentReq.Host}/images/{type}/";
             return baseURL + fileName;
+        }
+        public async Task SendEmailAsync(string name, string email, string content)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_configuration["Mail:DisplayName"], _configuration["Mail:Email"]));
+            message.To.Add(new MailboxAddress(name, email));
+            message.Subject = "Đặt Lại Mật Khẩu";
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = content
+            };
+
+            using (var client = new SmtpClient())
+            {
+                await client.ConnectAsync(_configuration["Mail:Host"], int.Parse(_configuration["Mail:Port"]), SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_configuration["Mail:Email"], _configuration["Mail:Password"]);
+                await client.SendAsync(message);
+            }
         }
     }
 }
