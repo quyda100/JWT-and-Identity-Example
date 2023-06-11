@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using auth.Model.DTO;
+using auth.Model.Request;
 
 namespace auth.Controllers
 {
@@ -25,15 +26,15 @@ namespace auth.Controllers
             return Ok(brands);
         }
         [HttpPost]
-        public IActionResult AddBrand(string name)
+        public IActionResult AddBrand(BrandRequest request)
         {
             try
             {
-                if (!ModelState.IsValid)
+                if (!ModelState.IsValid|| request == null)
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                _service.AddBrand(name);
+                _service.AddBrand(request);
                 return Ok();
             }
             catch (Exception ex)

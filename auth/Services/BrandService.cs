@@ -2,6 +2,7 @@
 using auth.Interfaces;
 using auth.Model;
 using auth.Model.DTO;
+using auth.Model.Request;
 using Microsoft.EntityFrameworkCore;
 
 namespace auth.Services
@@ -23,19 +24,21 @@ namespace auth.Services
             {
                 Id = b.Id,
                 Name = b.Name,
+                Description = b.Description,
                 CreatedAt = b.CreatedAt
             }).ToList();
             return brands;
         }
 
-        public void AddBrand(string name)
+        public void AddBrand(BrandRequest model)
         {
-            if (_context.Brands.Any(x => x.Name == name))
-                throw new Exception(name + " đã tồn tại!");
-            _log.SaveLog("Tạo nhãn hàng mới: " + name);
+            if (_context.Brands.Any(x => x.Name == model.Name))
+                throw new Exception(model.Name + " đã tồn tại!");
+            _log.SaveLog("Tạo nhãn hàng mới: " + model.Name);
             var brand = new Brand
             {
-                Name = name
+                Name = model.Name,
+                Description = model.Description
             };
             _context.Brands.Add(brand);
             _context.SaveChanges();

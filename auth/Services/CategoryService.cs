@@ -2,6 +2,7 @@
 using auth.Interfaces;
 using auth.Model;
 using auth.Model.DTO;
+using auth.Model.Request;
 using Microsoft.EntityFrameworkCore;
 
 namespace auth.Services
@@ -15,15 +16,16 @@ namespace auth.Services
             _context = context;
             _log = log;
         }
-        public void AddCategory(String Name)
+        public void AddCategory(CategoryRequest model)
         {
 
-            if (_context.Categories.Any(x => x.Name == Name))
-                throw new Exception(Name + " đã tồn tại!");
-            _log.SaveLog("Tạo mới loại sản phẩm: " + Name);
+            if (_context.Categories.Any(x => x.Name == model.Name))
+                throw new Exception(model.Name + " đã tồn tại!");
+            _log.SaveLog("Tạo mới loại sản phẩm: " + model.Name);
             var cate = new Category
             {
-                Name = Name,
+                Name = model.Name,
+                Description = model.Description
             };
             _context.Categories.Add(cate);
             _context.SaveChanges();

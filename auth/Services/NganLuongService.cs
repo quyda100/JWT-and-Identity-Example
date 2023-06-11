@@ -118,22 +118,23 @@ namespace auth.Services
             return false;
         }
 
-        public static string GetMD5Hash(string input)
+        public String GetMD5Hash(String input)
         {
-            // Use input string to calculate MD5 hash
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-            {
-                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
 
-                // Convert the byte array to hexadecimal string
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("X2"));
-                }
-                return sb.ToString().ToLower();
+            System.Security.Cryptography.MD5CryptoServiceProvider x = new System.Security.Cryptography.MD5CryptoServiceProvider();
+
+            byte[] bs = System.Text.Encoding.UTF8.GetBytes(input);
+
+            bs = x.ComputeHash(bs);
+
+            System.Text.StringBuilder s = new System.Text.StringBuilder();
+
+            foreach (byte b in bs)
+            {
+                s.Append(b.ToString("x2").ToLower());
             }
+            String md5String = s.ToString();
+            return md5String;
         }
 
         public bool UpdateOrder(string order_code, string payment_id, string payment_type, string secure_code, string transaction_info)
