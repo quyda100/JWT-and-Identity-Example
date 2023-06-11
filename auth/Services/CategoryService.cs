@@ -1,6 +1,7 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace auth.Services
@@ -14,13 +15,17 @@ namespace auth.Services
             _context = context;
             _log = log;
         }
-        public void AddCategory(Category model)
+        public void AddCategory(String Name)
         {
 
-            if (_context.Categories.Any(x => x.Name == model.Name))
-                throw new Exception(model.Name + " đã tồn tại!");
-            _log.SaveLog("Tạo mới loại sản phẩm: " + model.Name);
-            _context.Categories.Add(model);
+            if (_context.Categories.Any(x => x.Name == Name))
+                throw new Exception(Name + " đã tồn tại!");
+            _log.SaveLog("Tạo mới loại sản phẩm: " + Name);
+            var cate = new Category
+            {
+                Name = Name,
+            };
+            _context.Categories.Add(cate);
             _context.SaveChanges();
         }
 
@@ -33,22 +38,29 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public List<Category> GetCategories()
+        public List<CategoryDTO> GetCategories()
         {
-            var categories = _context.Categories.ToList();
+            var categories = _context.Categories.Where(c=>c.IsDeleted==false).Select(c=> new CategoryDTO
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+            }).ToList();
             return categories;
         }
 
-        public void UpdateCategory(int id, Category model)
+        public void UpdateCategory(int id, CategoryDTO model)
         {
             if (model.Id != id)
                 throw new Exception("Having trouble");
             var category = GetCategory(id);
             if (model.Name != category.Name && _context.Products.Any(pr => pr.Name == model.Name))
                 throw new Exception(category.Name + " đã tồn tại");
-            model.UpdatedAt = DateTime.Now;
+            category.Name = model.Name;
+            category.Description = model.Description;
+            category.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật dữ liệu: " + category.Name);
-            _context.Categories.Update(model);
+            _context.Categories.Update(category);
             _context.SaveChangesAsync();
         }
         private Category GetCategory(int id)

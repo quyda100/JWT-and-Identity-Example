@@ -1,5 +1,6 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,16 +27,16 @@ namespace auth.Controllers
             return Ok(categories);
         }
         [HttpPost("AddCategory")]
-        public IActionResult AddCategory(Category category)
+        public IActionResult AddCategory(string name)
         {
             try
             {
-                if (category == null || !ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                _service.AddCategory(category);
-                return Ok(category);
+                _service.AddCategory(name);
+                return Ok(name);
             }
             catch (Exception ex)
             {
@@ -43,7 +44,7 @@ namespace auth.Controllers
             }
         }
         [HttpPost("UpdateCategory")]
-        public IActionResult UpdateCategory(int id, Category category)
+        public IActionResult UpdateCategory(int id, CategoryDTO category)
         {
             try
             {

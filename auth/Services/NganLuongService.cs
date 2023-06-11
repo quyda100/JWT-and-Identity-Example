@@ -15,14 +15,14 @@ namespace auth.Services
         private string returnURL = "http://localhost:3000/checkout";
         private string cancelURL = "http://localhost:3000/checkout";
         private string notifyUrl = "https://localhost:7182/api/checkout/receiver";
-        public string BuildCheckOutURL(string transactionInfo, string orderId, int price)
+        public string BuildCheckOutURL(string userInfo, string orderId, int price)
         {
             //Khởi tạo Secure Code
             string secureCode = "";
             secureCode += "" + merchantSiteCode;
             secureCode += " " + returnURL;
             secureCode += " " + receiver; // tài khoản ngân lượng
-            secureCode += " " + transactionInfo;
+            secureCode += " " + "Thanh toán đơn hàng";
             secureCode += " " + orderId;
             secureCode += " " + price.ToString();
             secureCode += " " + "vnd"; // hỗ trợ 2 loại tiền tệ currency usd,vnd
@@ -31,8 +31,8 @@ namespace auth.Services
             secureCode += " " + "0";
             secureCode += " " + "0";
             secureCode += " " + "0";
-            secureCode += " " + "";
-            secureCode += " " + "";
+            secureCode += " " + "Thanh toán đơn hàng";
+            secureCode += " " + userInfo;
             secureCode += " " + "";
             secureCode += " " + securePass;
 
@@ -41,7 +41,7 @@ namespace auth.Services
             ht.Add("merchant_site_code", merchantSiteCode);
             ht.Add("return_url", returnURL.ToLower());
             ht.Add("receiver", receiver);
-            ht.Add("transaction_info", transactionInfo);
+            ht.Add("transaction_info", "Thanh toán đơn hàng");
             ht.Add("order_code", orderId);
             ht.Add("price", price);
             ht.Add("currency", "vnd");
@@ -50,8 +50,8 @@ namespace auth.Services
             ht.Add("discount", 0);
             ht.Add("fee_cal", 0);
             ht.Add("fee_shipping", 0);
-            ht.Add("order_description", "");
-            ht.Add("buyer_info", "");
+            ht.Add("order_description", "Thanh toán đơn hàng");
+            ht.Add("buyer_info", userInfo);
             ht.Add("affiliate_code", "");
             ht.Add("secure_code", GetMD5Hash(secureCode));
             ht.Add("cancel_url", cancelURL.ToLower());

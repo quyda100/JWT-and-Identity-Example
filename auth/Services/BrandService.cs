@@ -19,7 +19,7 @@ namespace auth.Services
 
         public List<BrandDTO> GetBrands()
         {
-            var brands = _context.Brands.Select(b => new BrandDTO
+            var brands = _context.Brands.Where(b=>b.IsDeleted==false).Select(b => new BrandDTO
             {
                 Id = b.Id,
                 Name = b.Name,

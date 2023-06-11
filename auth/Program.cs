@@ -123,9 +123,6 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
-// quên mật khẩu
-builder.Services.AddTransient<IEmailService, EmailService>();
-/////////////////////////////
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

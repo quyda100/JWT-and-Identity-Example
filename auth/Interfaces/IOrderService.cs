@@ -6,7 +6,7 @@ namespace auth.Interfaces
 {
     public interface IOrderService
     {
-        public void CreateOrder(OrderRequest order);
+        public Task<int> CreateOrder(OrderRequest order);
         public List<OrderDTO> GetOrders();
         public List<OrderProductDTO> GetOrderProducts(int orderId);
         public Task UpdateOrder(int id, OrderDTO order);

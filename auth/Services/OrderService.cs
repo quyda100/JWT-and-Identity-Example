@@ -34,11 +34,12 @@ namespace auth.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public void CreateOrder(OrderRequest model)
+        public async Task<int> CreateOrder(OrderRequest model)
         {
+            int orderId = -1;
             var order = new Order
             {
-                PaymentMethod = "COD",
+                PaymentMethod = model.PaymentType,
                 CustomerName = model.Name,
                 Address = model.Address,
                 Phone = model.Phone,
@@ -47,12 +48,14 @@ namespace auth.Services
             };
             _context.Orders.Add(order);
             _context.SaveChanges();
+            orderId = order.Id;
             //Tạo orderProduct
             var orderProducts = GetOrderProducts(model.orderProducts, order.Id);
             order.Total = orderProducts.Sum(p => p.Quantity * p.Price); // Tổng hóa đơn
             _context.OrderProducts.AddRange(orderProducts);
+            await _context.SaveChangesAsync();
+            return orderId;
 
-            _context.SaveChanges();
         }
         public List<OrderProduct> GetOrderProducts(List<OrderProductRequest> productRequests, int OrderId)
         {
@@ -82,7 +85,10 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrders()
         {
-            var orders = _context.Orders.Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).OrderBy(p => p.CreatedAt).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
+            var orders = _context.Orders.Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod != "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                    .Include(o => o.OrderProducts).ThenInclude(p => p.Product)
+                    .Include(o => o.User).OrderBy(p => p.CreatedAt)
+                    .Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
@@ -113,7 +119,9 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrdersByUserId()
         {
-            var orders = _context.Orders.Where(o => o.UserId == GetUserId()).Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User).OrderBy(p => p.CreatedAt).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
+            var orders = _context.Orders.Where(o => o.UserId == GetUserId() && (o.PaymentMethod == "COD" || (o.PaymentMethod != "NganLuong" && o.PaymentTime != DateTime.MinValue)))
+                        .Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User)
+                        .OrderBy(p => p.CreatedAt).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
@@ -242,20 +250,22 @@ namespace auth.Services
 
         public async Task<Order> FindOrder(int id)
         {
-            var order = await _context.Orders.FirstOrDefaultAsync(o=>o.Id == id);
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
             return order;
         }
         public async Task UpdateOrderCheckout(int id, long price)
         {
-            var order =  await FindOrder(id);
-            if(order == null)
+            var order = await FindOrder(id);
+            if (order == null)
             {
                 throw new Exception("Không tìm thấy hóa đơn");
             }
-            if(order.PaymentTime != DateTime.MinValue) {
+            if (order.PaymentTime != DateTime.MinValue)
+            {
                 throw new Exception("Đơn hàng đã được thanh toán");
             }
-            if(price != order.Total) {
+            if (price != order.Total)
+            {
                 throw new Exception("Sai thông tin sản phẩm");
             }
             order.PaymentMethod = "NganLuong";
@@ -265,8 +275,8 @@ namespace auth.Services
         }
         public async Task UpdateOrderCheckout(int id)
         {
-            var order =  await FindOrder(id);
-            if(order == null)
+            var order = await FindOrder(id);
+            if (order == null)
             {
                 throw new Exception("Không tìm thấy hóa đơn");
             }

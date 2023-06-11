@@ -21,7 +21,7 @@ namespace auth.Controllers
 
         [HttpPost("CreateOrder")]
         [Authorize(Roles = UserRoles.User)]
-        public IActionResult CreateOrder(OrderRequest order)
+        public async Task<IActionResult> CreateOrder(OrderRequest order)
         {
             try
             {
@@ -29,8 +29,8 @@ namespace auth.Controllers
                 {
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                _service.CreateOrder(order);
-                return Ok(order);
+                int orderId = await _service.CreateOrder(order);
+                return Ok(orderId);
             }
             catch (Exception ex)
             {

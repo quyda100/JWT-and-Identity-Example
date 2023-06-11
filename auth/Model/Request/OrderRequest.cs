@@ -11,6 +11,8 @@ namespace auth.Model.Request
         [Required]
         public string Phone { get; set; }
         [Required]
+        public string PaymentType { get; set; }
+        [Required]
         public List<OrderProductRequest> orderProducts { get; set; }
     }
     public class OrderProductRequest
