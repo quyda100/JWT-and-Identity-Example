@@ -61,6 +61,7 @@ namespace auth.Services
             if (model.Name != brand.Name && _context.Products.Any(pr => pr.Name == model.Name))
                 throw new Exception("Tên " + brand.Name + " đã tồn tại");
             brand.Name = model.Name;
+            brand.Description = model.Description;
             brand.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật dữ liệu: " + brand.Name);
             _context.Brands.Update(brand);
