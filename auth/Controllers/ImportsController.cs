@@ -30,11 +30,11 @@ namespace auth.Controllers
             return Ok(result);
         }
         [HttpPost]
-        public IActionResult AddImport(ImportRequest request)
+        public async Task<IActionResult> AddImport(ImportRequest request)
         {
             try
             {
-                _service.AddImport(request);
+                await _service.AddImport(request);
                 return Ok();
             }
             catch (Exception ex)
@@ -43,13 +43,13 @@ namespace auth.Controllers
             }
         }
         [HttpPost("ImportFromFile")]
-        public IActionResult ImportByCSV([FromForm]ImportFileRequest request){
+        public async Task<IActionResult> ImportByCSV([FromForm]ImportFileRequest request){
             try
             {
                 if(!ModelState.IsValid || request == null){
                     return BadRequest("Vui lòng nhập đúng thông tin");
                 }
-                _service.ImportByCSV(request);
+                await _service.ImportByCSV(request);
             }
             catch (Exception ex)
             {

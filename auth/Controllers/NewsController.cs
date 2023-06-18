@@ -19,11 +19,31 @@ namespace auth.Controllers
         {
             _service = service;
         }
-        [HttpGet]
+        [HttpGet("GetNewestPost")]
         [AllowAnonymous]
+        public IActionResult GetNewstPost()
+        {
+            var news = _service.GetNewestPosts();
+            return Ok(news);
+        }
+        [HttpGet("GetPosts")]
+        [AllowAnonymous]
+        public IActionResult GetPosts()
+        {
+            var news = _service.GetViewPosts();
+            return Ok(news);
+        }
+        [HttpGet]
         public IActionResult GetNews()
         {
             var news = _service.GetNews();
+            return Ok(news);
+        }
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public IActionResult GetNews(int id)
+        {
+            var news = _service.GetNew(id);
             return Ok(news);
         }
         [HttpPost]

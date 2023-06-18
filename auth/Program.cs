@@ -88,6 +88,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";*/
     options.User.RequireUniqueEmail = true;
 });
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+   opt.TokenLifespan = TimeSpan.FromMinutes(2));
 
 
 builder.Services.AddAuthentication(options =>

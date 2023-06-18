@@ -52,9 +52,20 @@ namespace auth.Services
             _context.SaveChangesAsync();
         }
 
-        public New GetNew(int id)
+        public NewDTO GetNew(int id)
         {
-            return findNew(id);
+            var news = findNew(id);
+            return new NewDTO
+            {
+                Id = news.Id,
+                Title = news.Title,
+                Thumbnail = news.Thumbnail,
+                Description = news.Description,
+                Content = news.Content,
+                CreatedAt = news.CreatedAt,
+                IsDeleted = news.IsDeleted,
+                UserName = news.User.FullName
+            };
         }
 
         public List<NewDTO> GetNews()
@@ -83,13 +94,24 @@ namespace auth.Services
         }
         private New findNew(int id)
         {
-            var item = _context.News.SingleOrDefault(p => p.Id == id);
+            var item = _context.News.Include(n => n.User).SingleOrDefault(p => p.Id == id);
             if (item == null)
             {
                 throw new Exception("Không tìm thấy bài viết");
             }
             return item;
         }
+        public List<NewDTO> GetViewPosts()
+        {
+            var posts = _context.News.Where(p => p.IsDeleted == false).OrderByDescending(p => p.CreatedAt).Select(p => _mapper.Map<NewDTO>(p)).ToList();
+            return posts;
+        }
+        public List<NewDTO> GetNewestPosts()
+        {
+            var posts = _context.News.Where(p => p.IsDeleted == false).OrderByDescending(p => p.CreatedAt).Take(3).Select(p => _mapper.Map<NewDTO>(p)).ToList();
+            return posts;
+        }
+
         private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

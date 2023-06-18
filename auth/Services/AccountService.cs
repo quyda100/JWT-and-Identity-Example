@@ -154,7 +154,6 @@ namespace auth.Services
                 Id = user.Id,
                 Email = user.Email,
                 Address = user.Address,
-                DateOfBirth = user.DateOfBirth,
                 Avatar = user.Avatar,
                 Phone = user.PhoneNumber,
                 FullName = user.FullName
@@ -172,11 +171,13 @@ namespace auth.Services
             {
                 throw new Exception("Email này đã được sử dụng");
             }
+            if (!String.IsNullOrEmpty(model.Address))
+            {
+                user.Address = model.Address;
+            }
             user.FullName = model.FullName;
             user.Email = model.Email;
             user.PhoneNumber = model.Phone;
-            user.Address = model.Address;
-            user.DateOfBirth = model.DateOfBirth;
             user.Avatar = model.Avatar;
             _context.Users.Update(user);
             _context.SaveChanges();
@@ -222,19 +223,17 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy người dùng");
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var link = $"https://localhost:3000/resetpassword?email={email}&token={token}";
+            var link = $"http://localhost:3000/forgotPassword?email={email}&token={token}";
             var content = $"<h3>Chào: {user.FullName}</h3>" +
-                $"<p>Bạn vui lòng truy cập vào đường dẫn:</p>" +
-                $"<a href ='{link}' target='_blank'>{link}</a>" +
-                $"<p>Hoặc nhấp <a href ='{link}' target='_blank'>vào đây</a> để đặt lại mật khẩu";
-            await _utility.SendEmailAsync(user.FullName,email, content);
+                $"<p>Bạn vui lòng nhấp <a href ='{link}' target='_blank' style='font-weight: bold;'>VÀO ĐÂY</a> để đặt lại mật khẩu";
+            await _utility.SendEmailAsync(user.FullName, email, content);
         }
 
         public async Task ResetPassword(string email, string token, string newPassword)
         {
-            if (string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
             {
-                throw new Exception("Vui lòng nhập Email");
+                throw new Exception("Vui lòng thử lại");
             }
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)

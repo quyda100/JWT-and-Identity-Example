@@ -134,7 +134,7 @@ namespace auth.Controllers
             return NoContent();
         }
         [AllowAnonymous]
-        [HttpGet("ResetPassword")]
+        [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(string email)
         {
             try
@@ -148,12 +148,12 @@ namespace auth.Controllers
             }
         }
         [AllowAnonymous]
-        [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(string email, string token, string newPassword)
+        [HttpPost("ConfirmResetPassword")]
+        public async Task<IActionResult> ResetPassword(string email, string token, string password)
         {
             try
             {
-                await _service.ResetPassword(email, token, newPassword);
+                await _service.ResetPassword(email, token, password);
                 return Ok();
             }
             catch (Exception ex)

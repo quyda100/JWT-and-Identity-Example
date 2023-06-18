@@ -25,7 +25,7 @@ namespace auth.Services
             _log = log;
             _mapper = mapper;
         }
-        public void AddImport(ImportRequest model)
+        public async Task AddImport(ImportRequest model)
         {
             var import = new Import
             {
@@ -33,16 +33,18 @@ namespace auth.Services
                 SupplierId = model.supplierId,
             };
             _context.Imports.Add(import);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             var total = 0;
             model.ImportProducts.ForEach(item =>
             {
+                var product = GetProductByCode(item.ProductCode);
                 /*
                  *  Create Import Product
                  */
                 var importProduct = new ImportDetail
                 {
-                    ProductId = item.ProductId,
+                    ImportId = import.Id,
+                    ProductId = product.Id,
                     Quantity = item.Quantity,
                     Price = item.Price,
                 };
@@ -51,18 +53,17 @@ namespace auth.Services
                 /*
                  *  Update Product
                  */
-                var product = GetProductById(importProduct.Id);
                 product.Stock += importProduct.Quantity;
                 product.Price = importProduct.Price;
                 product.UpdatedAt = DateTime.Now;
                 _context.Products.Update(product);
             });
             import.Total = total;
-            _log.SaveLog("Tạo hóa đơn nhập: " + import.Id);
+            await _log.SaveLog("Tạo hóa đơn nhập: " + import.Id);
             _context.Imports.Update(import);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
-        public void ImportByCSV(ImportFileRequest request)
+        public async Task ImportByCSV(ImportFileRequest request)
         {
             var fileExtension = Path.GetExtension(request.file.FileName);
             if (!fileExtension.Equals(".csv"))
@@ -99,11 +100,11 @@ namespace auth.Services
             *   Call back to AddImport
             */
             var ImportRequest = new ImportRequest { supplierId = request.supplierId, ImportProducts = items };
-            AddImport(ImportRequest);
+            await AddImport(ImportRequest);
         }
-        private Product GetProductById(int id)
+        private Product GetProductByCode(string code)
         {
-            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            var product = _context.Products.FirstOrDefault(p => p.Code == code);
             if (product == null)
                 throw new Exception("Không tìm thấy sản phẩm");
             return product;
@@ -116,7 +117,7 @@ namespace auth.Services
 
         public List<ImportDTO> GetImports()
         {
-            var imports = _context.Imports.Include(i => i.User).Select(i => _mapper.Map<ImportDTO>(i)).ToList();
+            var imports = _context.Imports.Include(i => i.User).Include(i=>i.Supplier).Select(i => _mapper.Map<ImportDTO>(i)).ToList();
             return imports;
         }
         private string GetUserId()

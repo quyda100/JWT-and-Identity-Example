@@ -8,7 +8,7 @@ namespace auth.Interfaces
     {
         public List<ImportDTO> GetImports();
         public List<ImportProductDTO> GetImportDetail(int id);
-        public void AddImport(ImportRequest model);
-        public void ImportByCSV(ImportFileRequest model);
+        public Task AddImport(ImportRequest model);
+        public Task ImportByCSV(ImportFileRequest model);
     }
 }
