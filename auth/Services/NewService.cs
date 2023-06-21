@@ -49,7 +49,7 @@ namespace auth.Services
             model.IsDeleted = true;
             _log.SaveLog("Xóa bài viết: " + model.Title);
             _context.News.Update(model);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
         public NewDTO GetNew(int id)
@@ -74,7 +74,7 @@ namespace auth.Services
             return news;
         }
 
-        public async void UpdateNew(int id, NewUpdateRequest model)
+        public void UpdateNew(int id, NewUpdateRequest model)
         {
             if (model.Id != id)
                 throw new Exception("Having trouble");
@@ -90,7 +90,7 @@ namespace auth.Services
             item.UpdatedAt = DateTime.Now;
             _context.News.Update(item);
             _log.SaveLog("Cập nhật bài viết: " + item.Title);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
         private New findNew(int id)
         {

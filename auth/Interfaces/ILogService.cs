@@ -6,6 +6,6 @@ namespace auth.Interfaces
     public interface ILogService
     {
         public List<LogDTO> GetLogs();
-        public Task SaveLog(string content);
+        public void SaveLog(string content);
     }
 }

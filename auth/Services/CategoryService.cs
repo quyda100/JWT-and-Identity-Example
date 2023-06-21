@@ -16,7 +16,7 @@ namespace auth.Services
             _context = context;
             _log = log;
         }
-        public void AddCategory(CategoryRequest model)
+        public  void AddCategory(CategoryRequest model)
         {
 
             if (_context.Categories.Any(x => x.Name == model.Name))
@@ -31,7 +31,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public void DeleteCategory(int id)
+        public  void DeleteCategory(int id)
         {
             var category = GetCategory(id);
             category.IsDeleted = true;
@@ -51,7 +51,7 @@ namespace auth.Services
             return categories;
         }
 
-        public void UpdateCategory(int id, CategoryDTO model)
+        public  void UpdateCategory(int id, CategoryDTO model)
         {
             if (model.Id != id)
                 throw new Exception("Having trouble");
@@ -63,7 +63,7 @@ namespace auth.Services
             category.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật dữ liệu: " + category.Name);
             _context.Categories.Update(category);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
         private Category GetCategory(int id)
         {

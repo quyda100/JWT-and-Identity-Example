@@ -26,7 +26,7 @@ namespace auth.Services
             return logs;
         }
 
-        public async Task SaveLog(string content)
+        public void SaveLog(string content)
         {
             var log = new Log
             {
@@ -35,7 +35,7 @@ namespace auth.Services
 
             };
             _context.Logs.Add(log);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
         private string getUserId()
         {
