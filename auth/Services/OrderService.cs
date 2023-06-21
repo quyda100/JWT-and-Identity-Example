@@ -172,8 +172,8 @@ namespace auth.Services
                 order.Status = status;
                 order.UpdatedAt = DateTime.Now;
                 _context.Orders.Update(order);
-                await _context.SaveChangesAsync();
                 _log.SaveLog($"Cập nhật hóa đơn: {id} thành {status}");
+                 _context.SaveChanges();
             }
         }
         /*

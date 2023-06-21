@@ -20,7 +20,7 @@ namespace auth.Services
             _log = log;
         }
 
-        public void Create(Supplier request)
+        public  void Create(Supplier request)
         {
             if (_context.Suppliers.Any(s => s.Name == request.Name))
             {
@@ -31,7 +31,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public void Delete(int id)
+        public  void Delete(int id)
         {
             var supplier = Find(id);
             supplier.IsDeleted = true;
@@ -45,7 +45,7 @@ namespace auth.Services
             return _context.Suppliers.ToList();
         }
 
-        public void Update(Supplier request, int id)
+        public  void Update(Supplier request, int id)
         {
             if (request.Id != id)
             {

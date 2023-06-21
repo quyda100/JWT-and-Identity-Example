@@ -59,7 +59,7 @@ namespace auth.Services
                 _context.Products.Update(product);
             });
             import.Total = total;
-            await _log.SaveLog("Tạo hóa đơn nhập: " + import.Id);
+            _log.SaveLog("Tạo hóa đơn nhập: " + import.Id);
             _context.Imports.Update(import);
             await _context.SaveChangesAsync();
         }

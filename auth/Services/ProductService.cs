@@ -197,7 +197,7 @@ namespace auth.Services
             {
                 throw new Exception("Category is not exist!");
             }
-            var products = _context.Products.Where(p => p.CategoryId == categoryId).OrderBy(p => p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.CategoryId == categoryId).OrderByDescending(p => p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 

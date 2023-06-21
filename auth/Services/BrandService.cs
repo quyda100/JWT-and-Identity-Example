@@ -30,7 +30,7 @@ namespace auth.Services
             return brands;
         }
 
-        public void AddBrand(BrandRequest model)
+        public  void AddBrand(BrandRequest model)
         {
             if (_context.Brands.Any(x => x.Name == model.Name))
                 throw new Exception(model.Name + " đã tồn tại!");
@@ -44,7 +44,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public void DeleteBrand(int id)
+        public  void DeleteBrand(int id)
         {
             var brand = GetBrand(id);
             brand.IsDeleted = true;
@@ -53,7 +53,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public void UpdateBrand(int id, BrandDTO model)
+        public  void UpdateBrand(int id, BrandDTO model)
         {
             if (model.Id != id)
                 throw new Exception("Có lỗi xảy ra");
@@ -65,7 +65,7 @@ namespace auth.Services
             brand.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật dữ liệu: " + brand.Name);
             _context.Brands.Update(brand);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
         private Brand GetBrand(int id)
