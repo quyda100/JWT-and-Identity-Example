@@ -207,7 +207,7 @@ namespace auth.Services
 
         public List<ProductDTO> GetTrashedProducts()
         {
-            var products = _context.Products.Where(p => p.IsDeleted == false).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == true).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 
@@ -221,7 +221,8 @@ namespace auth.Services
         {
             var product = GetProduct(id);
             product.IsDeleted = false;
-            _log.SaveLog("Khôi phục sản phẩm: " +product.Name);
+            _context.Products.Update(product);
+            _log.SaveLog("Khôi phục sản phẩm: " + product.Name);
             _context.SaveChanges();
         }
     }

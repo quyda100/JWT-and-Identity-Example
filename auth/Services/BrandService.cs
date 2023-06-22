@@ -20,7 +20,7 @@ namespace auth.Services
 
         public List<BrandDTO> GetBrands()
         {
-            var brands = _context.Brands.Where(b=>b.IsDeleted==false).Select(b => new BrandDTO
+            var brands = _context.Brands.Where(b => b.IsDeleted == false).Select(b => new BrandDTO
             {
                 Id = b.Id,
                 Name = b.Name,
@@ -30,7 +30,7 @@ namespace auth.Services
             return brands;
         }
 
-        public  void AddBrand(BrandRequest model)
+        public void AddBrand(BrandRequest model)
         {
             if (_context.Brands.Any(x => x.Name == model.Name))
                 throw new Exception(model.Name + " đã tồn tại!");
@@ -44,7 +44,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public  void DeleteBrand(int id)
+        public void DeleteBrand(int id)
         {
             var brand = GetBrand(id);
             brand.IsDeleted = true;
@@ -53,7 +53,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public  void UpdateBrand(int id, BrandDTO model)
+        public void UpdateBrand(int id, BrandDTO model)
         {
             if (model.Id != id)
                 throw new Exception("Có lỗi xảy ra");
@@ -80,20 +80,21 @@ namespace auth.Services
         {
             var brand = GetBrand(id);
             brand.IsDeleted = false;
+            _context.Brands.Update(brand);
             _log.SaveLog("Khôi phục nhãn hàng: " + brand.Name);
             _context.SaveChanges();
         }
 
         public List<BrandDTO> GetBrandsTrashed()
         {
-           var brands = _context.Brands.Where(b=>b.IsDeleted==true).Select(b=> new BrandDTO
-           {
-               Id = b.Id,
-               Name = b.Name,
-               Description = b.Description,
-               CreatedAt = b.CreatedAt,
-           }).ToList();
-           return brands;
+            var brands = _context.Brands.Where(b => b.IsDeleted == true).Select(b => new BrandDTO
+            {
+                Id = b.Id,
+                Name = b.Name,
+                Description = b.Description,
+                CreatedAt = b.CreatedAt,
+            }).ToList();
+            return brands;
         }
     }
 }
