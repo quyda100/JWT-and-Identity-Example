@@ -16,7 +16,7 @@ namespace auth.Services
             _context = context;
             _log = log;
         }
-        public  void AddCategory(CategoryRequest model)
+        public void AddCategory(CategoryRequest model)
         {
 
             if (_context.Categories.Any(x => x.Name == model.Name))
@@ -31,7 +31,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public  void DeleteCategory(int id)
+        public void DeleteCategory(int id)
         {
             var category = GetCategory(id);
             category.IsDeleted = true;
@@ -51,6 +51,26 @@ namespace auth.Services
             return categories;
         }
 
+        public List<CategoryDTO> GetCategoriesTrashed()
+        {
+            var categories = _context.Categories.Where(c => c.IsDeleted == true).Select(c => new CategoryDTO
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+            }).ToList();
+            return categories;
+        }
+
+        public void RecoveryCategory(int id)
+        {
+            var category = GetCategory(id);
+            category.IsDeleted = false;
+            _log.SaveLog("Khôi phục loại sản phẩm: " + category.Name);
+            _context.Categories.Update(category);
+            _context.SaveChanges();
+        }
+
         public  void UpdateCategory(int id, CategoryDTO model)
         {
             if (model.Id != id)
@@ -65,6 +85,7 @@ namespace auth.Services
             _context.Categories.Update(category);
             _context.SaveChanges();
         }
+
         private Category GetCategory(int id)
         {
             var category = _context.Categories.SingleOrDefault(x => x.Id == id);

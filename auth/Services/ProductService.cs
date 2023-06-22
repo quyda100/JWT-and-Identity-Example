@@ -81,6 +81,10 @@ namespace auth.Services
         public void RemoveProduct(int id)
         {
             var product = GetProduct(id);
+            if (product.Stock != 0)
+            {
+                throw new Exception("Sản phẩm còn hàng");
+            }
             product.IsDeleted = true;
             _log.SaveLog("Xóa sản phẩm: " + product.Code);
             _context.Products.Update(product);
@@ -211,6 +215,14 @@ namespace auth.Services
         {
             var product = _context.Products.Include(p => p.Brand).Include(p => p.Category).FirstOrDefault(p => p.Code == code);
             return _mapper.Map<ProductDTO>(product);
+        }
+
+        public void RecoveryProduct(int id)
+        {
+            var product = GetProduct(id);
+            product.IsDeleted = false;
+            _log.SaveLog("Khôi phục sản phẩm: " +product.Name);
+            _context.SaveChanges();
         }
     }
 }

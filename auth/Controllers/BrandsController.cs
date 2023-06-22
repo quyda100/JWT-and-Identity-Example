@@ -76,5 +76,31 @@ namespace auth.Controllers
             }
             return Ok();
         }
+        [HttpGet("GetTrashed")]
+        public IActionResult GetBrandTrashed()
+        {
+            try
+            {
+                var brands = _service.GetBrandsTrashed();
+                return Ok(brands);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut("Recovery")]
+        public IActionResult Recovery(int id)
+        {
+            try
+            {
+                _service.RecoveryBrand(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

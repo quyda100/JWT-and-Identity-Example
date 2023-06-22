@@ -75,5 +75,25 @@ namespace auth.Services
                 throw new Exception("Brand not found");
             return brand;
         }
+
+        public void RecoveryBrand(int id)
+        {
+            var brand = GetBrand(id);
+            brand.IsDeleted = false;
+            _log.SaveLog("Khôi phục nhãn hàng: " + brand.Name);
+            _context.SaveChanges();
+        }
+
+        public List<BrandDTO> GetBrandsTrashed()
+        {
+           var brands = _context.Brands.Where(b=>b.IsDeleted==true).Select(b=> new BrandDTO
+           {
+               Id = b.Id,
+               Name = b.Name,
+               Description = b.Description,
+               CreatedAt = b.CreatedAt,
+           }).ToList();
+           return brands;
+        }
     }
 }

@@ -130,5 +130,18 @@ namespace auth.Controllers
             var products = _service.GetNewestProducts(category);
             return Ok(products);
         }
+        [HttpPut("Recovery")]
+        public IActionResult Recovery(int id)
+        {
+            try
+            {
+                _service.RecoveryProduct(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

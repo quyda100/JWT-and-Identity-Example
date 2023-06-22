@@ -44,7 +44,7 @@ namespace auth.Services
             }
             var folder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", type);
             var fileName = prefix + "-" + Guid.NewGuid().ToString() + fileExtension;
-            var filePath = Path.Combine(folder, fileName);
+            var filePath = Path.Combine(folder, fileName.Replace(@"\", "-"));
 
             if (!Directory.Exists(folder))
             {
