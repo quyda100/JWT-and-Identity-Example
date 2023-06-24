@@ -74,7 +74,7 @@ namespace auth.Services
         private string FormatFileURL(string fileName, string type)
         {
             var currentReq = _httpContextAccessor.HttpContext.Request;
-            string baseURL = $"{currentReq.Scheme}://{currentReq.Host}/images/{type}/";
+            string baseURL = $"{currentReq.Scheme}://{currentReq.Host}/images/{type}%2F";
             return baseURL + fileName;
         }
         public async Task SendEmailAsync(string name, string email, string content)

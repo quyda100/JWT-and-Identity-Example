@@ -36,6 +36,7 @@ namespace auth.Services
             };
             _log.SaveLog("Tạo bài viết mới: " + model.Title);
             _context.News.Add(post);
+            _context.SaveChanges();
             var thumbnail = _utility.UploadImage(model.Thumbnail, $"{post.Id}", "Posts");
             post.Thumbnail = thumbnail;
             _context.News.Update(post);

@@ -19,7 +19,6 @@ namespace auth.Model.Request
         public string Description { get; set; }
         public IFormFile Thumbnail { get; set; }
         public string Content { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; }
     }
 }

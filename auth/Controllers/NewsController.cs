@@ -47,7 +47,7 @@ namespace auth.Controllers
             return Ok(news);
         }
         [HttpPost]
-        public IActionResult AddNew(NewRequest New)
+        public IActionResult AddNew([FromForm]NewRequest New)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace auth.Controllers
             }
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateNew(int id, NewUpdateRequest New)
+        public IActionResult UpdateNew(int id, [FromForm] NewUpdateRequest New)
         {
             try
             {

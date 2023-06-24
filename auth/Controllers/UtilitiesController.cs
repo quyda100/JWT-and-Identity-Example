@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace auth.Controllers
 {
-    [Route("")]
-    [ApiController]
+    [Route("/")]
     public class UtilitiesController : ControllerBase
     {
         private readonly IUtilityService _service;
@@ -15,10 +14,10 @@ namespace auth.Controllers
             _service = service;
         }
 
-        [HttpGet("images/products/{name}")]
+        [HttpGet("images/{name}")]
         public IActionResult GetProductImage(string name)
         {
-            name = Path.Combine("products", name);
+            name = name.Replace("%2F",@"\").ToLower();
             return File(_service.GetImage(name), "image/jpeg");
         }
     }

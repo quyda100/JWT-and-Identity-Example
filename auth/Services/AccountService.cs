@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Web;
 using System.Xml.Linq;
 
 namespace auth.Services
@@ -223,7 +224,7 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy người dùng");
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var link = $"http://localhost:3000/forgotPassword?email={email}&token={token}";
+            var link = $"http://localhost:3000/forgotPassword?email={email}&token={HttpUtility.UrlEncode(token)}";
             var content = $"<h3>Chào: {user.FullName}</h3>" +
                 $"<p>Bạn vui lòng nhấp <a href ='{link}' target='_blank' style='font-weight: bold;'>VÀO ĐÂY</a> để đặt lại mật khẩu";
             await _utility.SendEmailAsync(user.FullName, email, content);
@@ -240,7 +241,12 @@ namespace auth.Services
             {
                 throw new Exception("Không tìm thấy người dùng");
             }
-            await _userManager.ResetPasswordAsync(user, token, newPassword);
+            var strToken = HttpUtility.UrlDecode(token);
+            var result = await _userManager.ResetPasswordAsync(user, strToken, newPassword);
+            if (!result.Succeeded)
+            {
+                throw new Exception(result.Errors.FirstOrDefault().Description);
+            }
         }
     }
 }
