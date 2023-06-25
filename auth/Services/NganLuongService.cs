@@ -24,7 +24,7 @@ namespace auth.Services
             secureCode += " " + receiver; // tài khoản ngân lượng
             secureCode += " " + "Thanh toán đơn hàng";
             secureCode += " " + orderId;
-            secureCode += " " + price.ToString();
+            secureCode += " " + (price / 1000).ToString();
             secureCode += " " + "vnd"; // hỗ trợ 2 loại tiền tệ currency usd,vnd
             secureCode += " " + "1"; // số lượng mặc định 1
             secureCode += " " + "0";
@@ -43,10 +43,10 @@ namespace auth.Services
             ht.Add("receiver", receiver);
             ht.Add("transaction_info", "Thanh toán đơn hàng");
             ht.Add("order_code", orderId);
-            ht.Add("price", price);
+            ht.Add("price", price / 1000);
             ht.Add("currency", "vnd");
             ht.Add("quantity", 1);
-            ht.Add("tax",0);
+            ht.Add("tax", 0);
             ht.Add("discount", 0);
             ht.Add("fee_cal", 0);
             ht.Add("fee_shipping", 0);
