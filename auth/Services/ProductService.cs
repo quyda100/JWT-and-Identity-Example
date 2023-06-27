@@ -94,7 +94,7 @@ namespace auth.Services
         public async Task UpdateProduct(int id, ProductRequest p)
         {
             if (p.Id != id)
-                throw new Exception("Having trouble");
+                throw new Exception("Có lỗi xảy ra");
             var product = GetProduct(id);
             if (product.Code != p.Code && _context.Products.Any(pr => pr.Code == p.Code))
                 throw new Exception(p.Code + " đã tồn tại");
@@ -109,7 +109,7 @@ namespace auth.Services
             if (previewImages != null)
             {
                 var images = JsonSerializer.Deserialize<List<string>>(product.PreviewImages);
-                var deleted = images.Where(i => previewImages.Contains(i)).ToList();
+                var deleted = images.Where(i => !p.PreviewImages.Contains(i)).ToList();
                 deleted.ForEach(i => images.Remove(i));
                 var combine = images.Concat(previewImages);
                 product.PreviewImages = JsonSerializer.Serialize(combine);

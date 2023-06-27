@@ -24,14 +24,20 @@ namespace auth.Services
 
         public long DailyOrderSales()
         {
-            var sales = _context.Orders.Where(o => o.CreatedAt.Date == DateTime.Now.Date && o.Status != -1).Sum(o => o.Total);
+            var sales = _context.Orders.Where(o => o.CreatedAt.Date == DateTime.Now.Date)
+                .Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                .Where(o=> o.Status > -1)
+                .Sum(o => o.Total);
             return sales;
         }
 
         public long DailyProductSales()
         {
             long sum = 0;
-            var orders = _context.Orders.Where(o => o.CreatedAt.Date == DateTime.Now.Date).Include(o => o.OrderProducts).ToList();
+            var orders = _context.Orders.Where(o => o.CreatedAt.Date == DateTime.Now.Date)
+                .Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                .Where(o=> o.Status > -1)
+                .Include(o => o.OrderProducts).ToList();
             foreach (var item in orders)
             {
                 sum += item.OrderProducts.Sum(o => o.Quantity);
@@ -51,7 +57,11 @@ namespace auth.Services
             for (int i = 1; i <= 12; i++)
             {
                 int count = 0;
-                var orders = _context.Orders.Where(o => o.CreatedAt.Year == DateTime.Now.Year && o.CreatedAt.Month == i).Include(o => o.OrderProducts).ToList();
+                var orders = _context.Orders.Where(o => o.CreatedAt.Year == DateTime.Now.Year && o.CreatedAt.Month == i)
+                        .Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                        .Where(o=> o.Status == 3)
+                        .Include(o => o.OrderProducts)
+                        .ToList();
                 foreach (var item in orders)
                 {
                     count += item.OrderProducts.Sum(o => o.Quantity);
@@ -80,7 +90,9 @@ namespace auth.Services
         public int CountOrdersMonth(int month)
         {
             var orders = _context.Orders.Where(o => o.CreatedAt.Month == month && o.CreatedAt.Year == DateTime.Now.Year);
-            var count = orders.Where(o => o.PaymentTime != DateTime.MinValue).Count();
+            var count = orders.Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                            .Where(o=> o.Status > -1)
+                            .Count();
             return count;
         }
         public List<object> TotalProductsCategoryOfWeek()

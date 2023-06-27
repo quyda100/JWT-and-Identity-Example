@@ -8,6 +8,7 @@
         public int Price { get; set; }
         public IFormFile ImageFile { get; set; }
         public string Color { get; set; }
+        public List<string> PreviewImages {get; set;}
         public List<IFormFile> PreviewImageFiles { get; set; }
         public string CaseMaterial { get; set; }
         public float CaseSize { get; set; }

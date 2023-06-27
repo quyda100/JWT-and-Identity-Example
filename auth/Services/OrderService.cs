@@ -85,7 +85,7 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrders()
         {
-            var orders = _context.Orders.Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod != "NganLuong" && o.PaymentTime != DateTime.MinValue))
+            var orders = _context.Orders.Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
                     .Include(o => o.OrderProducts).ThenInclude(p => p.Product)
                     .Include(o => o.User).OrderBy(p => p.CreatedAt)
                     .Select(o => _mapper.Map<OrderDTO>(o)).ToList();
@@ -119,8 +119,11 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrdersByUserId()
         {
-            var orders = _context.Orders.Where(o => o.UserId == GetUserId() && (o.PaymentMethod == "COD" || (o.PaymentMethod != "NganLuong" && o.PaymentTime != DateTime.MinValue)))
-                        .Include(o => o.OrderProducts).ThenInclude(p => p.Product).Include(o => o.User)
+            var orders = _context.Orders.Where(o => o.UserId == GetUserId())
+                        .Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                        .Include(o => o.OrderProducts)
+                        .ThenInclude(p => p.Product)
+                        .Include(o => o.User)
                         .OrderBy(p => p.CreatedAt).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
