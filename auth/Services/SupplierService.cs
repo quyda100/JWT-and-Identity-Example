@@ -42,7 +42,7 @@ namespace auth.Services
 
         public List<Supplier> Get()
         {
-            return _context.Suppliers.ToList();
+            return _context.Suppliers.Where(s=>s.IsDeleted == false).ToList();
         }
 
         public  void Update(Supplier request, int id)

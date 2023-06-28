@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using auth.Interfaces;
 using auth.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace auth.Controllers
 {
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     [Route("api/[controller]")]
     public class SuppliersController : ControllerBase
     {

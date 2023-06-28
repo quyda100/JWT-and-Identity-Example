@@ -9,13 +9,13 @@ namespace auth.Helpers
         public ApplicationMapper()
         {
             CreateMap<Product, ProductDTO>();
-            CreateMap<Order, OrderDTO>();
+            CreateMap<Order, OrderDTO>().ForMember(o=>o.FullName, od => od.MapFrom(o=>o.User.FullName));
             CreateMap<OrderProduct, OrderProductDTO>();
             CreateMap<Import, ImportDTO>().ForMember(i => i.FullName, id => id.MapFrom(i=>i.User.FullName));
             CreateMap<ImportDetail, ImportProductDTO>();
-            CreateMap<New, NewDTO>();
+            CreateMap<New, NewDTO>().ForMember(n => n.UserName, nd => nd.MapFrom(n=>n.User.FullName));
             CreateMap<NewDTO, New>();
-            CreateMap<Log, LogDTO>();
+            CreateMap<Log, LogDTO>().ForMember(i => i.FullName, id => id.MapFrom(i=>i.User.FullName));
         }
     }
 }

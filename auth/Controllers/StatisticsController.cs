@@ -1,10 +1,13 @@
 ﻿using auth.Interfaces;
+using auth.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace auth.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = UserRoles.Admin)]
     [ApiController]
     public class StatisticsController : ControllerBase
     {
