@@ -1,4 +1,6 @@
 ﻿using auth.Interfaces;
+using auth.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +8,7 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     public class LogsController : ControllerBase
     {
         private readonly ILogService _service;

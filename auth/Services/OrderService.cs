@@ -85,9 +85,9 @@ namespace auth.Services
 
         public List<OrderDTO> GetOrders()
         {
-            var orders = _context.Orders.Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+            var orders = _context.Orders.Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
                     .Include(o => o.OrderProducts).ThenInclude(p => p.Product)
-                    .Include(o => o.User).OrderBy(p => p.CreatedAt)
+                    .Include(o => o.User).OrderByDescending(p => p.CreatedAt)
                     .Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
@@ -120,11 +120,11 @@ namespace auth.Services
         public List<OrderDTO> GetOrdersByUserId()
         {
             var orders = _context.Orders.Where(o => o.UserId == GetUserId())
-                        .Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                        .Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
                         .Include(o => o.OrderProducts)
                         .ThenInclude(p => p.Product)
                         .Include(o => o.User)
-                        .OrderBy(p => p.CreatedAt).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
+                        .OrderByDescending(p => p.CreatedAt).Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
 
@@ -176,7 +176,7 @@ namespace auth.Services
                 order.UpdatedAt = DateTime.Now;
                 _context.Orders.Update(order);
                 _log.SaveLog($"Cập nhật hóa đơn: {id} thành {status}");
-                 _context.SaveChanges();
+                _context.SaveChanges();
             }
         }
         /*

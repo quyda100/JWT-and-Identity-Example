@@ -24,16 +24,17 @@ namespace auth.Controllers
         [HttpGet("Receiver")]
         public async Task<IActionResult> VerifyURL(string transaction_info, string order_code, string price, string payment_id, string payment_type, string error_text, string secure_code)
         {
+            transaction_info = System.Web.HttpUtility.UrlDecode(transaction_info);
             bool result = _service.VerifyPaymentUrl(transaction_info, order_code, price, payment_id, payment_type, error_text, secure_code);
             try
             {
-                if (string.IsNullOrEmpty(error_text))
+                if (!string.IsNullOrEmpty(error_text))
                 {
-                    return BadRequest(error_text);
+                    return BadRequest(System.Web.HttpUtility.UrlDecode(error_text));
                 }
                 else if (result)
                 {
-                    await _orderService.UpdateOrderCheckout(int.Parse(order_code), long.Parse(price));
+                    await _orderService.UpdateOrderCheckout(int.Parse(order_code), long.Parse(price)*1000);
                     return Ok("Thanh toán thành công");
                 }
             }

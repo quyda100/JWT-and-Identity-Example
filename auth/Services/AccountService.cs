@@ -224,7 +224,6 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy người dùng");
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            Console.WriteLine("TOken: " + token);
             var link = $"http://localhost:3000/forgotPassword?email={email}&token={HttpUtility.UrlEncode(token)}";
             var content = $"<h3>Chào: {user.FullName}</h3>" +
                 $"<p>Bạn vui lòng nhấp <a href ='{link}' target='_blank' style='font-weight: bold;'>VÀO ĐÂY</a> để đặt lại mật khẩu";
@@ -243,7 +242,6 @@ namespace auth.Services
                 throw new Exception("Không tìm thấy người dùng");
             }
             var strToken = HttpUtility.UrlDecode(token).Replace(" ", "+");
-            Console.WriteLine("Token:" + strToken);
             var result = await _userManager.ResetPasswordAsync(user, strToken, newPassword);
             if (!result.Succeeded)
             {
