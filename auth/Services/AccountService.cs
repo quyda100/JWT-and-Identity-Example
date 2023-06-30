@@ -122,7 +122,7 @@ namespace auth.Services
             var token_key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
             var creds = new SigningCredentials(token_key, SecurityAlgorithms.HmacSha512Signature);
 
-            var expires = DateTime.Now.AddDays(7);
+            var expires = DateTime.UtcNow.AddHours(7).AddDays(7);
             var token = new JwtSecurityToken(
                _configuration["Jwt:Issuser"],
               _configuration["Jwt:Audience"],

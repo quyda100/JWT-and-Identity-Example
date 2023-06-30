@@ -106,18 +106,20 @@ namespace auth.Services
             {
                 product.Image = image;
             }
+
+            var images = JsonSerializer.Deserialize<List<string>>(product.PreviewImages);
+            var deletedImages = images.Where(i => !p.PreviewImages.Contains(i)).ToList();
+            deletedImages.ForEach(i => images.Remove(i));
+
             if (previewImages != null)
-            {
-                var images = JsonSerializer.Deserialize<List<string>>(product.PreviewImages);
-                var deleted = images.Where(i => !p.PreviewImages.Contains(i)).ToList();
-                deleted.ForEach(i => images.Remove(i));
-                var combine = images.Concat(previewImages);
-                product.PreviewImages = JsonSerializer.Serialize(combine);
+            { 
+                images = (List<string>)images.Concat(previewImages);
             }
             product.Code = p.Code;
             product.Name = p.Name;
             product.Price = p.Price;
             product.Color = p.Color;
+            product.PreviewImages = JsonSerializer.Serialize(images);
             product.CaseMaterial = p.CaseMaterial;
             product.CaseSize = p.CaseSize;
             product.GlassMaterial = p.GlassMaterial;
@@ -127,7 +129,7 @@ namespace auth.Services
             product.Warranty = p.Warranty;
             product.BrandId = p.BrandId;
             product.CategoryId = p.CategoryId;
-            product.UpdatedAt = DateTime.Now;
+            product.UpdatedAt = DateTime.UtcNow.AddHours(7);
             _log.SaveLog("Cập nhật sản phẩm: " + product.Code);
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
@@ -143,7 +145,7 @@ namespace auth.Services
             var product = _context.Products.Include(p => p.Brand).Include(p => p.Category).SingleOrDefault(p => p.Id == id);
             if (product == null)
             {
-                throw new Exception("Product not found");
+                throw new Exception("Không tìm thấy sản phẩm");
             }
             return product;
         }
@@ -152,7 +154,7 @@ namespace auth.Services
             var products = _context.Products.Where(p => p.Brand.Name == brandName).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             if (products == null)
             {
-                throw new Exception("Product not found");
+                throw new Exception("Không tìm thấy sản phẩm");
             }
             return products;
         }
@@ -162,7 +164,7 @@ namespace auth.Services
             var result = _context.Products.Where(p => p.Name.Contains(name)).ToList();
             if (result == null)
             {
-                throw new Exception("Product not found");
+                throw new Exception("Không tìm thấy sản phẩm");
             }
             return _mapper.Map<ProductDTO>(result);
         }
@@ -183,7 +185,7 @@ namespace auth.Services
             var category = _context.Categories.FirstOrDefault(b => b.Id == categoryId);
             if (category == null)
             {
-                throw new Exception("Category is not exist!");
+                throw new Exception("Loại sản phẩm không tồn tại!");
             }
             var products = _context.Products.Where(p => p.CategoryId == categoryId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
@@ -199,7 +201,7 @@ namespace auth.Services
             var category = _context.Categories.FirstOrDefault(b => b.Id == categoryId);
             if (category == null)
             {
-                throw new Exception("Category is not exist!");
+                throw new Exception("Loại sản phẩm không tồn tại!");
             }
             var products = _context.Products.Where(p => p.CategoryId == categoryId).OrderByDescending(p => p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;

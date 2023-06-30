@@ -101,7 +101,7 @@ namespace auth.Services
         public async Task UpdateOrder(int id, OrderDTO model)
         {
             if (id != model.Id)
-                throw new Exception("Having a trouble");
+                throw new Exception("Có lỗi xảy ra");
             var order = await FindOrder(id);
             if (order == null)
             {
@@ -112,7 +112,7 @@ namespace auth.Services
             {
                 UpdateProductSales(order.OrderProducts);
             }
-            order.UpdatedAt = DateTime.Now;
+            order.UpdatedAt = DateTime.UtcNow.AddHours(7);
             _log.SaveLog("Cập nhật đơn hàng: " + id);
             _context.Orders.Update(order);
         }
@@ -136,7 +136,7 @@ namespace auth.Services
                 throw new Exception("Không thể thực hiện yêu cầu");
             }
             order.Status = -1;
-            order.UpdatedAt = DateTime.Now;
+            order.UpdatedAt = DateTime.UtcNow.AddHours(7);
             _context.Orders.Update(order);
             _context.SaveChanges();
         }
@@ -173,7 +173,7 @@ namespace auth.Services
                     UpdateProductSales(order.OrderProducts);
                 }
                 order.Status = status;
-                order.UpdatedAt = DateTime.Now;
+                order.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 _context.Orders.Update(order);
                 _log.SaveLog($"Cập nhật hóa đơn: {id} thành {status}");
                 _context.SaveChanges();
@@ -272,7 +272,7 @@ namespace auth.Services
                 throw new Exception("Sai thông tin sản phẩm");
             }
             order.PaymentMethod = "NganLuong";
-            order.PaymentTime = DateTime.Now;
+            order.PaymentTime = DateTime.UtcNow.AddHours(7);
             _context.Update(order);
             await _context.SaveChangesAsync();
         }
@@ -288,7 +288,7 @@ namespace auth.Services
                 throw new Exception("Đơn hàng đã được thanh toán");
             }
             order.PaymentMethod = "NganLuong";
-            order.PaymentTime = DateTime.Now;
+            order.PaymentTime = DateTime.UtcNow.AddHours(7);
             _context.Update(order);
             await _context.SaveChangesAsync();
         }

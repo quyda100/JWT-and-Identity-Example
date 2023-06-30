@@ -32,7 +32,6 @@ namespace auth.Services
             {
                 UserId = getUserId(),
                 Action = content,
-
             };
             _context.Logs.Add(log);
             _context.SaveChanges();

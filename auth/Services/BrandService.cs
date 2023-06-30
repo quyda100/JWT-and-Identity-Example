@@ -62,7 +62,7 @@ namespace auth.Services
                 throw new Exception("Tên " + brand.Name + " đã tồn tại");
             brand.Name = model.Name;
             brand.Description = model.Description;
-            brand.UpdatedAt = DateTime.Now;
+            brand.UpdatedAt = DateTime.UtcNow.AddHours(7);
             _log.SaveLog("Cập nhật dữ liệu: " + brand.Name);
             _context.Brands.Update(brand);
             _context.SaveChanges();
@@ -72,7 +72,7 @@ namespace auth.Services
         {
             var brand = _context.Brands.SingleOrDefault(x => x.Id == id);
             if (brand == null)
-                throw new Exception("Brand not found");
+                throw new Exception("Nhãn hàng không tồn tại");
             return brand;
         }
 

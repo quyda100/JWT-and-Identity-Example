@@ -55,7 +55,7 @@ namespace auth.Services
                  */
                 product.Stock += importProduct.Quantity;
                 product.Price = importProduct.Price;
-                product.UpdatedAt = DateTime.Now;
+                product.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 _context.Products.Update(product);
             });
             import.Total = total;
@@ -68,12 +68,12 @@ namespace auth.Services
             var fileExtension = Path.GetExtension(request.file.FileName);
             if (!fileExtension.Equals(".csv"))
             {
-                throw new Exception("You must upload .csv file");
+                throw new Exception("Yêu cầu định dạng CSV");
             }
             /*
             *   Create path of file
             */
-            var fileName = DateTime.Now.ToString() + fileExtension;
+            var fileName = DateTime.UtcNow.AddHours(7).ToString() + fileExtension;
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "CSV");
             var filePath = Path.Combine(folderPath, fileName);
             if (!Directory.Exists(folderPath))

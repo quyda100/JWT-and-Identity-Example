@@ -58,7 +58,7 @@ namespace auth.Services
             }
             supplier.Name = request.Name;
             supplier.Address = request.Address;
-            supplier.UpdatedAt = DateTime.Now;
+            supplier.UpdatedAt = DateTime.UtcNow.AddHours(7);
             _log.SaveLog("Cập nhật nhà cung cấp: " + request.Name);
             _context.Suppliers.Update(supplier);
             _context.SaveChanges();

@@ -13,7 +13,7 @@ namespace auth.Model.DTO
         public string Thumbnail { get; set; }
         public string Content { get; set; }
         public string UserName { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
         public bool IsDeleted { get; set; } = false;
     }
 }
