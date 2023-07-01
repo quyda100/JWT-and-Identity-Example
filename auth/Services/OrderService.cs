@@ -244,9 +244,17 @@ namespace auth.Services
             else
             {
                 var jsonData = await response.Content.ReadAsStringAsync();
-                dynamic json = JsonConvert.DeserializeObject(jsonData);
-                string ex = json.code_message_value;
-                throw new Exception(ex);
+                string ex;
+                try
+                {
+                    dynamic json = JsonConvert.DeserializeObject(jsonData);
+                    ex = json.code_message_value;
+                }
+                catch (Exception)
+                {
+                    ex = jsonData;
+                }
+                throw new Exception($"GHN: {ex}");
             }
             return order;
         }
