@@ -110,7 +110,7 @@ namespace auth.Services
             order.Status = model.Status;
             if (order.Status == 1)
             {
-                UpdateProductSales(order.OrderProducts);
+                UpdateProductSales(order.OrderProducts, order.Id);
             }
             order.UpdatedAt = DateTime.Now;
             _log.SaveLog("Cập nhật đơn hàng: " + id);
@@ -140,11 +140,15 @@ namespace auth.Services
             _context.Orders.Update(order);
             _context.SaveChanges();
         }
-        private void UpdateProductSales(List<OrderProduct> orderProducts)
+        private void UpdateProductSales(List<OrderProduct> orderProducts, int id)
         {
             foreach (var item in orderProducts)
             {
                 var product = _context.Products.FirstOrDefault(p => p.Id == item.ProductId);
+                if (product.Stock < item.Quantity)
+                {
+                    throw new Exception($"Đơn hàng {id}: Sản phẩm {product.Name} tồn kho không đủ!");
+                }
                 product.Stock -= item.Quantity;
                 product.Sales += item.Quantity;
                 _context.Products.Update(product);
@@ -155,6 +159,7 @@ namespace auth.Services
 
         public async Task UpdateOrderStatus(List<int> ids, int status)
         {
+            ids.Sort();
             foreach (var id in ids)
             {
                 var order = await _context.Orders.Include(o => o.OrderProducts).ThenInclude(p => p.Product).FirstOrDefaultAsync(o => o.Id == id);
@@ -170,7 +175,7 @@ namespace auth.Services
                 }
                 if (status == 2)
                 {
-                    UpdateProductSales(order.OrderProducts);
+                    UpdateProductSales(order.OrderProducts, id);
                 }
                 order.Status = status;
                 order.UpdatedAt = DateTime.Now;
