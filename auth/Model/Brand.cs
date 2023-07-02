@@ -6,8 +6,8 @@
         public string Name { get; set; }
         public string Description { get; set; } = "";
         public bool IsDeleted { get; set; } = false;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
         public List<Product> Products { get; set; }
     }
 }

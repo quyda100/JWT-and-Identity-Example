@@ -56,7 +56,7 @@ namespace auth.Services
             ht.Add("secure_code", GetMD5Hash(secureCode));
             ht.Add("cancel_url", cancelURL.ToLower());
             ht.Add("notify_url", notifyUrl.ToLower());
-            ht.Add("time_limit", DateTime.Now.AddMinutes(30).ToString("dd/MM/yyyy,HH:mm"));
+            ht.Add("time_limit", DateTime.UtcNow.AddHours(7).AddMinutes(30).ToString("dd/MM/yyyy,HH:mm"));
             //Khởi tạo url
             string redirect_url = nganLuongURL;
 

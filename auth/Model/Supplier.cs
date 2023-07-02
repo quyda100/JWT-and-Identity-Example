@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public string Address { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
     }
 }

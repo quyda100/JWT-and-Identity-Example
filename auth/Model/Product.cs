@@ -30,8 +30,8 @@ namespace auth.Model
         [DisplayName("Bảo hành")]
         public int Warranty { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
         [ForeignKey("Brand")]
         public int BrandId { get; set; }
         [ForeignKey("Category")]

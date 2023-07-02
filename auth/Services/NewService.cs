@@ -78,7 +78,7 @@ namespace auth.Services
         public void UpdateNew(int id, NewUpdateRequest model)
         {
             if (model.Id != id)
-                throw new Exception("Having trouble");
+                throw new Exception("Có lỗi xảy ra");
             var item = findNew(id);
             if (model.Thumbnail != null)
             {
@@ -88,7 +88,7 @@ namespace auth.Services
             item.Description = model.Description;
             item.IsDeleted = model.IsDeleted;
             item.Content = model.Content;
-            item.UpdatedAt = DateTime.Now;
+            item.UpdatedAt = DateTime.UtcNow.AddHours(7);
             _context.News.Update(item);
             _log.SaveLog("Cập nhật bài viết: " + item.Title);
             _context.SaveChanges();

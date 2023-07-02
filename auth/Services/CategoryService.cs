@@ -74,13 +74,13 @@ namespace auth.Services
         public  void UpdateCategory(int id, CategoryDTO model)
         {
             if (model.Id != id)
-                throw new Exception("Having trouble");
+                throw new Exception("Có lỗi xảy ra");
             var category = GetCategory(id);
             if (model.Name != category.Name && _context.Products.Any(pr => pr.Name == model.Name))
                 throw new Exception(category.Name + " đã tồn tại");
             category.Name = model.Name;
             category.Description = model.Description;
-            category.UpdatedAt = DateTime.Now;
+            category.UpdatedAt = DateTime.UtcNow.AddHours(7);
             _log.SaveLog("Cập nhật dữ liệu: " + category.Name);
             _context.Categories.Update(category);
             _context.SaveChanges();
@@ -90,7 +90,7 @@ namespace auth.Services
         {
             var category = _context.Categories.SingleOrDefault(x => x.Id == id);
             if (category == null)
-                throw new Exception("Category not found");
+                throw new Exception("Loại sản phẩm không tồn tại");
             return category;
         }
     }

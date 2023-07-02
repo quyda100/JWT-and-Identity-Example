@@ -9,7 +9,7 @@ namespace auth.Model
         public int ProductId { get; set; }
         public string Content { get; set; }
         public string UserId { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow.AddHours(7);
         public bool IsDeleted { get; set; } = false;
         public Product Product { get; set; }
         public User User { get; set; }

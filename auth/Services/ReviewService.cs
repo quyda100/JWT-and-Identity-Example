@@ -41,7 +41,7 @@ namespace auth.Services
         public void UpdateReview(int id, Review model)
         {
             if (model.Id != id)
-                throw new Exception("Having trouble");
+                throw new Exception("Có lỗi xảy ra");
             _context.Reviews.Update(model);
             _context.SaveChanges();
         }
@@ -51,7 +51,7 @@ namespace auth.Services
             var review = _context.Reviews.SingleOrDefault(x => x.Id == id);
             if (review == null)
             {
-                throw new Exception("Review not found");
+                throw new Exception("Không tìm thấy bình luận");
             }
             return review;
         }
