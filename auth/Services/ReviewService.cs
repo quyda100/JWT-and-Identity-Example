@@ -1,6 +1,7 @@
 ﻿using auth.Data;
 using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -18,43 +19,30 @@ namespace auth.Services
             _log = log;
             _httpContextAccessor = httpContextAccessor;
         }
-        public void AddReview(Review model)
+        public void AddReview(string content, int productId)
         {
-            model.UserId = GetUserId();
-            _context.Reviews.Add(model);
+            var review = new Review{
+                Content = content,
+                UserId = GetUserId(),
+                ProductId = productId
+            };
+            _context.Reviews.Add(review);
             _context.SaveChanges();
         }
 
-        public void DeleteReview(int id)
+        public  List<ReviewDTO> GetReviews(int ProductId)
         {
-            var review = FindReview(id);
-            review.IsDeleted = true;
-            _context.Reviews.Update(review);
-            _context.SaveChanges();
-        }
-        public  List<Review> GetReviews(int ProductId)
-        {
-            var reviews = _context.Reviews.Where(x => x.ProductId == ProductId).ToList();
+            var reviews = _context.Reviews.Where(x => x.ProductId == ProductId)
+                    .Include(x=>x.User).Select(x=> new ReviewDTO {
+                        Id = x.Id,
+                        Avatar = x.User.Avatar,
+                        Content = x.Content,
+                        CreatedDate = x.CreatedDate,
+                        UserName = x.User.FullName
+                    }).ToList();
             return reviews;
         }
 
-        public void UpdateReview(int id, Review model)
-        {
-            if (model.Id != id)
-                throw new Exception("Có lỗi xảy ra");
-            _context.Reviews.Update(model);
-            _context.SaveChanges();
-        }
-
-        private Review FindReview(int id)
-        {
-            var review = _context.Reviews.SingleOrDefault(x => x.Id == id);
-            if (review == null)
-            {
-                throw new Exception("Không tìm thấy bình luận");
-            }
-            return review;
-        }
         private string GetUserId() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

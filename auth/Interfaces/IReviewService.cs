@@ -1,12 +1,11 @@
 ﻿using auth.Model;
+using auth.Model.DTO;
 
 namespace auth.Interfaces
 {
     public interface IReviewService
     {
-        public List<Review> GetReviews(int ProductId);
-        public void AddReview(Review model);
-        public void UpdateReview(int id, Review model);
-        public void DeleteReview(int id);
+        public List<ReviewDTO> GetReviews(int ProductId);
+        public void AddReview(string content, int productId);
     }
 }

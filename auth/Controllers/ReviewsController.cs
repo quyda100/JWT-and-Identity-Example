@@ -1,5 +1,7 @@
 ﻿using auth.Interfaces;
 using auth.Model;
+using auth.Model.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +9,7 @@ namespace auth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.User)]
     public class ReviewsController : ControllerBase
     {
         private readonly IReviewService _service;
@@ -14,53 +17,25 @@ namespace auth.Controllers
         {
             _service = service;
         }
+        [AllowAnonymous]
         [HttpGet("getReviews")]
-        public IActionResult GetReview(int id)
+        public IActionResult GetReview(int productId)
         {
-            var reviews = _service.GetReviews(id);
+            var reviews = _service.GetReviews(productId);
             return Ok(reviews);
         }
         [HttpPost("addReview")]
-        public IActionResult AddReview(Review review)
+        public IActionResult AddReview(string content, int productId)
         {
             try
             {
-                _service.AddReview(review);
-                return Ok(review);
+                _service.AddReview(content, productId);
+                return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return BadRequest(ex.Message);
             }
-        }
-        [HttpPost("updateReview")]
-        public IActionResult UpdateReview(int id, Review Review)
-        {
-            try
-            {
-                _service.UpdateReview(id, Review);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-            return NoContent();
-        }
-        [HttpPost("deleteReview")]
-        public IActionResult deleteReview(int id)
-        {
-            try
-            {
-                _service.DeleteReview(id);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-            return NoContent();
         }
     }
 }
