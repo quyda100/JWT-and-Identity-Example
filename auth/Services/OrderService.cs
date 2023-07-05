@@ -169,12 +169,12 @@ namespace auth.Services
                 }
                 if (status == 1)
                 {
+                    if(order.OrderProducts.Any(p=>p.Quantity > p.Product.Stock)){
+                        throw new Exception($"Đơn hàng {order.Id}: Sản phẩm tồn kho không đủ!");
+                    }
                     var temp = await CreateOrderGHN(order);
                     order.Code = temp.Code;
                     order.DeliveryTime = temp.DeliveryTime;
-                }
-                if (status == 2)
-                {
                     UpdateProductSales(order.OrderProducts, id);
                 }
                 order.Status = status;
