@@ -101,6 +101,24 @@ namespace auth.Controllers
             }
             return Ok();
         }
+        [HttpPost("GHNUpdateOrder")]
+        [AllowAnonymous]
+        public IActionResult GHNUpdateOrder(GHNOrderRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return BadRequest("Vui lòng thử lại");
+                }
+                _service.UpdateOrderGHN(request);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
+            }
 
+        }
     }
 }

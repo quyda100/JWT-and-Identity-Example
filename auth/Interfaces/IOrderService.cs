@@ -16,5 +16,6 @@ namespace auth.Interfaces
         public Task<Order> FindOrder(int id);
         public Task UpdateOrderCheckout(int id, long price);
         public Task UpdateOrderCheckout(int id);
+        public void UpdateOrderGHN(GHNOrderRequest request);
     }
 }

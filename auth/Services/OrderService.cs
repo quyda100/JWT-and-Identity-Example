@@ -305,5 +305,35 @@ namespace auth.Services
             _context.Update(order);
             await _context.SaveChangesAsync();
         }
+
+        public void UpdateOrderGHN(GHNOrderRequest request)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Code == request.OrderCode);
+            if(order == null)
+            {
+                throw new Exception("Không tìm thấy hóa đơn");
+            }
+            int status = order.Status;
+            switch (request.Status)
+            {
+                case "picked":
+                case "storing":
+                case "transporting":
+                case "sorting":
+                case "delivering":
+                case "money_collect_delivering":
+                    status = 2; 
+                    break;
+                case "delivered":
+                    status = 3;
+                    break;
+                default:
+                    break;
+            }
+            order.Status = status;
+            order.UpdatedAt = DateTime.UtcNow.AddHours(7);
+            _context.Update(order);
+            _context.SaveChanges();
+        }
     }
 }
