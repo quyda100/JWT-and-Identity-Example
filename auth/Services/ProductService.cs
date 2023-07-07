@@ -28,7 +28,7 @@ namespace auth.Services
         }
         public List<ProductDTO> GetProducts()
         {
-            var products = _context.Products.Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p=>p.IsDeleted == false).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
         public List<ProductDTO> GetProductsDetail()
@@ -142,7 +142,7 @@ namespace auth.Services
 
         private Product GetProduct(int id)
         {
-            var product = _context.Products.Include(p => p.Brand).Include(p => p.Category).SingleOrDefault(p => p.Id == id);
+            var product = _context.Products.Where(p => p.IsDeleted == false).Include(p => p.Brand).Include(p => p.Category).SingleOrDefault(p => p.Id == id);
             if (product == null)
             {
                 throw new Exception("Không tìm thấy sản phẩm");
@@ -151,7 +151,7 @@ namespace auth.Services
         }
         public List<ProductDTO> GetSimilarProduct(string brandName)
         {
-            var products = _context.Products.Where(p => p.Brand.Name == brandName).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.Brand.Name == brandName).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             if (products == null)
             {
                 throw new Exception("Không tìm thấy sản phẩm");
@@ -161,7 +161,7 @@ namespace auth.Services
 
         public ProductDTO SearchProduct(string name)
         {
-            var result = _context.Products.Where(p => p.Name.Contains(name)).ToList();
+            var result = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.Name.Contains(name)).ToList();
             if (result == null)
             {
                 throw new Exception("Không tìm thấy sản phẩm");
@@ -177,7 +177,7 @@ namespace auth.Services
                 //throw new Exception("Brand is not exist!");
                 return null;
             }
-            var products = _context.Products.Where(p => p.BrandId == brandId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.BrandId == brandId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
         public List<ProductDTO> GetProductsByCategory(int categoryId)
@@ -187,7 +187,7 @@ namespace auth.Services
             {
                 throw new Exception("Loại sản phẩm không tồn tại!");
             }
-            var products = _context.Products.Where(p => p.CategoryId == categoryId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.CategoryId == categoryId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 
@@ -203,7 +203,7 @@ namespace auth.Services
             {
                 throw new Exception("Loại sản phẩm không tồn tại!");
             }
-            var products = _context.Products.Where(p => p.CategoryId == categoryId).OrderByDescending(p => p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.CategoryId == categoryId).OrderByDescending(p => p.CreatedAt).Take(4).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 
