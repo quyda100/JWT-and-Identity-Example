@@ -175,6 +175,7 @@ namespace auth.Services
                     var temp = await CreateOrderGHN(order);
                     order.Code = temp.Code;
                     order.DeliveryTime = temp.DeliveryTime;
+                    _context.Orders.Update(order);
                     UpdateProductSales(order.OrderProducts, id);
                 }
                 order.Status = status;
