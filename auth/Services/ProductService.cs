@@ -112,8 +112,8 @@ namespace auth.Services
             deletedImages.ForEach(i => images.Remove(i));
 
             if (previewImages != null)
-            { 
-                images = (List<string>)images.Concat(previewImages);
+            {
+                images.AddRange(previewImages);
             }
             product.Code = p.Code;
             product.Name = p.Name;

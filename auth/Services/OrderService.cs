@@ -181,7 +181,7 @@ namespace auth.Services
                 order.Status = status;
                 order.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 _context.Orders.Update(order);
-                _log.SaveLog($"Cập nhật hóa đơn: {id} thành {status}");
+                _log.SaveLog($"Cập nhật trạng thái hóa đơn {id}: thành {status}");
                 _context.SaveChanges();
             }
         }

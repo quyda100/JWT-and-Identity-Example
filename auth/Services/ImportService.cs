@@ -34,7 +34,7 @@ namespace auth.Services
             };
             _context.Imports.Add(import);
             await _context.SaveChangesAsync();
-            var total = 0;
+            long total = 0;
             model.ImportProducts.ForEach(item =>
             {
                 var product = GetProductByCode(item.ProductCode);
@@ -73,7 +73,7 @@ namespace auth.Services
             /*
             *   Create path of file
             */
-            var fileName = DateTime.UtcNow.AddHours(7).ToString() + fileExtension;
+            var fileName = DateTime.UtcNow.AddHours(7).ToString("dd-MM-yyyy-HHmmss") + fileExtension;
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "CSV");
             var filePath = Path.Combine(folderPath, fileName);
             if (!Directory.Exists(folderPath))

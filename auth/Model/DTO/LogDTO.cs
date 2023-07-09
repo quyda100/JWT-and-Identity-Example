@@ -4,6 +4,6 @@
     {
         public string FullName { get; set; }
         public string Action { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
