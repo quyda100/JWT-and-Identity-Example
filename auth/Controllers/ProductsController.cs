@@ -143,5 +143,19 @@ namespace auth.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [AllowAnonymous]
+        [HttpGet("SearchProduct")]
+        public IActionResult SearchProduct(string name)
+        {
+            try
+            {
+                var products = _service.SearchProduct(name);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

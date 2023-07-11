@@ -22,6 +22,7 @@ namespace auth.Interfaces
         public List<ProductDTO> GetNewestProducts(int categoryId);
         public List<ProductDTO> GetTrashedProducts();
         public void RecoveryProduct(int id);
+        public List<ProductDTO> SearchProduct(string name);
     }
 }
 

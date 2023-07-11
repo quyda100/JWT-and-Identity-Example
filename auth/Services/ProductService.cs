@@ -28,7 +28,7 @@ namespace auth.Services
         }
         public List<ProductDTO> GetProducts()
         {
-            var products = _context.Products.Where(p=>p.IsDeleted == false).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
         public List<ProductDTO> GetProductsDetail()
@@ -159,14 +159,10 @@ namespace auth.Services
             return products;
         }
 
-        public ProductDTO SearchProduct(string name)
+        public List<ProductDTO> SearchProduct(string name)
         {
-            var result = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.Name.Contains(name)).ToList();
-            if (result == null)
-            {
-                throw new Exception("Không tìm thấy sản phẩm");
-            }
-            return _mapper.Map<ProductDTO>(result);
+            var result = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.Name.Contains(name)).Take(10).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            return result;
         }
 
         public List<ProductDTO> GetProductsByBrand(int brandId)
@@ -221,7 +217,11 @@ namespace auth.Services
 
         public void RecoveryProduct(int id)
         {
-            var product = GetProduct(id);
+            var product = _context.Products.Where(p => p.IsDeleted == true).FirstOrDefault();
+            if (product == null)
+            {
+                throw new Exception("Không tìm thấy sản phẩm");
+            }
             product.IsDeleted = false;
             _context.Products.Update(product);
             _log.SaveLog("Khôi phục sản phẩm: " + product.Name);
