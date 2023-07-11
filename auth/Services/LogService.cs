@@ -22,7 +22,10 @@ namespace auth.Services
         }
         public List<LogDTO> GetLogs()
         {
-            var logs = _context.Logs.Include(l=>l.User).Select(l=>_mapper.Map<LogDTO>(l)).ToList();
+            var logs = _context.Logs.Where(l=>l.CreatedAt.Month == DateTime.UtcNow.Month && l.CreatedAt.Year == DateTime.UtcNow.Year)
+                .Include(l=>l.User).Select(l=>_mapper.Map<LogDTO>(l))
+                .OrderByDescending(l=>l.CreatedAt)
+                .ToList();
             return logs;
         }
 
