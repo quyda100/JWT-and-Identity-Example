@@ -87,7 +87,7 @@ namespace auth.Services
         {
             var orders = _context.Orders.Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
                     .Include(o => o.OrderProducts).ThenInclude(p => p.Product)
-                    .Include(o => o.User).OrderBy(p => p.CreatedAt)
+                    .Include(o => o.User).OrderByDescending(p => p.CreatedAt)
                     .Select(o => _mapper.Map<OrderDTO>(o)).ToList();
             return orders;
         }
@@ -169,7 +169,8 @@ namespace auth.Services
                 }
                 if (status == 1)
                 {
-                    if(order.OrderProducts.Any(p=>p.Quantity > p.Product.Stock)){
+                    if (order.OrderProducts.Any(p => p.Quantity > p.Product.Stock))
+                    {
                         throw new Exception($"Đơn hàng {order.Id}: Sản phẩm tồn kho không đủ!");
                     }
                     var temp = await CreateOrderGHN(order);
@@ -181,9 +182,25 @@ namespace auth.Services
                 order.Status = status;
                 order.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 _context.Orders.Update(order);
-                _log.SaveLog($"Cập nhật trạng thái hóa đơn {id}: thành {status}");
+                _log.SaveLog($"Cập nhật trạng thái hóa đơn {id}: thành {getOrderStatus(status)}");
                 _context.SaveChanges();
             }
+        }
+        private string getOrderStatus(int status)
+        {
+            string result = String.Empty;
+            switch (status)
+            {
+                case -2: result = "Đã hủy"; break;
+                case -1: result = "Đang chờ hủy"; break;
+                case 0: result = "Chờ xác nhận"; break;
+                case 1: result = "Đang chuẩn bị hàng"; break;
+                case 2: result = "Đang giao hàng"; break;
+                case 3: result = "Đã giao"; break;
+                default:
+                    break;
+            }
+            return result;
         }
         /*
          * Tạo đơn hàng và gửi qua GHN
@@ -199,7 +216,7 @@ namespace auth.Services
                 name = p.Product.Name,
                 code = p.Product.Code,
                 quantity = p.Quantity,
-                price = p.Price / 1000,
+                price = p.Price,
             });
             string item = JsonConvert.SerializeObject(items);
             object data = new
@@ -211,7 +228,7 @@ namespace auth.Services
                 to_ward_name = address[address.Length - 3].Trim(),
                 to_district_name = address[address.Length - 2].Trim(),
                 to_province_name = address[address.Length - 1].Trim(),
-                cod_amount = order.PaymentMethod == "COD" ? order.Total / 1000 : 0,
+                cod_amount = order.PaymentMethod == "COD" ? order.Total : 0,
                 weight = 200,
                 length = 10,
                 width = 5,
@@ -310,7 +327,7 @@ namespace auth.Services
         public void UpdateOrderGHN(GHNOrderRequest request)
         {
             var order = _context.Orders.FirstOrDefault(o => o.Code == request.OrderCode);
-            if(order == null)
+            if (order == null)
             {
                 throw new Exception("Không tìm thấy hóa đơn");
             }
@@ -323,7 +340,7 @@ namespace auth.Services
                 case "sorting":
                 case "delivering":
                 case "money_collect_delivering":
-                    status = 2; 
+                    status = 2;
                     break;
                 case "delivered":
                     status = 3;

@@ -8,7 +8,7 @@ namespace auth.Interfaces
         public int UsersCount();
         public int DailyOrderCount();
         public long DailyProductSales();
-        public List<ProductDTO> GetBestProductsSale();
+        public List<object> GetBestProductsSale();
         public List<Object> GetYearlySales();
         public List<object> TotalProductsCategoryOfWeek();
 

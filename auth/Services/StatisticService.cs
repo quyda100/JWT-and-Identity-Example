@@ -25,8 +25,8 @@ namespace auth.Services
         public long DailyOrderSales()
         {
             var sales = _context.Orders.Where(o => o.CreatedAt.Date == DateTime.Now.Date)
-                .Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
-                .Where(o=> o.Status > -1)
+                .Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                .Where(o => o.Status > -1)
                 .Sum(o => o.Total);
             return sales;
         }
@@ -35,8 +35,8 @@ namespace auth.Services
         {
             long sum = 0;
             var orders = _context.Orders.Where(o => o.CreatedAt.Date == DateTime.Now.Date)
-                .Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
-                .Where(o=> o.Status > -1)
+                .Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                .Where(o => o.Status > -1)
                 .Include(o => o.OrderProducts).ToList();
             foreach (var item in orders)
             {
@@ -45,10 +45,17 @@ namespace auth.Services
             return sum;
         }
 
-        public List<ProductDTO> GetBestProductsSale()
+        public List<object> GetBestProductsSale()
         {
-            var products = _context.Products.OrderByDescending(p => p.Sales).Take(4).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
-            return products;
+            List<object> result = new List<object>();
+            var orderProduct = _context.OrderProducts.Include(o => o.Order).Include(o => o.Product).Where(o => o.Order.Status == 3)
+                .Where(o => o.Order.CreatedAt < DateTime.Now && o.Order.CreatedAt > DateTime.Now.AddMonths(-1));
+            var temp = orderProduct.GroupBy(o => o.Product.Name).OrderByDescending(o=>o.Count()).Take(4).Select(o => new { Name = o.Key, Sales = o.Count() }).ToList();
+            foreach (var item in temp)
+            {
+                result.Add(item);
+            }
+            return result;
         }
 
         public List<object> GetYearlySales()
@@ -58,8 +65,8 @@ namespace auth.Services
             {
                 int count = 0;
                 var orders = _context.Orders.Where(o => o.CreatedAt.Year == DateTime.Now.Year && o.CreatedAt.Month == i)
-                        .Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
-                        .Where(o=> o.Status == 3)
+                        .Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                        .Where(o => o.Status == 3)
                         .Include(o => o.OrderProducts)
                         .ToList();
                 foreach (var item in orders)
@@ -90,8 +97,8 @@ namespace auth.Services
         public int CountOrdersMonth(int month)
         {
             var orders = _context.Orders.Where(o => o.CreatedAt.Month == month && o.CreatedAt.Year == DateTime.Now.Year);
-            var count = orders.Where(o=>o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
-                            .Where(o=> o.Status > -1)
+            var count = orders.Where(o => o.PaymentMethod == "COD" || (o.PaymentMethod == "NganLuong" && o.PaymentTime != DateTime.MinValue))
+                            .Where(o => o.Status > -1)
                             .Count();
             return count;
         }
