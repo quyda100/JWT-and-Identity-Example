@@ -17,7 +17,7 @@ namespace auth.Controllers
             _orderService = orderService;
         }
         [HttpGet("GetURL")]
-        public IActionResult BuildURL(string userInfo, int orderId, int price)
+        public IActionResult BuildURL(string userInfo, int orderId, long price)
         {
             return Ok(_service.BuildCheckOutURL(userInfo, orderId.ToString(), price));
         }
@@ -34,7 +34,7 @@ namespace auth.Controllers
                 }
                 else if (result)
                 {
-                    await _orderService.UpdateOrderCheckout(int.Parse(order_code), long.Parse(price)*1000);
+                    await _orderService.UpdateOrderCheckout(int.Parse(order_code), long.Parse(price));
                     return Ok("Thanh toán thành công");
                 }
             }

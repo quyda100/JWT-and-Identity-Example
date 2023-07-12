@@ -15,7 +15,7 @@ namespace auth.Services
         private string returnURL = "http://localhost:3000/checkout";
         private string cancelURL = "http://localhost:3000/checkout";
         private string notifyUrl = "https://localhost:7182/api/checkout/receiver";
-        public string BuildCheckOutURL(string userInfo, string orderId, int price)
+        public string BuildCheckOutURL(string userInfo, string orderId, long price)
         {
             //Khởi tạo Secure Code
             string secureCode = "";
@@ -24,7 +24,7 @@ namespace auth.Services
             secureCode += " " + receiver; // tài khoản ngân lượng
             secureCode += " " + "Thanh toán đơn hàng";
             secureCode += " " + orderId;
-            secureCode += " " + (price / 1000).ToString();
+            secureCode += " " + price.ToString();
             secureCode += " " + "vnd"; // hỗ trợ 2 loại tiền tệ currency usd,vnd
             secureCode += " " + "1"; // số lượng mặc định 1
             secureCode += " " + "0";
@@ -43,7 +43,7 @@ namespace auth.Services
             ht.Add("receiver", receiver);
             ht.Add("transaction_info", "Thanh toán đơn hàng");
             ht.Add("order_code", orderId);
-            ht.Add("price", price / 1000);
+            ht.Add("price", price);
             ht.Add("currency", "vnd");
             ht.Add("quantity", 1);
             ht.Add("tax", 0);
