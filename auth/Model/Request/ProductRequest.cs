@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public int Price { get; set; }
+        public long Price { get; set; }
         public IFormFile ImageFile { get; set; }
         public string Color { get; set; }
         public List<string> PreviewImages {get; set;}

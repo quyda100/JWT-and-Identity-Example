@@ -9,7 +9,7 @@ namespace auth.Model
         public int ImportId { get; set; }
         [ForeignKey("Product")]
         public int ProductId { get; set; }
-        public int Price { get; set; }
+        public long Price { get; set; }
         public int Quantity { get; set; }
         public Product Product { get; set; }
         public Import Import { get; set; }

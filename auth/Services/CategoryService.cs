@@ -25,7 +25,8 @@ namespace auth.Services
             var cate = new Category
             {
                 Name = model.Name,
-                Description = model.Description
+                Description = model.Description,
+                IsUnisex = model.IsUnisex
             };
             _context.Categories.Add(cate);
             _context.SaveChanges();
@@ -47,6 +48,7 @@ namespace auth.Services
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
+                IsUnisex = c.IsUnisex,
             }).ToList();
             return categories;
         }

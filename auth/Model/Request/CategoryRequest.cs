@@ -7,5 +7,6 @@ namespace auth.Model.Request
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool IsUnisex { get; set; }
     }
 }

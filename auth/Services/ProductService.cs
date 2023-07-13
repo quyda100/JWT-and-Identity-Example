@@ -183,7 +183,7 @@ namespace auth.Services
             {
                 throw new Exception("Loại sản phẩm không tồn tại!");
             }
-            var products = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.CategoryId == categoryId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).Include(p => p.Brand).Include(p => p.Category).Where(p => p.CategoryId == categoryId || p.Category.IsUnisex).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 

@@ -8,7 +8,7 @@ namespace auth.Model.DTO
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public int Price { get; set; }
+        public long Price { get; set; }
         public string Image { get; set; }
         public string Color { get; set; }
         public int Stock { get; set; }
