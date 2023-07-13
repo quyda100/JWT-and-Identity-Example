@@ -216,7 +216,7 @@ namespace auth.Services
                 name = p.Product.Name,
                 code = p.Product.Code,
                 quantity = p.Quantity,
-                price = p.Price,
+                price = p.Price/1000,
             });
             string item = JsonConvert.SerializeObject(items);
             object data = new
@@ -228,7 +228,7 @@ namespace auth.Services
                 to_ward_name = address[address.Length - 3].Trim(),
                 to_district_name = address[address.Length - 2].Trim(),
                 to_province_name = address[address.Length - 1].Trim(),
-                cod_amount = order.PaymentMethod == "COD" ? order.Total : 0,
+                cod_amount = order.PaymentMethod == "COD" ? order.Total/1000 : 0,
                 weight = 200,
                 length = 10,
                 width = 5,

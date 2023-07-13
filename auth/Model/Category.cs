@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; } = "";
-        public bool IsUnisex { get; set; } = false;
+        public int Type { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(7);

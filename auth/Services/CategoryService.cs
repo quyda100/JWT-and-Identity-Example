@@ -12,7 +12,8 @@ namespace auth.Services
         private readonly ApplicationDBContext _context;
         private readonly ILogService _log;
 
-        public CategoryService(ApplicationDBContext context, ILogService log) { 
+        public CategoryService(ApplicationDBContext context, ILogService log)
+        {
             _context = context;
             _log = log;
         }
@@ -26,7 +27,7 @@ namespace auth.Services
             {
                 Name = model.Name,
                 Description = model.Description,
-                IsUnisex = model.IsUnisex
+                Type = model.Type,
             };
             _context.Categories.Add(cate);
             _context.SaveChanges();
@@ -36,19 +37,19 @@ namespace auth.Services
         {
             var category = GetCategory(id);
             category.IsDeleted = true;
-            _log.SaveLog("Xóa loại sản phẩm: "+category.Name);
+            _log.SaveLog("Xóa loại sản phẩm: " + category.Name);
             _context.Categories.Update(category);
             _context.SaveChanges();
         }
 
         public List<CategoryDTO> GetCategories()
         {
-            var categories = _context.Categories.Where(c=>c.IsDeleted==false).Select(c=> new CategoryDTO
+            var categories = _context.Categories.Where(c => c.IsDeleted == false).Select(c => new CategoryDTO
             {
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
-                IsUnisex = c.IsUnisex,
+                Type = c.Type,
             }).ToList();
             return categories;
         }
@@ -73,7 +74,7 @@ namespace auth.Services
             _context.SaveChanges();
         }
 
-        public  void UpdateCategory(int id, CategoryDTO model)
+        public void UpdateCategory(int id, CategoryDTO model)
         {
             if (model.Id != id)
                 throw new Exception("Có lỗi xảy ra");
@@ -82,6 +83,7 @@ namespace auth.Services
                 throw new Exception(category.Name + " đã tồn tại");
             category.Name = model.Name;
             category.Description = model.Description;
+            category.Type = model.Type;
             category.UpdatedAt = DateTime.UtcNow.AddHours(7);
             _log.SaveLog("Cập nhật dữ liệu: " + category.Name);
             _context.Categories.Update(category);
