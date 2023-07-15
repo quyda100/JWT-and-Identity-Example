@@ -28,7 +28,7 @@ namespace auth.Services
         }
         public List<ProductDTO> GetProducts()
         {
-            var products = _context.Products.Where(p => p.IsDeleted == false).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).OrderByDescending(p => p.CreatedAt).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
         public List<ProductDTO> GetProductsDetail()
