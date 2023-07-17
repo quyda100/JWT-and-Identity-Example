@@ -173,7 +173,7 @@ namespace auth.Services
                 //throw new Exception("Brand is not exist!");
                 return null;
             }
-            var products = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.BrandId == brandId).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).Where(p => p.BrandId == brandId).OrderByDescending(p => p.CreatedAt).Include(p => p.Brand).Include(p => p.Category).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
         public List<ProductDTO> GetProductsByCategory(int categoryId)
@@ -183,7 +183,7 @@ namespace auth.Services
             {
                 throw new Exception("Loại sản phẩm không tồn tại!");
             }
-            var products = _context.Products.Where(p => p.IsDeleted == false).Include(p => p.Brand).Include(p => p.Category).Where(p => p.CategoryId == categoryId || p.Category.Type == 2).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
+            var products = _context.Products.Where(p => p.IsDeleted == false).OrderByDescending(p => p.CreatedAt).Include(p => p.Brand).Include(p => p.Category).Where(p => p.CategoryId == categoryId || p.Category.Type == 2).Select(p => _mapper.Map<ProductDTO>(p)).ToList();
             return products;
         }
 
