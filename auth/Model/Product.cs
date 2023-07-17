@@ -10,6 +10,7 @@ namespace auth.Model
         public string Code { get; set; }
         public string Name { get; set; }
         public long Price { get; set; }
+        public long ImportPrice { get; set; }
         public int Stock { get; set; } = 0;
         public string Image { get; set; }
         public string Color { get; set; }

@@ -75,6 +75,7 @@ namespace auth.Services
                 {
                     ProductId = product.Id,
                     OrderId = OrderId,
+                    ImportPrice = product.ImportPrice,
                     Price = product.Price,
                     Quantity = productRequest.Quanlity
                 };
@@ -344,6 +345,7 @@ namespace auth.Services
                     break;
                 case "delivered":
                     status = 3;
+                    order.PaymentTime = DateTime.UtcNow.AddHours(7);
                     break;
                 default:
                     break;

@@ -54,7 +54,8 @@ namespace auth.Services
                  *  Update Product
                  */
                 product.Stock += importProduct.Quantity;
-                product.Price = importProduct.Price;
+                product.ImportPrice = importProduct.Price;
+                product.Price = (long)(importProduct.Price * 1.2);
                 product.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 _context.Products.Update(product);
             });

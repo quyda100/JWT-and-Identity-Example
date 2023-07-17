@@ -162,5 +162,16 @@ namespace auth.Services
                 default: return "";
             }
         }
+
+        public long InterestMonth(int month)
+        {
+            long result = 0;
+            var orderProduct = _context.OrderProducts.Include(o=>o.Order).Where(o=>o.Order.PaymentTime != DateTime.MinValue && o.Order.PaymentTime.Month == month && o.Order.PaymentTime.Year == DateTime.Now.Year).ToList();
+            foreach (var item in orderProduct)
+            {
+                result = (item.Price - item.ImportPrice) * item.Quantity;
+            }
+            return result;
+        }
     }
 }

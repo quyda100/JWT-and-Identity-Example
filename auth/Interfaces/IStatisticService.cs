@@ -14,6 +14,7 @@ namespace auth.Interfaces
 
         public long OrderSalesTotalMonth(int month);
         public long ImportTotalMonth(int month);
+        public long InterestMonth(int month);
         public int CountOrdersMonth(int month);
         public List<object> BrandCountSales(int month);
         public List<object> BrandCountStock();
