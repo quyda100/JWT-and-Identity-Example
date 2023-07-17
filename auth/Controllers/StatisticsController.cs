@@ -77,7 +77,7 @@ namespace auth.Controllers
         {
             return Ok(_service.BrandCountStock());
         }
-        [HttpGet("InterestMonth")]
+        [HttpGet("InterestMonth/{month}")]
         public IActionResult InterestMonth(int month)
         {
             return Ok(_service.InterestMonth(month));
